@@ -29,16 +29,36 @@ html, body {
 .header {
   background: linear-gradient(135deg, #0a1a0a, #111);
   border-bottom: 2px solid var(--green);
-  padding: 16px 20px;
+  padding: 14px 20px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
   box-shadow: 0 4px 20px rgba(0,200,60,.15);
 }
 .header-left { display: flex; align-items: center; gap: 12px; }
-.header-logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
+.header-logo { font-size: 20px; font-weight: 900; letter-spacing: 2px; }
 .header-badge { background: var(--green); color: #000; font-size: 10px; font-weight: 800;
   padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; }
 .header-time { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: 2px; }
+
+/* ── TABS ── */
+.tabs-bar {
+  display: flex; border-bottom: 1px solid var(--border); background: #0d0d0d;
+}
+.tab-btn {
+  flex: 1; padding: 14px 10px; text-align: center;
+  background: none; border: none; color: var(--muted);
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  border-bottom: 3px solid transparent; transition: all .15s;
+  text-transform: uppercase; letter-spacing: .8px;
+}
+.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+.tab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--red); color: #fff; border-radius: 50%;
+  width: 18px; height: 18px; font-size: 10px; font-weight: 900;
+  margin-left: 6px; vertical-align: middle;
+}
+.tab-badge.hide { display: none; }
 
 /* ── STATS BAR ── */
 .stats-bar {
@@ -46,83 +66,119 @@ html, body {
   background: #0d0d0d;
 }
 .stat-item {
-  flex: 1; padding: 14px 12px; text-align: center;
+  flex: 1; padding: 12px; text-align: center;
   border-right: 1px solid var(--border);
 }
 .stat-item:last-child { border-right: none; }
-.stat-val { font-size: 28px; font-weight: 900; }
+.stat-val { font-size: 24px; font-weight: 900; }
 .stat-val.green { color: var(--green); }
 .stat-val.gold  { color: var(--gold); }
 .stat-val.red   { color: var(--red); }
 .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
 /* ── MAIN ── */
-.main { padding: 16px; max-width: 600px; margin: 0 auto; }
+.main { padding: 14px; max-width: 700px; margin: 0 auto; }
 
 /* ── SECTION TITLE ── */
 .section-title {
   font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
-  margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+  margin: 0 0 10px; display: flex; align-items: center; gap: 8px;
 }
 .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-/* ── CHAMADA CARD ── */
-.chamada-card {
+/* ── PEDIDO CARD ── */
+.pedido-card {
   background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  padding: 16px 18px; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 10px; overflow: hidden;
   animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both;
-  position: relative; overflow: hidden;
+  position: relative;
 }
-.chamada-card::before {
+.pedido-card::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
   background: var(--green); border-radius: 4px 0 0 4px;
 }
-.chamada-card.atendida::before { background: var(--muted); }
-.chamada-card.atendida { opacity: 0.5; }
+.pedido-card.atendido::before { background: #2a6a2a; }
+.pedido-card.atendido { opacity: 0.75; }
+.pedido-card.chamada::before { background: var(--gold); }
 
 @keyframes cardIn {
   from { transform: translateY(-10px) scale(.97); opacity: 0; }
   to   { transform: none; opacity: 1; }
 }
-
-.chamada-mesa {
-  width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--green-dark), #007030);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border: 2px solid rgba(0,200,60,.3);
-  box-shadow: 0 0 16px rgba(0,200,60,.2);
-}
-.chamada-mesa-num { font-size: 22px; font-weight: 900; color: var(--green); line-height: 1; }
-.chamada-mesa-lbl { font-size: 8px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; }
-
-.chamada-info { flex: 1; }
-.chamada-title { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
-.chamada-time { font-size: 12px; color: var(--muted); }
-.chamada-elapsed { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px; }
-
-.chamada-actions { display: flex; flex-direction: column; gap: 6px; }
-.btn-atender {
-  background: var(--green); border: none; color: #000; padding: 8px 16px;
-  border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;
-  transition: all .15s; white-space: nowrap;
-}
-.btn-atender:hover { background: #00e050; transform: scale(1.03); }
-.btn-remover {
-  background: #222; border: 1px solid var(--border); color: var(--muted);
-  padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600;
-  cursor: pointer; transition: all .15s; white-space: nowrap;
-}
-.btn-remover:hover { background: #2a1010; color: #fff; border-color: var(--red); }
-
-/* Pulse for new calls */
-.chamada-card.nova {
-  border-color: rgba(0,200,60,.4);
-  animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both, novaPulse 2s ease-in-out 3;
-}
 @keyframes novaPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,60,.2); }
   50%       { box-shadow: 0 0 0 8px rgba(0,200,60,.0); }
+}
+.pedido-card.novo {
+  border-color: rgba(0,200,60,.4);
+  animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both, novaPulse 2s ease-in-out 3;
+}
+
+.pedido-header {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  border-bottom: 1px solid #1a1a1a;
+}
+.pedido-mesa {
+  width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--green-dark), #007030);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 2px solid rgba(0,200,60,.3);
+}
+.pedido-mesa.chamada-mesa {
+  background: linear-gradient(135deg, #3a2a00, #5a4200);
+  border-color: rgba(200,160,0,.3);
+}
+.pedido-mesa-num { font-size: 20px; font-weight: 900; color: var(--green); line-height: 1; }
+.pedido-mesa.chamada-mesa .pedido-mesa-num { color: var(--gold); }
+.pedido-mesa-lbl { font-size: 8px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; }
+
+.pedido-meta { flex: 1; }
+.pedido-tipo { font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+.pedido-time { font-size: 12px; color: var(--muted); }
+.pedido-elapsed { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px; }
+.pedido-total { font-size: 18px; font-weight: 900; color: var(--gold); white-space: nowrap; }
+
+.pedido-itens {
+  padding: 10px 16px; border-bottom: 1px solid #1a1a1a;
+}
+.pedido-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 5px 0; border-bottom: 1px solid #161616; font-size: 13px;
+}
+.pedido-item:last-child { border-bottom: none; }
+.pedido-item-qty { color: var(--green); font-weight: 800; min-width: 24px; flex-shrink: 0; }
+.pedido-item-info { flex: 1; }
+.pedido-item-nome { font-weight: 700; }
+.pedido-item-det { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.pedido-item-preco { color: var(--gold); font-weight: 700; white-space: nowrap; }
+
+.pedido-actions {
+  display: flex; gap: 8px; padding: 12px 16px; flex-wrap: wrap;
+}
+.btn-atendeu {
+  background: var(--green); border: none; color: #000; padding: 9px 16px;
+  border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;
+  transition: all .15s; flex: 1;
+}
+.btn-atendeu:hover { background: #00e050; }
+.btn-excluir-mesa {
+  background: #1a0808; border: 1px solid #3a1010; color: #e05050;
+  padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.btn-excluir-mesa:hover { background: #2a1010; border-color: var(--red); }
+.btn-ignorar {
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--muted);
+  padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.btn-ignorar:hover { background: #252525; color: var(--text); }
+
+/* Atendido footer */
+.pedido-atendido-info {
+  padding: 10px 16px; font-size: 12px;
+  color: #5daa5d; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
 }
 
 /* ── EMPTY STATE ── */
@@ -133,15 +189,15 @@ html, body {
 .empty-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
 .empty-sub { font-size: 13px; }
 
-/* ── DEMO MODE BANNER ── */
+/* ── DEMO BANNER ── */
 .demo-banner {
   background: linear-gradient(135deg, #1a1200, #2a1e00);
   border: 1px solid #3a2a00; border-radius: 10px; padding: 10px 14px;
-  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
   font-size: 12px; color: #c8a050;
 }
 
-/* ── PING INDICATOR ── */
+/* ── PING ── */
 .ping-dot {
   width: 8px; height: 8px; border-radius: 50%; background: var(--green);
   animation: pingPulse 2s ease-in-out infinite; flex-shrink: 0;
@@ -155,19 +211,22 @@ html, body {
 /* ── FAB LIMPAR ── */
 .fab-limpar {
   position: fixed; bottom: 20px; right: 20px;
-  background: #222; border: 1px solid #333; color: var(--muted);
+  background: #1a0808; border: 1px solid #3a1010; color: #e05050;
   padding: 10px 18px; border-radius: 30px; font-size: 13px; font-weight: 700;
   cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.5); transition: all .2s;
 }
-.fab-limpar:hover { background: #2a1010; color: var(--red); border-color: var(--red); }
+.fab-limpar:hover { background: #2a1010; border-color: var(--red); color: #fff; }
 
-/* ── NOTIF SOUND ICON ── */
 .sound-btn {
   background: #1a1a1a; border: 1px solid var(--border); color: var(--muted);
   padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
   transition: all .15s;
 }
 .sound-btn:hover { border-color: var(--green); color: var(--green); }
+
+/* Tab panels */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 </style>
 </head>
 <body>
@@ -179,7 +238,7 @@ html, body {
     <div class="header-badge">Painel Garçom</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <button class="sound-btn" id="sound-btn" onclick="toggleSound()" title="Som de notificação">🔔</button>
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">🔔</button>
     <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
       <div class="ping-dot" id="ping-dot"></div>
       <span id="ping-label">ao vivo</span>
@@ -191,12 +250,12 @@ html, body {
 <!-- ── STATS BAR ── -->
 <div class="stats-bar">
   <div class="stat-item">
-    <div class="stat-val green" id="stat-aguardando">0</div>
-    <div class="stat-lbl">Aguardando</div>
+    <div class="stat-val green" id="stat-pedidos">0</div>
+    <div class="stat-lbl">Pedidos</div>
   </div>
   <div class="stat-item">
-    <div class="stat-val gold" id="stat-hoje">0</div>
-    <div class="stat-lbl">Chamadas hoje</div>
+    <div class="stat-val gold" id="stat-chamadas">0</div>
+    <div class="stat-lbl">Chamadas</div>
   </div>
   <div class="stat-item">
     <div class="stat-val red" id="stat-tempo">—</div>
@@ -204,31 +263,70 @@ html, body {
   </div>
 </div>
 
+<!-- ── TABS ── -->
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('pedidos',this)">
+    📋 Pedidos <span class="tab-badge hide" id="badge-pedidos">0</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('chamadas',this)">
+    🔔 Chamadas <span class="tab-badge hide" id="badge-chamadas">0</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('historico',this)">
+    ✅ Atendidos
+  </button>
+</div>
+
 <!-- ── MAIN ── -->
 <div class="main">
 
   <div class="demo-banner" id="demo-banner">
-    ⚠️ <span><b>Modo demonstração</b> — Configure o Firebase no código para sincronização em tempo real.</span>
+    ⚠️ <span><b>Modo demonstração</b> — Configure o Firebase para sincronização em tempo real.</span>
   </div>
 
-  <div class="section-title">🔔 Chamadas ativas</div>
+  <!-- TAB PEDIDOS -->
+  <div id="tab-pedidos" class="tab-panel active">
+    <div class="section-title">📋 Pedidos aguardando</div>
+    <div id="pedidos-list">
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-title">Sem pedidos pendentes</div>
+        <div class="empty-sub">Os pedidos das mesas aparecerão aqui.</div>
+      </div>
+    </div>
+  </div>
 
-  <div id="chamadas-list">
-    <div class="empty-state" id="empty-state">
-      <div class="empty-icon">✅</div>
-      <div class="empty-title">Tudo em ordem!</div>
-      <div class="empty-sub">Nenhuma mesa aguardando atendimento.</div>
+  <!-- TAB CHAMADAS -->
+  <div id="tab-chamadas" class="tab-panel">
+    <div class="section-title">🔔 Chamadas de garçom</div>
+    <div id="chamadas-list">
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-title">Tudo em ordem!</div>
+        <div class="empty-sub">Nenhuma mesa chamando.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB HISTÓRICO -->
+  <div id="tab-historico" class="tab-panel">
+    <div class="section-title" style="margin-bottom:10px">✅ Atendidos recentemente</div>
+    <div id="historico-list">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">Sem histórico</div>
+        <div class="empty-sub">Pedidos e chamadas atendidas aparecerão aqui.</div>
+      </div>
     </div>
   </div>
 
 </div>
 
-<button class="fab-limpar" onclick="limparAtendidas()">🗑 Limpar atendidas</button>
+<button class="fab-limpar" onclick="limparAtendidos()">🗑 Limpar atendidos</button>
 
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getDatabase, ref, onValue, update, query, orderByChild, limitToLast }
+import { getDatabase, ref, onValue, update, remove, query, orderByChild, limitToLast }
   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
 
 const firebaseConfig = {
@@ -242,31 +340,68 @@ const firebaseConfig = {
 };
 
 let db = null;
-let connected = false;
 
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
 
-  // Listen for calls
-  const chamadasRef = query(ref(db, 'chamadas'), orderByChild('hora'), limitToLast(50));
-  onValue(chamadasRef, (snapshot) => {
-    const data = snapshot.val() || {};
-    window._renderChamadas(data, db);
-    connected = true;
+  // Ouvir PEDIDOS
+  const pedidosRef = query(ref(db, 'pedidos'), orderByChild('hora'), limitToLast(100));
+  onValue(pedidosRef, (snap) => {
+    window._dadosPedidos = snap.val() || {};
+    window._renderTudo();
     document.getElementById('ping-dot').classList.remove('ping-offline');
     document.getElementById('ping-label').textContent = 'ao vivo';
     document.getElementById('demo-banner').style.display = 'none';
   }, (err) => {
-    console.warn('Firebase error:', err);
+    console.warn('Firebase pedidos error:', err);
     document.getElementById('ping-dot').classList.add('ping-offline');
     document.getElementById('ping-label').textContent = 'offline';
   });
 
-  window._fbUpdate = (key, data) => update(ref(db, 'chamadas/' + key), data);
+  // Ouvir CHAMADAS
+  const chamadasRef = query(ref(db, 'chamadas'), orderByChild('hora'), limitToLast(100));
+  onValue(chamadasRef, (snap) => {
+    window._dadosChamadas = snap.val() || {};
+    window._renderTudo();
+  });
+
+  // Ações
+  window._fbUpdatePedido  = (key, data) => update(ref(db, 'pedidos/' + key), data);
+  window._fbUpdateChamada = (key, data) => update(ref(db, 'chamadas/' + key), data);
+  window._fbDeletePedido  = (key) => remove(ref(db, 'pedidos/' + key));
+  window._fbDeleteChamada = (key) => remove(ref(db, 'chamadas/' + key));
+
+  // Limpar todos atendidos
+  window._fbLimparAtendidos = async () => {
+    const pedidos = window._dadosPedidos || {};
+    const chamadas = window._dadosChamadas || {};
+    const ops = [];
+    Object.entries(pedidos).forEach(([k, v]) => {
+      if (v.status !== 'aguardando') ops.push(remove(ref(db, 'pedidos/' + k)));
+    });
+    Object.entries(chamadas).forEach(([k, v]) => {
+      if (v.status !== 'aguardando') ops.push(remove(ref(db, 'chamadas/' + k)));
+    });
+    await Promise.all(ops);
+  };
+
+  // Resetar mesa (remove todos pedidos + chamadas daquela mesa)
+  window._fbResetarMesa = async (mesa) => {
+    const pedidos = window._dadosPedidos || {};
+    const chamadas = window._dadosChamadas || {};
+    const ops = [];
+    Object.entries(pedidos).forEach(([k, v]) => {
+      if (String(v.mesa) === String(mesa)) ops.push(remove(ref(db, 'pedidos/' + k)));
+    });
+    Object.entries(chamadas).forEach(([k, v]) => {
+      if (String(v.mesa) === String(mesa)) ops.push(remove(ref(db, 'chamadas/' + k)));
+    });
+    await Promise.all(ops);
+  };
 
 } catch(e) {
-  console.warn('Firebase não configurado, rodando em modo demo:', e.message);
+  console.warn('Firebase não configurado:', e.message);
   document.getElementById('ping-dot').classList.add('ping-offline');
   document.getElementById('ping-label').textContent = 'demo';
 }
@@ -274,107 +409,204 @@ try {
 
 <script>
 // ═══════════════════════════════════════════
-//  STATE (modo demo — sem Firebase)
+//  ESTADO
 // ═══════════════════════════════════════════
-let chamadasDemo = {}; // key -> { mesa, hora (ms), status }
+window._dadosPedidos  = {};
+window._dadosChamadas = {};
 let soundEnabled = true;
-let statHoje = 0;
-let lastKeys = new Set();
+let lastPedidoKeys = new Set();
+let lastChamadaKeys = new Set();
+let tabAtiva = 'pedidos';
 
-// Usar dados demo se Firebase não disponível
-function adicionarDemo(mesa) {
-  const key = 'demo_' + Date.now();
-  chamadasDemo[key] = { mesa: String(mesa), hora: Date.now(), status: 'aguardando' };
-  statHoje++;
-  renderDemo();
-  tocarSom();
-}
-
-function renderDemo() {
-  window._renderChamadas(chamadasDemo, null);
+// ═══════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════
+function switchTab(tab, btn) {
+  tabAtiva = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
 }
 
 // ═══════════════════════════════════════════
-//  RENDER CHAMADAS
+//  RENDER PRINCIPAL
 // ═══════════════════════════════════════════
-window._renderChamadas = function(data, db) {
-  const list = document.getElementById('chamadas-list');
-  const empty = document.getElementById('empty-state');
+window._renderTudo = function() {
+  const pedidos = window._dadosPedidos;
+  const chamadas = window._dadosChamadas;
 
-  const entries = Object.entries(data)
+  // ── Pedidos ──
+  const todosPedidos = Object.entries(pedidos)
     .map(([k, v]) => ({ key: k, ...v, horaMs: typeof v.hora === 'number' ? v.hora : Date.now() }))
     .sort((a, b) => b.horaMs - a.horaMs);
 
-  const aguardando = entries.filter(e => e.status === 'aguardando');
-  const atendidas  = entries.filter(e => e.status !== 'aguardando');
+  const pedidosAguard = todosPedidos.filter(p => p.status === 'aguardando');
+  const pedidosAtend  = todosPedidos.filter(p => p.status !== 'aguardando');
 
-  // Check for new calls (to play sound)
-  const newKeys = new Set(aguardando.map(e => e.key));
-  const hasNew = [...newKeys].some(k => !lastKeys.has(k));
-  if (hasNew && lastKeys.size > 0) tocarSom();
-  lastKeys = newKeys;
+  // ── Chamadas ──
+  const todasChamadas = Object.entries(chamadas)
+    .map(([k, v]) => ({ key: k, ...v, horaMs: typeof v.hora === 'number' ? v.hora : Date.now() }))
+    .sort((a, b) => b.horaMs - a.horaMs);
 
-  // Update stats
-  document.getElementById('stat-aguardando').textContent = aguardando.length;
-  document.getElementById('stat-hoje').textContent = statHoje + entries.length;
+  const chamadasAguard = todasChamadas.filter(c => c.status === 'aguardando');
+  const chamadasAtend  = todasChamadas.filter(c => c.status !== 'aguardando');
 
-  if (aguardando.length > 0) {
-    const oldest = Math.max(...aguardando.map(e => Date.now() - e.horaMs));
+  // Sons para novos
+  const newPedKeys = new Set(pedidosAguard.map(p => p.key));
+  if ([...newPedKeys].some(k => !lastPedidoKeys.has(k)) && lastPedidoKeys.size > 0) tocarSom(true);
+  lastPedidoKeys = newPedKeys;
+
+  const newChamKeys = new Set(chamadasAguard.map(c => c.key));
+  if ([...newChamKeys].some(k => !lastChamadaKeys.has(k)) && lastChamadaKeys.size > 0) tocarSom(false);
+  lastChamadaKeys = newChamKeys;
+
+  // Stats
+  document.getElementById('stat-pedidos').textContent = pedidosAguard.length;
+  document.getElementById('stat-chamadas').textContent = chamadasAguard.length;
+
+  const todasAguard = [...pedidosAguard, ...chamadasAguard];
+  if (todasAguard.length > 0) {
+    const oldest = Math.max(...todasAguard.map(x => Date.now() - x.horaMs));
     document.getElementById('stat-tempo').textContent = formatElapsed(oldest);
   } else {
     document.getElementById('stat-tempo').textContent = '—';
   }
 
-  // Rebuild list
-  list.innerHTML = '';
+  // Badges
+  const badgePed = document.getElementById('badge-pedidos');
+  badgePed.textContent = pedidosAguard.length;
+  badgePed.classList.toggle('hide', pedidosAguard.length === 0);
 
-  if (aguardando.length === 0 && atendidas.length === 0) {
-    list.appendChild(Object.assign(document.createElement('div'), { innerHTML: `
-      <div class="empty-state">
-        <div class="empty-icon">✅</div>
-        <div class="empty-title">Tudo em ordem!</div>
-        <div class="empty-sub">Nenhuma mesa aguardando atendimento.</div>
-      </div>` }));
-    return;
+  const badgeCham = document.getElementById('badge-chamadas');
+  badgeCham.textContent = chamadasAguard.length;
+  badgeCham.classList.toggle('hide', chamadasAguard.length === 0);
+
+  // ── Render tab PEDIDOS ──
+  const listPed = document.getElementById('pedidos-list');
+  listPed.innerHTML = '';
+  if (pedidosAguard.length === 0) {
+    listPed.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">✅</div>
+      <div class="empty-title">Sem pedidos pendentes</div>
+      <div class="empty-sub">Os pedidos das mesas aparecerão aqui.</div>
+    </div>`;
+  } else {
+    pedidosAguard.forEach(p => listPed.appendChild(criarCardPedido(p)));
   }
 
-  aguardando.forEach(chamada => {
-    const el = criarCard(chamada, db, false);
-    list.appendChild(el);
-  });
+  // ── Render tab CHAMADAS ──
+  const listCham = document.getElementById('chamadas-list');
+  listCham.innerHTML = '';
+  if (chamadasAguard.length === 0) {
+    listCham.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">✅</div>
+      <div class="empty-title">Tudo em ordem!</div>
+      <div class="empty-sub">Nenhuma mesa chamando.</div>
+    </div>`;
+  } else {
+    chamadasAguard.forEach(c => listCham.appendChild(criarCardChamada(c)));
+  }
 
-  if (atendidas.length > 0) {
-    const sep = document.createElement('div');
-    sep.className = 'section-title';
-    sep.style.marginTop = '20px';
-    sep.textContent = 'Atendidas recentemente';
-    list.appendChild(sep);
-    atendidas.slice(0, 5).forEach(chamada => {
-      list.appendChild(criarCard(chamada, db, true));
+  // ── Render tab HISTÓRICO ──
+  const listHist = document.getElementById('historico-list');
+  listHist.innerHTML = '';
+  const hist = [...pedidosAtend, ...chamadasAtend].sort((a, b) => b.horaMs - a.horaMs).slice(0, 30);
+  if (hist.length === 0) {
+    listHist.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">Sem histórico</div>
+      <div class="empty-sub">Pedidos e chamadas atendidas aparecem aqui.</div>
+    </div>`;
+  } else {
+    hist.forEach(item => {
+      if (item.itens) listHist.appendChild(criarCardPedido(item, true));
+      else listHist.appendChild(criarCardChamada(item, true));
     });
   }
 };
 
-function criarCard(chamada, db, atendida) {
+// ═══════════════════════════════════════════
+//  CRIAR CARD — PEDIDO
+// ═══════════════════════════════════════════
+function criarCardPedido(pedido, atendido) {
+  const el = document.createElement('div');
+  const elapsed = Date.now() - pedido.horaMs;
+  const isNovo = elapsed < 15000 && !atendido;
+
+  el.className = `pedido-card${atendido ? ' atendido' : ''}${isNovo ? ' novo' : ''}`;
+
+  const itens = pedido.itens || [];
+  const totalFmt = pedido.total ? formatBRL(pedido.total) : '—';
+
+  const itensHTML = itens.map(i => `
+    <div class="pedido-item">
+      <div class="pedido-item-qty">${i.qty}x</div>
+      <div class="pedido-item-info">
+        <div class="pedido-item-nome">${escHtml(i.nome)}</div>
+        ${i.detalhe ? `<div class="pedido-item-det">${escHtml(i.detalhe)}</div>` : ''}
+      </div>
+      <div class="pedido-item-preco">${formatBRL((i.preco || 0) * (i.qty || 1))}</div>
+    </div>
+  `).join('');
+
+  const actionsHTML = !atendido ? `
+    <div class="pedido-actions">
+      <button class="btn-atendeu" onclick="atenderPedido('${pedido.key}')">✔ Pedido anotado</button>
+      <button class="btn-excluir-mesa" onclick="resetarMesa('${pedido.mesa}')">🗑 Reset Mesa ${escHtml(pedido.mesa)}</button>
+      <button class="btn-ignorar" onclick="ignorarPedido('${pedido.key}')">Ignorar</button>
+    </div>
+  ` : `<div class="pedido-atendido-info">✅ Atendido às ${formatHora(pedido.horaMs)}</div>`;
+
+  el.innerHTML = `
+    <div class="pedido-header">
+      <div class="pedido-mesa">
+        <div class="pedido-mesa-num">${escHtml(pedido.mesa)}</div>
+        <div class="pedido-mesa-lbl">mesa</div>
+      </div>
+      <div class="pedido-meta">
+        <div class="pedido-tipo">🍽️ Pedido da Mesa ${escHtml(pedido.mesa)}</div>
+        <div class="pedido-time">${formatHora(pedido.horaMs)}</div>
+        ${!atendido ? `<div class="pedido-elapsed" id="elapsed-ped-${pedido.key}">${formatElapsed(elapsed)} atrás</div>` : ''}
+      </div>
+      <div class="pedido-total">${totalFmt}</div>
+    </div>
+    ${itensHTML ? `<div class="pedido-itens">${itensHTML}</div>` : ''}
+    ${actionsHTML}
+  `;
+  return el;
+}
+
+// ═══════════════════════════════════════════
+//  CRIAR CARD — CHAMADA
+// ═══════════════════════════════════════════
+function criarCardChamada(chamada, atendido) {
   const el = document.createElement('div');
   const elapsed = Date.now() - chamada.horaMs;
-  const isNova = elapsed < 10000;
+  const isNovo = elapsed < 10000 && !atendido;
 
-  el.className = `chamada-card${atendida ? ' atendida' : ''}${isNova && !atendida ? ' nova' : ''}`;
+  el.className = `pedido-card chamada${atendido ? ' atendido' : ''}${isNovo ? ' novo' : ''}`;
+
+  const actionsHTML = !atendido ? `
+    <div class="pedido-actions">
+      <button class="btn-atendeu" onclick="atenderChamada('${chamada.key}')">✔ Atendi</button>
+      <button class="btn-ignorar" onclick="ignorarChamada('${chamada.key}')">Ignorar</button>
+    </div>
+  ` : `<div class="pedido-atendido-info">✅ Garçom foi até a mesa · ${formatHora(chamada.horaMs)}</div>`;
+
   el.innerHTML = `
-    <div class="chamada-mesa">
-      <div class="chamada-mesa-num">${chamada.mesa}</div>
-      <div class="chamada-mesa-lbl">mesa</div>
+    <div class="pedido-header">
+      <div class="pedido-mesa chamada-mesa">
+        <div class="pedido-mesa-num">${escHtml(chamada.mesa)}</div>
+        <div class="pedido-mesa-lbl">mesa</div>
+      </div>
+      <div class="pedido-meta">
+        <div class="pedido-tipo">🔔 Mesa ${escHtml(chamada.mesa)} chamando garçom</div>
+        <div class="pedido-time">${formatHora(chamada.horaMs)}</div>
+        ${!atendido ? `<div class="pedido-elapsed" id="elapsed-ch-${chamada.key}">${formatElapsed(elapsed)} atrás</div>` : ''}
+      </div>
     </div>
-    <div class="chamada-info">
-      <div class="chamada-title">${atendida ? '✅ Atendida' : '🔔 Mesa ' + chamada.mesa + ' chamando'}</div>
-      <div class="chamada-time">${formatHora(chamada.horaMs)}</div>
-      ${!atendida ? `<div class="chamada-elapsed" id="elapsed-${chamada.key}">${formatElapsed(elapsed)} atrás</div>` : ''}
-    </div>
-    ${!atendida ? `<div class="chamada-actions">
-      <button class="btn-atender" onclick="atenderChamada('${chamada.key}')">✔ Atender</button>
-      <button class="btn-remover" onclick="removerChamada('${chamada.key}')">Remover</button>
-    </div>` : ''}
+    ${actionsHTML}
   `;
   return el;
 }
@@ -382,39 +614,59 @@ function criarCard(chamada, db, atendida) {
 // ═══════════════════════════════════════════
 //  AÇÕES
 // ═══════════════════════════════════════════
+function atenderPedido(key) {
+  if (window._fbUpdatePedido) window._fbUpdatePedido(key, { status: 'atendido' });
+}
+function ignorarPedido(key) {
+  if (window._fbDeletePedido) window._fbDeletePedido(key);
+  else { delete window._dadosPedidos[key]; window._renderTudo(); }
+}
 function atenderChamada(key) {
-  if (window._fbUpdate) {
-    window._fbUpdate(key, { status: 'atendida' });
-  } else if (chamadasDemo[key]) {
-    chamadasDemo[key].status = 'atendida';
-    renderDemo();
-  }
+  if (window._fbUpdateChamada) window._fbUpdateChamada(key, { status: 'atendida' });
 }
-
-function removerChamada(key) {
-  if (window._fbUpdate) {
-    window._fbUpdate(key, { status: 'removida' });
+function ignorarChamada(key) {
+  if (window._fbDeleteChamada) window._fbDeleteChamada(key);
+  else { delete window._dadosChamadas[key]; window._renderTudo(); }
+}
+function resetarMesa(mesa) {
+  if (!confirm(`Resetar Mesa ${mesa}? Isso remove TODOS os pedidos e chamadas desta mesa.`)) return;
+  if (window._fbResetarMesa) {
+    window._fbResetarMesa(mesa);
   } else {
-    delete chamadasDemo[key];
-    renderDemo();
+    // demo
+    Object.keys(window._dadosPedidos).forEach(k => {
+      if (String(window._dadosPedidos[k].mesa) === String(mesa)) delete window._dadosPedidos[k];
+    });
+    Object.keys(window._dadosChamadas).forEach(k => {
+      if (String(window._dadosChamadas[k].mesa) === String(mesa)) delete window._dadosChamadas[k];
+    });
+    window._renderTudo();
   }
 }
-
-function limparAtendidas() {
-  Object.entries(chamadasDemo).forEach(([k,v]) => {
-    if (v.status !== 'aguardando') delete chamadasDemo[k];
-  });
-  renderDemo();
+function limparAtendidos() {
+  if (!confirm('Limpar todos os pedidos e chamadas já atendidos?')) return;
+  if (window._fbLimparAtendidos) {
+    window._fbLimparAtendidos();
+  } else {
+    Object.keys(window._dadosPedidos).forEach(k => {
+      if (window._dadosPedidos[k].status !== 'aguardando') delete window._dadosPedidos[k];
+    });
+    Object.keys(window._dadosChamadas).forEach(k => {
+      if (window._dadosChamadas[k].status !== 'aguardando') delete window._dadosChamadas[k];
+    });
+    window._renderTudo();
+  }
 }
 
 // ═══════════════════════════════════════════
 //  SOM
 // ═══════════════════════════════════════════
-function tocarSom() {
+function tocarSom(pedido) {
   if (!soundEnabled) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [880, 1100, 880].forEach((freq, i) => {
+    const freqs = pedido ? [660, 880, 1100, 880] : [880, 1100, 880];
+    freqs.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain); gain.connect(ctx.destination);
@@ -427,7 +679,6 @@ function tocarSom() {
     });
   } catch(e) {}
 }
-
 function toggleSound() {
   soundEnabled = !soundEnabled;
   document.getElementById('sound-btn').textContent = soundEnabled ? '🔔' : '🔕';
@@ -438,10 +689,8 @@ function toggleSound() {
 // ═══════════════════════════════════════════
 function formatHora(ms) {
   if (!ms) return '—';
-  const d = new Date(ms);
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
-
 function formatElapsed(ms) {
   const s = Math.floor(ms / 1000);
   if (s < 60)  return s + 's';
@@ -449,14 +698,22 @@ function formatElapsed(ms) {
   if (m < 60)  return m + 'min';
   return Math.floor(m / 60) + 'h ' + (m % 60) + 'min';
 }
+function formatBRL(v) {
+  return 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+}
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-// ─ Atualizar tempos a cada segundo ─
+// ─ Atualizar tempos ─
 setInterval(() => {
   document.querySelectorAll('[id^="elapsed-"]').forEach(el => {
-    const key = el.id.replace('elapsed-', '');
-    const all = { ...chamadasDemo };
-    if (all[key]) {
-      el.textContent = formatElapsed(Date.now() - all[key].horaMs) + ' atrás';
+    const parts = el.id.split('-');
+    const type = parts[1]; // 'ped' ou 'ch'
+    const key = parts.slice(2).join('-');
+    const dados = type === 'ped' ? window._dadosPedidos : window._dadosChamadas;
+    if (dados[key]) {
+      el.textContent = formatElapsed(Date.now() - (dados[key].hora || Date.now())) + ' atrás';
     }
   });
 }, 1000);
@@ -469,11 +726,10 @@ function updateClock() {
 }
 updateClock(); setInterval(updateClock, 10000);
 
-// ─ Demo: expõe função para testar ─
-window.testarChamada = (mesa) => adicionarDemo(mesa || Math.floor(Math.random() * 20 + 1));
+// ─ Render inicial ─
+window._renderTudo();
 
-console.log('%c Painel Garçom Thänn Bier ', 'background:#00c040;color:#000;font-weight:bold;padding:4px 8px;border-radius:4px');
-console.log('Para testar sem Firebase: testarChamada(5) — simula chamada da mesa 5');
+console.log('%c Painel Garçom Thänn Bier v2 ', 'background:#00c040;color:#000;font-weight:bold;padding:4px 8px;border-radius:4px');
 </script>
 
 </body>

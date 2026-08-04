@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Thänn Bier — Painel do Garçom</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #00c040;
+  --green-dark: #004d1a;
+  --red: #c41a0a;
+  --gold: #d4a853;
+  --dark: #080808;
+  --card: #111;
+  --border: #222;
+  --text: #f0ece8;
+  --muted: #777;
+}
+
+html, body {
+  height: 100%; background: var(--dark); color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(135deg, #0a1a0a, #111);
+  border-bottom: 2px solid var(--green);
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,200,60,.15);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-logo { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
+.header-badge { background: var(--green); color: #000; font-size: 10px; font-weight: 800;
+  padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; }
+.header-time { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: 2px; }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: flex; gap: 0; border-bottom: 1px solid var(--border);
+  background: #0d0d0d;
+}
+.stat-item {
+  flex: 1; padding: 14px 12px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-val { font-size: 28px; font-weight: 900; }
+.stat-val.green { color: var(--green); }
+.stat-val.gold  { color: var(--gold); }
+.stat-val.red   { color: var(--red); }
+.stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+/* ── MAIN ── */
+.main { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
+  margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── CHAMADA CARD ── */
+.chamada-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px 18px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+  animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both;
+  position: relative; overflow: hidden;
+}
+.chamada-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--green); border-radius: 4px 0 0 4px;
+}
+.chamada-card.atendida::before { background: var(--muted); }
+.chamada-card.atendida { opacity: 0.5; }
+
+@keyframes cardIn {
+  from { transform: translateY(-10px) scale(.97); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+.chamada-mesa {
+  width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--green-dark), #007030);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: 2px solid rgba(0,200,60,.3);
+  box-shadow: 0 0 16px rgba(0,200,60,.2);
+}
+.chamada-mesa-num { font-size: 22px; font-weight: 900; color: var(--green); line-height: 1; }
+.chamada-mesa-lbl { font-size: 8px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; }
+
+.chamada-info { flex: 1; }
+.chamada-title { font-size: 15px; font-weight: 800; margin-bottom: 3px; }
+.chamada-time { font-size: 12px; color: var(--muted); }
+.chamada-elapsed { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px; }
+
+.chamada-actions { display: flex; flex-direction: column; gap: 6px; }
+.btn-atender {
+  background: var(--green); border: none; color: #000; padding: 8px 16px;
+  border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;
+  transition: all .15s; white-space: nowrap;
+}
+.btn-atender:hover { background: #00e050; transform: scale(1.03); }
+.btn-remover {
+  background: #222; border: 1px solid var(--border); color: var(--muted);
+  padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn-remover:hover { background: #2a1010; color: #fff; border-color: var(--red); }
+
+/* Pulse for new calls */
+.chamada-card.nova {
+  border-color: rgba(0,200,60,.4);
+  animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both, novaPulse 2s ease-in-out 3;
+}
+@keyframes novaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,60,.2); }
+  50%       { box-shadow: 0 0 0 8px rgba(0,200,60,.0); }
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 60px 20px; color: var(--muted);
+}
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+.empty-sub { font-size: 13px; }
+
+/* ── DEMO MODE BANNER ── */
+.demo-banner {
+  background: linear-gradient(135deg, #1a1200, #2a1e00);
+  border: 1px solid #3a2a00; border-radius: 10px; padding: 10px 14px;
+  margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: #c8a050;
+}
+
+/* ── PING INDICATOR ── */
+.ping-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+  animation: pingPulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pingPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+.ping-offline { background: var(--red); animation: none; }
+
+/* ── FAB LIMPAR ── */
+.fab-limpar {
+  position: fixed; bottom: 20px; right: 20px;
+  background: #222; border: 1px solid #333; color: var(--muted);
+  padding: 10px 18px; border-radius: 30px; font-size: 13px; font-weight: 700;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.5); transition: all .2s;
+}
+.fab-limpar:hover { background: #2a1010; color: var(--red); border-color: var(--red); }
+
+/* ── NOTIF SOUND ICON ── */
+.sound-btn {
+  background: #1a1a1a; border: 1px solid var(--border); color: var(--muted);
+  padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  transition: all .15s;
+}
+.sound-btn:hover { border-color: var(--green); color: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">THÄNN</div>
+    <div class="header-badge">Painel Garçom</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()" title="Som de notificação">🔔</button>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
+      <div class="ping-dot" id="ping-dot"></div>
+      <span id="ping-label">ao vivo</span>
+    </div>
+    <div class="header-time" id="garcom-clock">--:--</div>
+  </div>
+</div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-val green" id="stat-aguardando">0</div>
+    <div class="stat-lbl">Aguardando</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val gold" id="stat-hoje">0</div>
+    <div class="stat-lbl">Chamadas hoje</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-val red" id="stat-tempo">—</div>
+    <div class="stat-lbl">Mais antiga</div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <div class="demo-banner" id="demo-banner">
+    ⚠️ <span><b>Modo demonstração</b> — Configure o Firebase no código para sincronização em tempo real.</span>
+  </div>
+
+  <div class="section-title">🔔 Chamadas ativas</div>
+
+  <div id="chamadas-list">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">✅</div>
+      <div class="empty-title">Tudo em ordem!</div>
+      <div class="empty-sub">Nenhuma mesa aguardando atendimento.</div>
+    </div>
+  </div>
+
+</div>
+
+<button class="fab-limpar" onclick="limparAtendidas()">🗑 Limpar atendidas</button>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, onValue, update, query, orderByChild, limitToLast }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAE2ad8r6Ox6fsgkVQwLdVdvk15nKCqZ8U",
+  authDomain: "thann-bier-cardapio.firebaseapp.com",
+  databaseURL: "https://thann-bier-cardapio-default-rtdb.firebaseio.com",
+  projectId: "thann-bier-cardapio",
+  storageBucket: "thann-bier-cardapio.firebasestorage.app",
+  messagingSenderId: "784931366480",
+  appId: "1:784931366480:web:c8fc63920e27653edf9355",
+};
+
+let db = null;
+let connected = false;
+
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+
+  // Listen for calls
+  const chamadasRef = query(ref(db, 'chamadas'), orderByChild('hora'), limitToLast(50));
+  onValue(chamadasRef, (snapshot) => {
+    const data = snapshot.val() || {};
+    window._renderChamadas(data, db);
+    connected = true;
+    document.getElementById('ping-dot').classList.remove('ping-offline');
+    document.getElementById('ping-label').textContent = 'ao vivo';
+    document.getElementById('demo-banner').style.display = 'none';
+  }, (err) => {
+    console.warn('Firebase error:', err);
+    document.getElementById('ping-dot').classList.add('ping-offline');
+    document.getElementById('ping-label').textContent = 'offline';
+  });
+
+  window._fbUpdate = (key, data) => update(ref(db, 'chamadas/' + key), data);
+
+} catch(e) {
+  console.warn('Firebase não configurado, rodando em modo demo:', e.message);
+  document.getElementById('ping-dot').classList.add('ping-offline');
+  document.getElementById('ping-label').textContent = 'demo';
+}
+</script>
+
+<script>
+// ═══════════════════════════════════════════
+//  STATE (modo demo — sem Firebase)
+// ═══════════════════════════════════════════
+let chamadasDemo = {}; // key -> { mesa, hora (ms), status }
+let soundEnabled = true;
+let statHoje = 0;
+let lastKeys = new Set();
+
+// Usar dados demo se Firebase não disponível
+function adicionarDemo(mesa) {
+  const key = 'demo_' + Date.now();
+  chamadasDemo[key] = { mesa: String(mesa), hora: Date.now(), status: 'aguardando' };
+  statHoje++;
+  renderDemo();
+  tocarSom();
+}
+
+function renderDemo() {
+  window._renderChamadas(chamadasDemo, null);
+}
+
+// ═══════════════════════════════════════════
+//  RENDER CHAMADAS
+// ═══════════════════════════════════════════
+window._renderChamadas = function(data, db) {
+  const list = document.getElementById('chamadas-list');
+  const empty = document.getElementById('empty-state');
+
+  const entries = Object.entries(data)
+    .map(([k, v]) => ({ key: k, ...v, horaMs: typeof v.hora === 'number' ? v.hora : Date.now() }))
+    .sort((a, b) => b.horaMs - a.horaMs);
+
+  const aguardando = entries.filter(e => e.status === 'aguardando');
+  const atendidas  = entries.filter(e => e.status !== 'aguardando');
+
+  // Check for new calls (to play sound)
+  const newKeys = new Set(aguardando.map(e => e.key));
+  const hasNew = [...newKeys].some(k => !lastKeys.has(k));
+  if (hasNew && lastKeys.size > 0) tocarSom();
+  lastKeys = newKeys;
+
+  // Update stats
+  document.getElementById('stat-aguardando').textContent = aguardando.length;
+  document.getElementById('stat-hoje').textContent = statHoje + entries.length;
+
+  if (aguardando.length > 0) {
+    const oldest = Math.max(...aguardando.map(e => Date.now() - e.horaMs));
+    document.getElementById('stat-tempo').textContent = formatElapsed(oldest);
+  } else {
+    document.getElementById('stat-tempo').textContent = '—';
+  }
+
+  // Rebuild list
+  list.innerHTML = '';
+
+  if (aguardando.length === 0 && atendidas.length === 0) {
+    list.appendChild(Object.assign(document.createElement('div'), { innerHTML: `
+      <div class="empty-state">
+        <div class="empty-icon">✅</div>
+        <div class="empty-title">Tudo em ordem!</div>
+        <div class="empty-sub">Nenhuma mesa aguardando atendimento.</div>
+      </div>` }));
+    return;
+  }
+
+  aguardando.forEach(chamada => {
+    const el = criarCard(chamada, db, false);
+    list.appendChild(el);
+  });
+
+  if (atendidas.length > 0) {
+    const sep = document.createElement('div');
+    sep.className = 'section-title';
+    sep.style.marginTop = '20px';
+    sep.textContent = 'Atendidas recentemente';
+    list.appendChild(sep);
+    atendidas.slice(0, 5).forEach(chamada => {
+      list.appendChild(criarCard(chamada, db, true));
+    });
+  }
+};
+
+function criarCard(chamada, db, atendida) {
+  const el = document.createElement('div');
+  const elapsed = Date.now() - chamada.horaMs;
+  const isNova = elapsed < 10000;
+
+  el.className = `chamada-card${atendida ? ' atendida' : ''}${isNova && !atendida ? ' nova' : ''}`;
+  el.innerHTML = `
+    <div class="chamada-mesa">
+      <div class="chamada-mesa-num">${chamada.mesa}</div>
+      <div class="chamada-mesa-lbl">mesa</div>
+    </div>
+    <div class="chamada-info">
+      <div class="chamada-title">${atendida ? '✅ Atendida' : '🔔 Mesa ' + chamada.mesa + ' chamando'}</div>
+      <div class="chamada-time">${formatHora(chamada.horaMs)}</div>
+      ${!atendida ? `<div class="chamada-elapsed" id="elapsed-${chamada.key}">${formatElapsed(elapsed)} atrás</div>` : ''}
+    </div>
+    ${!atendida ? `<div class="chamada-actions">
+      <button class="btn-atender" onclick="atenderChamada('${chamada.key}')">✔ Atender</button>
+      <button class="btn-remover" onclick="removerChamada('${chamada.key}')">Remover</button>
+    </div>` : ''}
+  `;
+  return el;
+}
+
+// ═══════════════════════════════════════════
+//  AÇÕES
+// ═══════════════════════════════════════════
+function atenderChamada(key) {
+  if (window._fbUpdate) {
+    window._fbUpdate(key, { status: 'atendida' });
+  } else if (chamadasDemo[key]) {
+    chamadasDemo[key].status = 'atendida';
+    renderDemo();
+  }
+}
+
+function removerChamada(key) {
+  if (window._fbUpdate) {
+    window._fbUpdate(key, { status: 'removida' });
+  } else {
+    delete chamadasDemo[key];
+    renderDemo();
+  }
+}
+
+function limparAtendidas() {
+  Object.entries(chamadasDemo).forEach(([k,v]) => {
+    if (v.status !== 'aguardando') delete chamadasDemo[k];
+  });
+  renderDemo();
+}
+
+// ═══════════════════════════════════════════
+//  SOM
+// ═══════════════════════════════════════════
+function tocarSom() {
+  if (!soundEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [880, 1100, 880].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.12);
+      osc.start(ctx.currentTime + i * 0.15);
+      osc.stop(ctx.currentTime + i * 0.15 + 0.12);
+    });
+  } catch(e) {}
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  document.getElementById('sound-btn').textContent = soundEnabled ? '🔔' : '🔕';
+}
+
+// ═══════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════
+function formatHora(ms) {
+  if (!ms) return '—';
+  const d = new Date(ms);
+  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  if (s < 60)  return s + 's';
+  const m = Math.floor(s / 60);
+  if (m < 60)  return m + 'min';
+  return Math.floor(m / 60) + 'h ' + (m % 60) + 'min';
+}
+
+// ─ Atualizar tempos a cada segundo ─
+setInterval(() => {
+  document.querySelectorAll('[id^="elapsed-"]').forEach(el => {
+    const key = el.id.replace('elapsed-', '');
+    const all = { ...chamadasDemo };
+    if (all[key]) {
+      el.textContent = formatElapsed(Date.now() - all[key].horaMs) + ' atrás';
+    }
+  });
+}, 1000);
+
+// ─ Clock ─
+function updateClock() {
+  const now = new Date();
+  document.getElementById('garcom-clock').textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+updateClock(); setInterval(updateClock, 10000);
+
+// ─ Demo: expõe função para testar ─
+window.testarChamada = (mesa) => adicionarDemo(mesa || Math.floor(Math.random() * 20 + 1));
+
+console.log('%c Painel Garçom Thänn Bier ', 'background:#00c040;color:#000;font-weight:bold;padding:4px 8px;border-radius:4px');
+console.log('Para testar sem Firebase: testarChamada(5) — simula chamada da mesa 5');
+</script>
+
+</body>
+</html>

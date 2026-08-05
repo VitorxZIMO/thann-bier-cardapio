@@ -30,11 +30,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 #sidebar { width: var(--sidebar-w); background: rgba(17,17,17,0.92); display: flex;
   flex-direction: column; border-right: 1px solid var(--border); flex-shrink: 0; }
 
-.logo-area { padding: 16px 14px 14px; display: flex; flex-direction: column; align-items: center;
-  gap: 6px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#181010,var(--sidebar-bg)); }
+.logo-area { display: flex; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#181010,var(--sidebar-bg)); }
 
-.logo-area img { width: 68px; height: 68px; object-fit: contain; border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(196,26,10,.3); }
+.logo-area img { object-fit: contain; box-shadow: 0 4px 20px rgba(196,26,10,.3); }
 
 .logo-name { font-size: 14px; font-weight: 800; letter-spacing: 3px; text-align: center; }
 .logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: -4px; }
@@ -992,18 +990,17 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
   <!-- ── SIDEBAR ── -->
   <aside id="sidebar">
-    <div class="logo-area">
+    <div class="logo-area" style="flex-direction:row;align-items:center;gap:10px;padding:14px 14px">
       <img src="https://static.goomer.app/stores/151683/products/mobile_menu/templates/233644/logo_v1637155067.png"
-           alt="Thänn Bier" onerror="this.style.display='none'">
-      <div class="logo-name">THÄNN BIER</div>
-      <div class="logo-sub">Bar &amp; Restaurante</div>
-      <!-- Mesa em destaque -->
-      <div class="mesa-sidebar-badge" onclick="abrirMesaModal()">
-        <div>
-          <div class="mesa-sidebar-label">Mesa</div>
-          <div class="mesa-sidebar-num" id="mesa-sidebar-display">—</div>
-          <div class="mesa-sidebar-sub">toque para alterar</div>
-        </div>
+           alt="Thänn Bier" onerror="this.style.display='none'" style="width:48px;height:48px;border-radius:10px;object-fit:contain;box-shadow:0 4px 20px rgba(196,26,10,.3);flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div class="logo-name" style="font-size:13px;letter-spacing:2px;text-align:left">THÄNN BIER</div>
+        <div class="logo-sub" style="text-align:left">Bar &amp; Restaurante</div>
+      </div>
+      <!-- Número da mesa — canto superior direito -->
+      <div style="flex-shrink:0;text-align:center;background:rgba(196,26,10,.18);border:1px solid rgba(196,26,10,.45);border-radius:10px;padding:5px 10px;min-width:48px">
+        <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;line-height:1">Mesa</div>
+        <div id="mesa-sidebar-display" style="font-size:22px;font-weight:900;color:#fff;line-height:1.1">—</div>
       </div>
     </div>
 
@@ -1028,15 +1025,11 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
       </button>
     </nav>
 
-    <!-- Tutorial rápido no fundo da sidebar -->
-    <div style="margin:0 10px 10px;background:#141414;border:1px solid #222;border-radius:10px;padding:12px;cursor:pointer" onclick="abrirTutorial()">
-      <div style="font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">📋 Como usar</div>
-      <div style="display:flex;flex-direction:column;gap:5px">
-        <div style="font-size:11px;color:#aaa;display:flex;align-items:center;gap:7px"><span>➕</span> Toque no <b style="color:#c41a0a">+</b> para adicionar</div>
-        <div style="font-size:11px;color:#aaa;display:flex;align-items:center;gap:7px"><span>🔔</span> Chame o garçom</div>
-        <div style="font-size:11px;color:#aaa;display:flex;align-items:center;gap:7px"><span>🛒</span> Envie seu pedido</div>
-      </div>
-      <div style="margin-top:8px;font-size:10px;color:#555;text-align:center">Toque para ver mais detalhes</div>
+    <!-- Botão Como usar o cardápio -->
+    <div style="padding:0 10px 12px">
+      <button onclick="abrirTutorial()" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#aaa;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;transition:all .2s" onmouseover="this.style.background='#222';this.style.color='#fff'" onmouseout="this.style.background='#1a1a1a';this.style.color='#aaa'">
+        <span style="font-size:16px">❓</span> Como usar o cardápio
+      </button>
     </div>
   </aside>
 
@@ -1049,9 +1042,6 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         <div id="garcom-sub" style="font-size:11px;color:rgba(255,255,255,.6)">Toque para chamar</div>
       </div>
     </button>
-    <div style="text-align:right">
-      <span class="mesa-badge" onclick="abrirMesaModal()" style="font-size:11px;color:#888;cursor:pointer">⚙️ Mesa: <b id="mesa-num-display">—</b></span>
-    </div>
   </div>
 
 
@@ -2065,7 +2055,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         <span class="cart-total-label">Total</span>
         <span class="cart-total-val" id="cart-total-val">R$ 0,00</span>
       </div>
-      <button class="btn-finalizar" onclick="finalizarPedido()">✅ Finalizar e Chamar Garçom</button>
+      <button class="btn-finalizar" onclick="finalizarPedido()">🛒 Enviar Pedido</button>
       <button class="btn-limpar-cart" onclick="limparCarrinho()">🗑 Limpar pedido</button>
     </div>
   </div>
@@ -2555,7 +2545,8 @@ let mesaNumero = localStorage.getItem('thann_mesa') || '';
 
 function atualizarDisplayMesa() {
   const n = mesaNumero || '—';
-  document.getElementById('mesa-num-display').textContent = n;
+  const nd = document.getElementById('mesa-num-display');
+  if (nd) nd.textContent = n;
   const sd = document.getElementById('mesa-sidebar-display');
   if (sd) sd.textContent = n;
 }
@@ -3147,8 +3138,8 @@ function mostrarPedidoLancado() {
   document.getElementById('pedido-enviado-modal').classList.remove('open');
   // Mostrar banner no topo
   var banner = document.getElementById('pedido-lancado-banner');
-  banner.style.display = 'flex';
-  setTimeout(function() { banner.style.display = 'none'; }, 6000);
+  banner.style.display = 'block';
+  setTimeout(function() { banner.style.display = 'none'; }, 7000);
   // Mostrar modal também
   document.getElementById('pedido-lancado-modal').classList.add('open');
   setTimeout(function() {

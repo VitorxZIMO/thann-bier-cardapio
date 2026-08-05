@@ -2347,10 +2347,13 @@ window._fbPushPedido = async function(mesaNum, itens, total) {
 };
 
 window._fbOuvirPedido = function(key, callback) {
-  if (!db || !key) return null;
+  if (!db || !key) { console.warn('_fbOuvirPedido: db ou key ausente', db, key); return null; }
+  console.log('Ouvindo pedido:', key);
   const unsub = onValue(ref(db, 'pedidos/' + key), (snap) => {
     const data = snap.val();
+    console.log('Pedido snap:', key, data);
     if (data) callback(data);
+    else console.warn('Pedido nao encontrado no Firebase:', key);
   });
   return unsub;
 };

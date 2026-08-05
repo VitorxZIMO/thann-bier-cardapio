@@ -2469,6 +2469,9 @@ function fazerLogout() {
 // ═══════════════════════════════════════════
 //  MESA CONFIG
 // ═══════════════════════════════════════════
+// Pega mesa da URL (?mesa=5) ou do localStorage
+const _urlMesa = new URLSearchParams(window.location.search).get('mesa');
+if (_urlMesa) localStorage.setItem('thann_mesa', _urlMesa);
 let mesaNumero = localStorage.getItem('thann_mesa') || '';
 
 function atualizarDisplayMesa() {

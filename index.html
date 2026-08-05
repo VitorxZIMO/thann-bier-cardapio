@@ -2347,13 +2347,14 @@ window._fbPushPedido = async function(mesaNum, itens, total) {
 };
 
 window._fbOuvirPedido = function(key, callback) {
-  if (!db || !key) { console.warn('_fbOuvirPedido: db ou key ausente', db, key); return null; }
-  console.log('Ouvindo pedido:', key);
-  const unsub = onValue(ref(db, 'pedidos/' + key), (snap) => {
+  if (!db || !key) return null;
+  const pedidoRef = ref(db, 'pedidos/' + key);
+  const unsub = onValue(pedidoRef, (snap) => {
     const data = snap.val();
-    console.log('Pedido snap:', key, data);
-    if (data) callback(data);
-    else console.warn('Pedido nao encontrado no Firebase:', key);
+    if (data && data.status === 'atendido') {
+      unsub();
+      callback();
+    }
   });
   return unsub;
 };
@@ -3034,16 +3035,10 @@ async function finalizarPedido() {
 
     // Ouvir quando garçom marcar como atendido
     if (pedidoKey && window._fbOuvirPedido) {
-      activePedidoUnsub = window._fbOuvirPedido(pedidoKey, function(data) {
-        console.log('Callback status:', data.status);
-        if (data.status === 'atendido') {
-          // Usar setTimeout para garantir que activePedidoUnsub já foi atribuído
-          setTimeout(function() {
-            if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
-            document.getElementById('pedido-enviado-modal').classList.remove('open');
-            mostrarPedidoLancado();
-          }, 0);
-        }
+      activePedidoUnsub = window._fbOuvirPedido(pedidoKey, function() {
+        activePedidoUnsub = null;
+        document.getElementById('pedido-enviado-modal').classList.remove('open');
+        mostrarPedidoLancado();
       });
     }
   }

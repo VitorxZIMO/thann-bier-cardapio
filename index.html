@@ -187,7 +187,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .config-box {
   position: relative; z-index: 1;
   background: #141414; border: 1px solid #2a2a2a; border-radius: 20px;
-  width: 320px; max-width: 95vw; overflow: hidden;
+  width: 320px; max-width: 95vw;
+  max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
   box-shadow: 0 20px 60px rgba(0,0,0,.7);
   animation: configPop .25s cubic-bezier(.2,.8,.3,1) both;
 }
@@ -232,8 +233,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .config-login-error.show { display: block; }
 
 /* Settings panel (após login) */
-.config-panel { padding: 20px; display: none; }
-.config-panel.open { display: block; }
+.config-panel { padding: 20px; display: none; overflow-y: auto; flex: 1; }
+.config-panel.open { display: flex; flex-direction: column; }
 
 .config-user-badge {
   display: flex; align-items: center; gap: 10px; background: #1a1a1a;
@@ -476,11 +477,11 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 /* Modal tamanhos chope */
 #chope-modal { position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85); }
 #chope-modal.open { display:flex; }
-.chope-modal-box { background:#141414;border:1px solid #2a2a2a;border-radius:18px;width:320px;max-width:92vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7); }
-.chope-modal-header { background:linear-gradient(135deg,#1a1400,#2a2000);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2000; }
+.chope-modal-box { background:#141414;border:1px solid #2a2a2a;border-radius:18px;width:320px;max-width:92vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);display:flex;flex-direction:column;max-height:80vh; }
+.chope-modal-header { background:linear-gradient(135deg,#1a1400,#2a2000);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2000;flex-shrink:0; }
 .chope-modal-title { font-size:15px;font-weight:800;color:#fff; }
 .chope-modal-close { background:#222;border:none;color:#777;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px; }
-.chope-modal-body { padding:14px 18px 18px; }
+.chope-modal-body { padding:14px 18px 18px;overflow-y:auto;flex:1; }
 .chope-modal-row { display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1e1e1e; }
 .chope-modal-row:last-child { border-bottom:none; }
 .chope-modal-size { font-size:13px;font-weight:700;color:#fff; }
@@ -712,11 +713,25 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .flavor-selectable .fs-extra { font-size: 11px; color: #e8a030; font-weight: 700; white-space: nowrap; }
 
 /* Borda selector no modal de pizza */
-.borda-selector { display: flex; flex-wrap: wrap; gap: 8px; }
+.borda-toggle-btn {
+  width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px;
+  color: #aaa; padding: 10px 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; transition: all .2s;
+  margin-bottom: 0;
+}
+.borda-toggle-btn.tem-borda { border-color: #5a4000; color: var(--gold); background: #1a1400; }
+.borda-toggle-btn .borda-chevron { font-size: 11px; color: #555; transition: transform .2s; }
+.borda-toggle-btn.open .borda-chevron { transform: rotate(180deg); }
+.borda-selector { display: none; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.borda-selector.open { display: flex; }
 .borda-opt { background: #1e1e1e; border: 1px solid #333; color: var(--muted2);
   padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
   transition: all .15s; }
 .borda-opt.selected { background: #1a1400; border-color: #5a4000; color: var(--gold); }
+.borda-opt-none { background: #111; border: 1px solid #222; color: #555;
+  padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .15s; }
+.borda-opt-none:hover { border-color: #444; color: #888; }
 
 /* Pedido enviado modal */
 #pedido-enviado-modal {
@@ -758,8 +773,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 }
 .cfg-tab.active { background: #c41a0a; border-color: #c41a0a; color: #fff; }
 
-.cfg-panel { display: none; }
-.cfg-panel.active { display: block; }
+.cfg-panel { display: none; flex: 1; overflow-y: auto; }
+.cfg-panel.active { display: flex; flex-direction: column; }
 
 /* ── ESTOQUE LISTA ── */
 .estoque-list { display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
@@ -979,7 +994,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <button class="preco-cat" onclick="mudarPrecoCat('drinks',this)">🍹 Drinks</button>
           <button class="preco-cat" onclick="mudarPrecoCat('chopes',this)">🍺 Chopes</button>
         </div>
-        <div id="preco-editor-body">
+        <div id="preco-editor-body" style="flex:1;overflow-y:auto;padding-bottom:8px">
           <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando...</div>
         </div>
       </div>
@@ -2105,10 +2120,13 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
     <!-- preenchido pelo JS -->
   </div>
   <div class="pizza-pedido-footer">
-    <!-- Borda -->
-    <div class="item-opts-label">Borda Recheada (opcional)</div>
+    <!-- Borda colapsável -->
+    <button class="borda-toggle-btn" id="borda-toggle-btn" onclick="toggleBordaSelector()">
+      <span id="borda-toggle-label">🍕 Adicionar borda recheada (opcional)</span>
+      <span class="borda-chevron">▼</span>
+    </button>
     <div class="borda-selector" id="pp-borda-sel"></div>
-    <div style="height:12px"></div>
+    <div style="height:10px"></div>
     <!-- Qty + Add -->
     <div class="item-sheet-footer">
       <div class="item-qty-ctrl">
@@ -2948,6 +2966,13 @@ function abrirPizzaPedido(tamanho) {
   pizzaPedidoData.bordaSelecionada = null;
   pizzaPedidoData.qty = 1;
   pizzaPedidoData.tipoAtual = 'salgadas';
+  // Reseta toggle de borda
+  var bordaSel = document.getElementById('pp-borda-sel');
+  var bordaBtn = document.getElementById('borda-toggle-btn');
+  if (bordaSel) bordaSel.classList.remove('open');
+  if (bordaBtn) { bordaBtn.classList.remove('open','tem-borda'); }
+  var bordaLabel = document.getElementById('borda-toggle-label');
+  if (bordaLabel) bordaLabel.textContent = '🍕 Adicionar borda recheada (opcional)';
 
   document.getElementById('pp-title').textContent = 'Pizza ' + PIZZA_BASE[tamanho].label;
   document.getElementById('pp-qty').textContent = '1';
@@ -3013,9 +3038,51 @@ function toggleSabor(sabor, maxSabores) {
   calcularPizzaTotal();
 }
 
+function toggleBordaSelector() {
+  var btn = document.getElementById('borda-toggle-btn');
+  var sel = document.getElementById('pp-borda-sel');
+  var isOpen = sel.classList.contains('open');
+  if (isOpen) {
+    sel.classList.remove('open');
+    btn.classList.remove('open');
+  } else {
+    sel.classList.add('open');
+    btn.classList.add('open');
+  }
+}
+
+function _atualizarBordaBtn() {
+  var btn = document.getElementById('borda-toggle-btn');
+  var label = document.getElementById('borda-toggle-label');
+  if (!btn || !label) return;
+  if (pizzaPedidoData.bordaSelecionada) {
+    btn.classList.add('tem-borda');
+    label.textContent = '🍕 Borda: ' + pizzaPedidoData.bordaSelecionada + ' ✓';
+  } else {
+    btn.classList.remove('tem-borda');
+    label.textContent = '🍕 Adicionar borda recheada (opcional)';
+  }
+}
+
 function renderPPBordas() {
   const sel = document.getElementById('pp-borda-sel');
   sel.innerHTML = '';
+  // Botão "Sem borda"
+  if (pizzaPedidoData.bordaSelecionada) {
+    const noneBtn = document.createElement('button');
+    noneBtn.className = 'borda-opt-none';
+    noneBtn.textContent = '✕ Sem borda';
+    noneBtn.onclick = () => {
+      pizzaPedidoData.bordaSelecionada = null;
+      renderPPBordas();
+      calcularPizzaTotal();
+      _atualizarBordaBtn();
+      // Fecha o seletor após remover
+      sel.classList.remove('open');
+      document.getElementById('borda-toggle-btn').classList.remove('open');
+    };
+    sel.appendChild(noneBtn);
+  }
   BORDAS.forEach(b => {
     const btn = document.createElement('button');
     btn.className = 'borda-opt' + (pizzaPedidoData.bordaSelecionada === b.nome ? ' selected' : '');
@@ -3024,6 +3091,12 @@ function renderPPBordas() {
       pizzaPedidoData.bordaSelecionada = (pizzaPedidoData.bordaSelecionada === b.nome) ? null : b.nome;
       renderPPBordas();
       calcularPizzaTotal();
+      _atualizarBordaBtn();
+      // Fecha o seletor após escolher
+      if (pizzaPedidoData.bordaSelecionada) {
+        sel.classList.remove('open');
+        document.getElementById('borda-toggle-btn').classList.remove('open');
+      }
     };
     sel.appendChild(btn);
   });

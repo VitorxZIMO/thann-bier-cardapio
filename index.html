@@ -2111,6 +2111,16 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   </div>
 </div>
 
+<!-- ── MODAL PEDIDO LANÇADO PELO GARÇOM ── -->
+<div id="pedido-lancado-modal" style="position:fixed;inset:0;z-index:1400;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85)">
+  <div style="background:#0a1a0a;border:2px solid #2a7a2a;border-radius:20px;padding:40px 32px;text-align:center;max-width:320px;width:90%;animation:sheetUp .3s cubic-bezier(.2,.8,.3,1) both">
+    <div style="font-size:60px;margin-bottom:16px">✅</div>
+    <div style="font-size:20px;font-weight:900;color:#5dff8a;margin-bottom:10px">Pedido lançado!</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.6">Seu pedido foi lançado<br>com sucesso pelo garçom.</div>
+  </div>
+</div>
+<style>#pedido-lancado-modal.open { display: flex; }</style>
+
 <!-- ── MODAL PEDIDO ENVIADO ── -->
 <div id="pedido-enviado-modal">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,.75)"></div>
@@ -2317,7 +2327,7 @@ window._garcomConfirmou = function() {
 
 // Push de PEDIDO completo
 window._fbPushPedido = async function(mesaNum, itens, total) {
-  if (!db) return;
+  if (!db) return null;
   try {
     const itensSer = itens.map(i => ({
       nome: i.nome,
@@ -2325,14 +2335,24 @@ window._fbPushPedido = async function(mesaNum, itens, total) {
       preco: i.preco,
       qty: i.qty
     }));
-    await push(ref(db, 'pedidos'), {
+    const newRef = await push(ref(db, 'pedidos'), {
       mesa: mesaNum,
       hora: serverTimestamp(),
       status: 'aguardando',
       total: total,
       itens: itensSer
     });
-  } catch(e) { console.warn('Firebase pedido error:', e); }
+    return newRef.key;
+  } catch(e) { console.warn('Firebase pedido error:', e); return null; }
+};
+
+window._fbOuvirPedido = function(key, callback) {
+  if (!db || !key) return null;
+  const unsub = onValue(ref(db, 'pedidos/' + key), (snap) => {
+    const data = snap.val();
+    if (data) callback(data);
+  });
+  return unsub;
 };
 </script>
 
@@ -2990,6 +3010,8 @@ function confirmarPizza() {
 // ──────────────────────────────────────────
 //  FINALIZAR PEDIDO → Firebase
 // ──────────────────────────────────────────
+let activePedidoUnsub = null;
+
 async function finalizarPedido() {
   if (!mesaNumero) { alert('Configure o número da mesa primeiro.'); abrirMesaModal(); return; }
   if (carrinho.length === 0) { alert('Adicione itens ao pedido primeiro.'); return; }
@@ -3000,12 +3022,27 @@ async function finalizarPedido() {
 
   fecharCarrinho();
 
-  // Enviar para Firebase
+  // Enviar para Firebase e ouvir confirmação do garçom
   if (window._fbPushPedido) {
-    await window._fbPushPedido(mesaNumero, carrinho, carrinhoTotal());
+    const pedidoKey = await window._fbPushPedido(mesaNumero, carrinho, carrinhoTotal());
+
+    // Cancelar listener anterior se existir
+    if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
+
+    // Ouvir quando garçom marcar como atendido
+    if (pedidoKey && window._fbOuvirPedido) {
+      activePedidoUnsub = window._fbOuvirPedido(pedidoKey, function(data) {
+        if (data.status === 'atendido') {
+          if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
+          // Fechar modal de "enviado" e mostrar confirmação do garçom
+          document.getElementById('pedido-enviado-modal').classList.remove('open');
+          mostrarPedidoLancado();
+        }
+      });
+    }
   }
 
-  // Mostrar modal de confirmação
+  // Mostrar modal de confirmação inicial
   document.getElementById('pe-mesa-num').textContent = mesaNumero;
   document.getElementById('pe-items-list').innerHTML = itensTxt.split('\n').map(function(l){return '<div>'+l+'</div>';}).join('');
   document.getElementById('pedido-enviado-modal').classList.add('open');
@@ -3013,6 +3050,13 @@ async function finalizarPedido() {
   // Limpar carrinho
   carrinho = [];
   atualizarFAB();
+}
+
+function mostrarPedidoLancado() {
+  document.getElementById('pedido-lancado-modal').classList.add('open');
+  setTimeout(function() {
+    document.getElementById('pedido-lancado-modal').classList.remove('open');
+  }, 5000);
 }
 
 function fecharPedidoEnviado() {

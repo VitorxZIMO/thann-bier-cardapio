@@ -467,8 +467,27 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .chope-price-row { display: flex; justify-content: space-between; align-items: center;
   font-size: 11px; padding: 4px 0; border-bottom: 1px solid #1e1e1e; }
 .chope-price-row:last-child { border-bottom: none; }
+.chope-ver-btn { width:100%;margin-top:10px;background:linear-gradient(135deg,#1a1400,#2a2000);
+  border:1px solid #3a3000;border-radius:8px;color:#d4a853;padding:8px;font-size:11px;
+  font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.3px; }
+.chope-ver-btn:hover { background:linear-gradient(135deg,#2a2000,#3a2a00);border-color:#5a4800; }
 .chope-price-label { color: var(--muted); }
 .chope-price-val { color: var(--gold); font-weight: 700; }
+/* Modal tamanhos chope */
+#chope-modal { position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85); }
+#chope-modal.open { display:flex; }
+.chope-modal-box { background:#141414;border:1px solid #2a2a2a;border-radius:18px;width:320px;max-width:92vw;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7); }
+.chope-modal-header { background:linear-gradient(135deg,#1a1400,#2a2000);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2000; }
+.chope-modal-title { font-size:15px;font-weight:800;color:#fff; }
+.chope-modal-close { background:#222;border:none;color:#777;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px; }
+.chope-modal-body { padding:14px 18px 18px; }
+.chope-modal-row { display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #1e1e1e; }
+.chope-modal-row:last-child { border-bottom:none; }
+.chope-modal-size { font-size:13px;font-weight:700;color:#fff; }
+.chope-modal-ml { font-size:11px;color:#666;margin-top:1px; }
+.chope-modal-right { display:flex;align-items:center;gap:10px; }
+.chope-modal-preco { font-size:14px;font-weight:800;color:#d4a853; }
+.chope-modal-add { background:var(--red);border:none;color:#fff;width:30px;height:30px;border-radius:8px;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center; }
 
 /* ── DRINKS ── */
 .drinks-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
@@ -768,6 +787,24 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .estoque-status.ok { color: #2a9a2a; }
 
 /* ── PRODUTOS FORM ── */
+/* ── EDITOR DE CHOPES ── */
+.chope-editor-card { background: #0d0d0d; border: 1px solid #222; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.chope-editor-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; user-select: none; }
+.chope-editor-name { font-size: 13px; font-weight: 800; color: #fff; }
+.chope-editor-chevron { font-size: 12px; color: #555; transition: transform .2s; }
+.chope-editor-card.open .chope-editor-chevron { transform: rotate(180deg); }
+.chope-editor-body { display: none; padding: 0 14px 14px; }
+.chope-editor-card.open .chope-editor-body { display: block; }
+.chope-size-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.chope-size-label { font-size: 11px; color: #888; width: 80px; flex-shrink: 0; }
+.chope-size-ml-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 7px; color: #13bfce; font-size: 12px; font-weight: 700; padding: 6px 8px; outline: none; }
+.chope-size-ml-input:focus { border-color: #13bfce; }
+.chope-size-preco-input { flex: 1; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 7px; color: #d4a853; font-size: 12px; font-weight: 700; padding: 6px 8px; outline: none; }
+.chope-size-preco-input:focus { border-color: #d4a853; }
+.chope-editor-save { width: 100%; margin-top: 10px; background: #1a3a1a; border: 1px solid #2a6a2a; color: #5dff8a; border-radius: 9px; padding: 9px; font-size: 12px; font-weight: 800; cursor: pointer; transition: all .15s; }
+.chope-editor-save:hover { background: #223322; border-color: #5aaa5a; }
+.chope-editor-saved { display: none; text-align: center; font-size: 11px; color: #5dff8a; margin-top: 6px; }
+
 .produto-form { display: flex; flex-direction: column; gap: 10px; }
 .produto-form label { font-size: 11px; color: #888; margin-bottom: 3px; display: block; }
 .produto-form input, .produto-form select, .produto-form textarea {
@@ -843,7 +880,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
       <div class="cfg-tabs">
         <button class="cfg-tab active" onclick="mudarCfgTab('geral',this)">⚙️ Geral</button>
         <button class="cfg-tab" onclick="mudarCfgTab('estoque',this)">📦 Estoque</button>
-        <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">➕ Produtos</button>
+        <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">🍺 Chopes</button>
       </div>
 
       <!-- PAINEL GERAL -->
@@ -909,42 +946,10 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
       <!-- PAINEL PRODUTOS -->
       <div class="cfg-panel" id="cfg-panel-produtos">
-        <div class="config-section-title" style="margin-bottom:12px">➕ Adicionar Produto</div>
-        <div class="produto-form">
-          <div>
-            <label>Nome do produto *</label>
-            <input type="text" id="pf-nome" placeholder="Ex: Frango Crispy">
-          </div>
-          <div>
-            <label>Descrição</label>
-            <textarea id="pf-desc" placeholder="Ingredientes, detalhes..."></textarea>
-          </div>
-          <div>
-            <label>Preço (R$) *</label>
-            <input type="number" id="pf-preco" placeholder="0.00" step="0.01" min="0">
-          </div>
-          <div>
-            <label>Aba do cardápio *</label>
-            <select id="pf-aba">
-              <option value="burgers">🍔 Burgers</option>
-              <option value="porcoes">🍟 Porções</option>
-              <option value="pizzas">🍕 Pizzas</option>
-              <option value="bebidas">🍺 Bebidas</option>
-            </select>
-          </div>
-          <div>
-            <label>Foto (URL ou upload)</label>
-            <input type="text" id="pf-foto-url" placeholder="https://... ou deixe vazio para emoji">
-            <input type="file" id="pf-foto-file" accept="image/*" style="margin-top:6px;font-size:11px;color:#888">
-            <img id="pf-foto-preview" class="produto-foto-preview">
-          </div>
-          <button class="produto-form-btn" onclick="adicionarProduto()">✅ Adicionar ao Cardápio</button>
-        </div>
-        <div class="produtos-adicionados">
-          <h4>Produtos adicionados</h4>
-          <div id="produtos-lista">
-            <div style="color:#555;font-size:12px;text-align:center;padding:10px">Nenhum produto adicionado ainda.</div>
-          </div>
+        <div class="config-section-title" style="margin-bottom:4px">🍺 Editar Chopes</div>
+        <p style="font-size:11px;color:#666;margin-bottom:12px">Altere ml e preços. Salva e atualiza em todos os tablets na hora.</p>
+        <div id="chope-editor-list">
+          <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando chopes...</div>
         </div>
       </div>
 
@@ -1438,12 +1443,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="chope-name">Pilsen Lager Premium</div>
                 <div class="chope-desc">O clássico. Suave, refrescante e perfeitamente equilibrado.</div>
                 <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 10,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 11,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 13,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 26,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 38,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 10,50</span></div>
                 </div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Pilsen Lager Premium','O clássico.',[{tam:'Half Pint',preco:10.50},{tam:'Pint',preco:11.50},{tam:'Caneca',preco:13.50},{tam:'Torre 1,5L',preco:26.00},{tam:'Torre 2,5L',preco:38.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1457,13 +1459,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Pilsen Duplo Malte</div>
                 <div class="chope-desc">Encorpado, com aroma maltado e cor dourada intensa.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 9,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 11,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 14,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 25,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 37,50</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 9,50</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Pilsen Duplo Malte','Encorpado e maltado.',[{tam:'Half Pint',preco:9.50},{tam:'Pint',preco:11.50},{tam:'Caneca',preco:14.00},{tam:'Torre 1,5L',preco:25.50},{tam:'Torre 2,5L',preco:37.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1477,12 +1474,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">IPA</div>
                 <div class="chope-desc">India Pale Ale. Lupulado, aromático e com amargor marcante.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 15,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 17,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 20,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 30,00</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 15,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('IPA','India Pale Ale.',[{tam:'Half Pint',preco:15.00},{tam:'Pint',preco:17.00},{tam:'Caneca',preco:20.00},{tam:'1 Litro',preco:30.00}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1496,12 +1489,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Session IPA</div>
                 <div class="chope-desc">Lupulado e refrescante, com teor alcoólico mais leve.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 27,50</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 14,50</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Session IPA','Lupulado e leve.',[{tam:'Half Pint',preco:14.50},{tam:'Pint',preco:16.50},{tam:'Caneca',preco:18.50},{tam:'1 Litro',preco:27.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1515,12 +1504,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Weiss</div>
                 <div class="chope-desc">Cerveja de trigo alemã. Frutada, levemente turva e cremosa.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 13,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 15,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 26,50</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 13,50</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Weiss','Cerveja de trigo.',[{tam:'Half Pint',preco:13.50},{tam:'Pint',preco:15.50},{tam:'Caneca',preco:18.50},{tam:'1 Litro',preco:26.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1534,12 +1519,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Vienna</div>
                 <div class="chope-desc">Lager âmbar vienense. Maltada, suave e com toque de caramelo.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 19,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 24,00</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 14,50</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Vienna','Lager âmbar vienense.',[{tam:'Half Pint',preco:14.50},{tam:'Pint',preco:16.00},{tam:'Caneca',preco:19.00},{tam:'1 Litro',preco:24.00}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1553,12 +1534,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Malzbier</div>
                 <div class="chope-desc">Escura, levemente adocicada com notas de chocolate e caramelo.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 12,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 14,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 22,00</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 12,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Malzbier','Escura e adocicada.',[{tam:'Half Pint',preco:12.00},{tam:'Pint',preco:14.00},{tam:'Caneca',preco:18.00},{tam:'1 Litro',preco:22.00}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1572,9 +1549,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Chopp Dunkel</div>
                 <div class="chope-desc">Dark Lager bávara. Tostada, com notas de pão escuro e casca de pão.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Taça Dublin</span><span class="chope-price-val">R$ 21,00</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">Taça Dublin</span><span class="chope-price-val">R$ 21,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Chopp Dunkel','Dark Lager bávara.',[{tam:'Taça Dublin',preco:21.00}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1588,12 +1564,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Chope Vinho (Rosé)</div>
                 <div class="chope-desc">Cerveja rosé encorpada, com notas frutadas e toque de vinho.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 12,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 14,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 16,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 32,50</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 12,50</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Chope Vinho Rosé','Cerveja rosé.',[{tam:'Half Pint',preco:12.50},{tam:'Pint',preco:14.00},{tam:'Caneca',preco:16.50},{tam:'Torre 1,5L',preco:32.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1607,13 +1579,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Chope Vinho Branco</div>
                 <div class="chope-desc">Cerveja branca com infusão de vinho branco. Leve e refrescante.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 17,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 38,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 54,50</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 14,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Chope Vinho Branco','Cerveja branca com infusão de vinho branco.',[{tam:'Half Pint',preco:14.00},{tam:'Pint',preco:17.00},{tam:'Caneca',preco:18.00},{tam:'Torre 1,5L',preco:38.00},{tam:'Torre 2,5L',preco:54.50}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1627,9 +1594,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Chope Maçã Verde</div>
                 <div class="chope-desc">Cerveja frutada com sabor fresco de maçã verde.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,00</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 16,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Chope Maçã Verde','Cerveja frutada com sabor fresco de maçã verde.',[{tam:'Pint',preco:16.00}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1643,13 +1609,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="chope-body">
                 <div class="chope-name">Chopp de Abacaxi</div>
                 <div class="chope-desc">Cerveja artesanal com infusão de abacaxi. Tropical e refrescante.</div>
-                <div class="chope-prices">
-                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,50</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 36,90</span></div>
-                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 56,90</span></div>
-                </div>
+                <div class="chope-prices"><div class="chope-price-row"><span class="chope-price-label">A partir de</span><span class="chope-price-val">R$ 14,00</span></div></div>
+                <button class="chope-ver-btn" onclick="abrirChopeModal('Chopp de Abacaxi','Cerveja artesanal com infusão de abacaxi. Tropical e refrescante.',[{tam:'Half Pint',preco:14.00},{tam:'Pint',preco:16.50},{tam:'Caneca',preco:18.00},{tam:'Torre 1,5L',preco:36.90},{tam:'Torre 2,5L',preco:56.90}])">🍺 Ver tamanhos e pedir</button>
               </div>
             </div>
 
@@ -1684,7 +1645,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Caipirinhas</div>
                   <div class="drink-desc">Cachaça artesanal, limão, açúcar e gelo. O clássico brasileiro.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipirinha" onclick="adicionarItemDireto('Caipirinhas','Cachaça artesanal',0)">+</button></div>
                 </div>
               </div>
 
@@ -1697,7 +1658,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Caipira de Chope</div>
                   <div class="drink-desc">A tradicional caipirinha com chope gelado. Única e refrescante.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipira-chope" onclick="adicionarItemDireto('Caipira de Chope','Caipirinha com chope',0)">+</button></div>
                 </div>
               </div>
 
@@ -1708,7 +1669,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Sakerinha</div>
                   <div class="drink-desc">Sake artesanal, limão siciliano, açúcar e gelo. Leve e aromática.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="sakerinha" onclick="adicionarItemDireto('Sakerinha','Sake artesanal com limão',0)">+</button></div>
                 </div>
               </div>
 
@@ -1719,7 +1680,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Caipirinha de Vinho</div>
                   <div class="drink-desc">Vinho tinto, frutas vermelhas, limão e açúcar. Sofisticada e saborosa.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipirinha-vinho" onclick="adicionarItemDireto('Caipirinha de Vinho','Vinho, frutas vermelhas e limão',0)">+</button></div>
                 </div>
               </div>
 
@@ -1737,7 +1698,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Aperol Spritz</div>
                   <div class="drink-desc">Aperol, prosecco, água com gás e laranja. O favorito italiano.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="aperol-spritz" onclick="adicionarItemDireto('Aperol Spritz','Aperol, prosecco e laranja',0)">+</button></div>
                 </div>
               </div>
 
@@ -1748,7 +1709,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Gin Tônica</div>
                   <div class="drink-desc">Gin premium, água tônica e especiarias. Elegante e refrescante.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="gin-tonica" onclick="adicionarItemDireto('Gin Tônica','Gin premium e tônica',0)">+</button></div>
                 </div>
               </div>
 
@@ -1759,7 +1720,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Mojito Cubano</div>
                   <div class="drink-desc">Rum branco, hortelã, limão, açúcar e água com gás.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="mojito-cubano" onclick="adicionarItemDireto('Mojito Cubano','Rum, hortelã e limão',0)">+</button></div>
                 </div>
               </div>
 
@@ -1769,8 +1730,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Mojito Inglês</div>
-                  <div class="drink-desc">Versão inglesa com gin no lugar do rum. Aromático e refrescante.</div>
-                  <div class="drink-price">Consulte</div>
+<div class="drink-desc">Versão inglesa com gin no lugar do rum. Aromático e refrescante.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="mojito-ingles" onclick="adicionarItemDireto('Mojito Inglês','Gin, hortelã e limão',0)">+</button></div>
                 </div>
               </div>
 
@@ -1781,7 +1742,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Piña Colada</div>
                   <div class="drink-desc">Rum branco, creme de coco e suco de abacaxi. Tropical.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="pina-colada" onclick="adicionarItemDireto('Piña Colada','Rum, coco e abacaxi',0)">+</button></div>
                 </div>
               </div>
 
@@ -1792,7 +1753,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Sex on the Beach</div>
                   <div class="drink-desc">Vodka, pêssego, suco de laranja e cranberry. Frutado e refrescante.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="sex-on-beach" onclick="adicionarItemDireto('Sex on the Beach','Vodka, pêssego e laranja',0)">+</button></div>
                 </div>
               </div>
 
@@ -1810,7 +1771,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Blue Hawaii</div>
                   <div class="drink-desc">Drink autoral exclusivo da casa. Azul, gelado e irresistível.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="blue-hawaii" onclick="adicionarItemDireto('Blue Hawaii','Drink autoral exclusivo',0)">+</button></div>
                 </div>
               </div>
 
@@ -1821,7 +1782,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Blue Ice</div>
                   <div class="drink-desc">Drink autoral gelado com visual impactante. Exclusivo Thänn Bier.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="blue-ice" onclick="adicionarItemDireto('Blue Ice','Drink autoral exclusivo',0)">+</button></div>
                 </div>
               </div>
 
@@ -1839,7 +1800,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Piña Descolada</div>
                   <div class="drink-desc">Versão sem álcool da Piña Colada. Abacaxi, coco e gelo. Tropical!</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="pina-descolada" onclick="adicionarItemDireto('Piña Descolada','Sem álcool · Abacaxi e coco',0)">+</button></div>
                 </div>
               </div>
 
@@ -1850,7 +1811,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="drink-body">
                   <div class="drink-name">Drink Maçã Verde</div>
                   <div class="drink-desc">Soda italiana, maçã verde e limão. Refrescante e sem álcool.</div>
-                  <div class="drink-price">Consulte</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="drink-maca-verde" onclick="adicionarItemDireto('Drink Maçã Verde','Sem álcool · Soda italiana',0)">+</button></div>
                 </div>
               </div>
 
@@ -2163,11 +2124,20 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   </div>
 </div>
 
+<!-- ── MODAL TAMANHOS CHOPE ── -->
+<div id="chope-modal">
+  <div class="chope-modal-box">
+    <div class="chope-modal-header">
+      <div class="chope-modal-title">🍺 <span id="chope-modal-nome">Chope</span></div>
+      <button class="chope-modal-close" onclick="fecharChopeModal()">✕</button>
+    </div>
+    <div class="chope-modal-body" id="chope-modal-body"></div>
+  </div>
+</div>
+
 <!-- ── BANNER PEDIDO BLOQUEADO ── -->
-<div id="pedido-bloqueado-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:800;background:#1a0a0a;border:2px solid #c41a0a;border-radius:14px;padding:16px 24px;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 24px rgba(196,26,10,.4)">
-  <div style="font-size:22px;margin-bottom:8px">🍽️</div>
-  <div style="font-size:15px;font-weight:800;color:#fff;margin-bottom:6px">Pedidos direto com o garçom na mesa</div>
-  <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.5">Escolheu seu pedido?<br><b style="color:#5dff8a;cursor:pointer" onclick="chamarGarcom()">Chame o garçom clicando aqui 🔔</b></div>
+<div id="pedido-bloqueado-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;background:#1a0a0a;border:1.5px solid #c41a0a;border-radius:30px;padding:9px 18px;text-align:center;white-space:nowrap;box-shadow:0 4px 20px rgba(196,26,10,.4)">
+  <span style="font-size:13px;font-weight:800;color:#fff">🍽️ Pedidos com o garçom &nbsp;·&nbsp; </span><b style="font-size:13px;color:#5dff8a;cursor:pointer" onclick="chamarGarcom()">Chamar 🔔</b>
 </div>
 
 <!-- ── BANNER PEDIDO LANÇADO ── -->
@@ -2315,6 +2285,11 @@ let activeChamadaUnsub = null;
 try {
   const app = initializeApp(firebaseConfig);
   db = getDatabase(app);
+  // Expõe primitivas do Firebase para uso fora do módulo
+  window._fbDb = db;
+  window._fbRef = ref;
+  window._fbSet = set;
+  window._fbOnValue = onValue;
 } catch(e) { console.warn('Firebase não configurado:', e.message); }
 
 window._fbSetBloqueio = async function(ativo) {
@@ -3213,6 +3188,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     aplicarBloqueio();
     if (window._fbIniciarListenerBloqueio) window._fbIniciarListenerBloqueio();
+    if (window._iniciarChopeSync) window._iniciarChopeSync();
   }, 800);
 
   // Atualizar display de mesa na sidebar
@@ -3270,6 +3246,190 @@ function abrirChope(nome, desc, preco, tamanho) {
   abrirItemModal(nome + ' (' + tamanho + ')', desc, preco, []);
 }
 
+function adicionarItemDireto(nome, desc, preco) {
+  adicionarAoCarrinho({ nome: nome, detalhe: '', preco: preco, qty: 1 });
+}
+
+// ML por tamanho
+var _chopeMl = { 'Half Pint': '285ml', 'Pint': '500ml', 'Caneca': '600ml', '1 Litro': '1.000ml (Caneca)', 'Torre 1,5L': '1.500ml', 'Torre 2,5L': '2.500ml', 'Taça Dublin': '300ml' };
+
+function abrirChopeModal(nome, desc, tamanhos) {
+  document.getElementById('chope-modal-nome').textContent = nome;
+  var body = document.getElementById('chope-modal-body');
+  var html = '';
+  tamanhos.forEach(function(t) {
+    var ml = _chopeMl[t.tam] || '';
+    html += '<div class="chope-modal-row">' +
+      '<div><div class="chope-modal-size">' + t.tam + '</div><div class="chope-modal-ml">' + ml + '</div></div>' +
+      '<div class="chope-modal-right">' +
+        '<span class="chope-modal-preco">R$ ' + t.preco.toFixed(2).replace('.',',') + '</span>' +
+        '<button class="chope-modal-add btn-add-item" data-item-key="chope-' + nome.toLowerCase().replace(/ /g,'-') + '-' + t.tam.toLowerCase().replace(/ /g,'-') + '" onclick="abrirChope(\'' + nome + '\',\'' + desc + '\',' + t.preco + ',\'' + t.tam + '\');fecharChopeModal()">+</button>' +
+      '</div>' +
+    '</div>';
+  });
+  body.innerHTML = html;
+  document.getElementById('chope-modal').classList.add('open');
+}
+
+function fecharChopeModal() {
+  document.getElementById('chope-modal').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════
+//  EDITOR DE CHOPES (config panel)
+// ══════════════════════════════════════════════
+
+// Dados padrão dos chopes (fonte de verdade inicial, sobrescrita pelo Firebase)
+var _CHOPES_DEFAULT = [
+  { id: 'pilsen', nome: 'Pilsen Lager Premium', desc: 'O clássico. Suave, refrescante e perfeitamente equilibrado.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 10.50 }, { tam: 'Pint', ml: '500ml', preco: 11.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 13.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 26.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 38.50 }]},
+  { id: 'duplo-malte', nome: 'Pilsen Duplo Malte', desc: 'Mais encorpada, com sabor mais intenso de malte.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 11.00 }, { tam: 'Pint', ml: '500ml', preco: 12.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 14.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 28.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 41.50 }]},
+  { id: 'ipa', nome: 'IPA', desc: 'Intensa, aromática e amarga. Para quem ama lúpulo.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 12.50 }, { tam: 'Pint', ml: '500ml', preco: 15.00 },
+    { tam: 'Caneca', ml: '600ml', preco: 17.00 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 34.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 49.00 }]},
+  { id: 'session-ipa', nome: 'Session IPA', desc: 'IPA mais leve e acessível, com aroma floral e cítrico.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 11.50 }, { tam: 'Pint', ml: '500ml', preco: 13.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 15.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 31.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 45.50 }]},
+  { id: 'weiss', nome: 'Weiss', desc: 'Cerveja de trigo alemã. Suave, com notas de banana e cravo.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 12.00 }, { tam: 'Pint', ml: '500ml', preco: 14.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 16.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 33.00 }]},
+  { id: 'vienna', nome: 'Vienna', desc: 'Âmbar e tostada. Equilibrada com dulçor de malte.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 11.50 }, { tam: 'Pint', ml: '500ml', preco: 13.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 15.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 31.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 45.50 }]},
+  { id: 'malzbier', nome: 'Malzbier', desc: 'Escura, doce e encorpada. Sabor intenso de malte torrado.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 12.00 }, { tam: 'Pint', ml: '500ml', preco: 14.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 16.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 33.00 }]},
+  { id: 'dunkel', nome: 'Chopp Dunkel', desc: 'Cerveja escura alemã com notas de chocolate e caramelo.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 12.00 }, { tam: 'Pint', ml: '500ml', preco: 14.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 16.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 33.00 }]},
+  { id: 'vinho-rose', nome: 'Chope Vinho Rosé', desc: 'Cerveja rosé encorpada, com notas frutadas e toque de vinho.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 12.50 }, { tam: 'Pint', ml: '500ml', preco: 14.00 },
+    { tam: 'Caneca', ml: '600ml', preco: 16.50 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 32.50 }]},
+  { id: 'vinho-branco', nome: 'Chope Vinho Branco', desc: 'Cerveja branca com infusão de vinho branco. Leve e refrescante.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 14.00 }, { tam: 'Pint', ml: '500ml', preco: 17.00 },
+    { tam: 'Caneca', ml: '600ml', preco: 18.00 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 38.00 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 54.50 }]},
+  { id: 'maca-verde', nome: 'Chope Maçã Verde', desc: 'Cerveja frutada com sabor fresco de maçã verde.', tamanhos: [
+    { tam: 'Pint', ml: '500ml', preco: 16.00 }]},
+  { id: 'abacaxi', nome: 'Chopp de Abacaxi', desc: 'Cerveja artesanal com infusão de abacaxi. Tropical e refrescante.', tamanhos: [
+    { tam: 'Half Pint', ml: '285ml', preco: 14.00 }, { tam: 'Pint', ml: '500ml', preco: 16.50 },
+    { tam: 'Caneca', ml: '600ml', preco: 18.00 }, { tam: 'Torre 1,5L', ml: '1.500ml', preco: 36.90 }, { tam: 'Torre 2,5L', ml: '2.500ml', preco: 56.90 }]}
+];
+
+// Dados em tempo real (começa com defaults, Firebase sobrescreve)
+var _chopesData = JSON.parse(JSON.stringify(_CHOPES_DEFAULT));
+
+window._renderChopeEditor = function() {
+  var list = document.getElementById('chope-editor-list');
+  if (!list) return;
+  list.innerHTML = _chopesData.map(function(c, ci) {
+    var rows = c.tamanhos.map(function(t, ti) {
+      return '<div class="chope-size-row">' +
+        '<div class="chope-size-label">' + t.tam + '</div>' +
+        '<input class="chope-size-ml-input" type="text" value="' + t.ml + '" ' +
+          'onchange="_chopesData[' + ci + '].tamanhos[' + ti + '].ml=this.value" ' +
+          'placeholder="ml" title="Descrição ml">' +
+        '<input class="chope-size-preco-input" type="number" step="0.01" min="0" value="' + t.preco.toFixed(2) + '" ' +
+          'onchange="_chopesData[' + ci + '].tamanhos[' + ti + '].preco=parseFloat(this.value)||0" ' +
+          'placeholder="R$">' +
+      '</div>';
+    }).join('');
+    return '<div class="chope-editor-card" id="chope-editor-card-' + ci + '">' +
+      '<div class="chope-editor-header" onclick="toggleChopeEditorCard(' + ci + ')">' +
+        '<div class="chope-editor-name">🍺 ' + c.nome + '</div>' +
+        '<div class="chope-editor-chevron">▼</div>' +
+      '</div>' +
+      '<div class="chope-editor-body">' +
+        '<div style="display:flex;gap:4px;margin-bottom:6px"><span style="font-size:10px;color:#555;flex:1;text-align:center">ml / descrição</span><span style="font-size:10px;color:#555;flex:1;text-align:center">Preço (R$)</span></div>' +
+        rows +
+        '<button class="chope-editor-save" onclick="salvarChopeEditor(' + ci + ')">💾 Salvar alterações</button>' +
+        '<div class="chope-editor-saved" id="chope-editor-saved-' + ci + '">✅ Salvo e atualizado em todos os tablets!</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+};
+
+function toggleChopeEditorCard(ci) {
+  var card = document.getElementById('chope-editor-card-' + ci);
+  if (card) card.classList.toggle('open');
+}
+
+function salvarChopeEditor(ci) {
+  var c = _chopesData[ci];
+  if (!window._fbRef || !window._fbSet) {
+    alert('Firebase não conectado. Tente novamente em instantes.'); return;
+  }
+  var dbRef = window._fbRef(window._fbDb, 'chopes/' + c.id);
+  window._fbSet(dbRef, {
+    nome: c.nome,
+    desc: c.desc,
+    tamanhos: c.tamanhos
+  }).then(function() {
+    var saved = document.getElementById('chope-editor-saved-' + ci);
+    if (saved) { saved.style.display = 'block'; setTimeout(function(){ saved.style.display='none'; }, 3000); }
+    // Atualiza o modal de tamanhos em memória também
+    _atualizarChopeMl(c);
+  }).catch(function(e) {
+    alert('Erro ao salvar: ' + e.message);
+  });
+}
+
+function _atualizarChopeMl(c) {
+  c.tamanhos.forEach(function(t) { _chopeMl[t.tam] = t.ml; });
+}
+
+// Carrega dados do Firebase ao iniciar (e fica ouvindo mudanças)
+window._iniciarChopeSync = function() {
+  if (!window._fbRef || !window._fbOnValue || !window._fbDb) return;
+  var dbRef = window._fbRef(window._fbDb, 'chopes');
+  window._fbOnValue(dbRef, function(snap) {
+    var val = snap.val();
+    if (!val) return; // sem dados no Firebase ainda, usa defaults
+    // Mescla dados do Firebase com defaults
+    _chopesData = _CHOPES_DEFAULT.map(function(def) {
+      var fb = val[def.id];
+      if (!fb) return def;
+      return { id: def.id, nome: fb.nome || def.nome, desc: fb.desc || def.desc,
+        tamanhos: (fb.tamanhos && fb.tamanhos.length) ? fb.tamanhos : def.tamanhos };
+    });
+    // Atualiza _chopeMl em memória
+    _chopesData.forEach(function(c) { _atualizarChopeMl(c); });
+    // Re-renderiza editor se estiver aberto
+    if (document.getElementById('chope-editor-list') &&
+        document.getElementById('cfg-panel-produtos').classList.contains('active')) {
+      window._renderChopeEditor();
+    }
+    // Atualiza os botões dos cards de chopes no cardápio
+    _atualizarCardapioChopeData();
+  });
+};
+
+function _atualizarCardapioChopeData() {
+  // Atualiza os onclick dos botões "Ver tamanhos e pedir" com dados mais recentes
+  _chopesData.forEach(function(c) {
+    // Encontra o botão pelo nome do chope
+    var btns = document.querySelectorAll('.chope-ver-btn');
+    btns.forEach(function(btn) {
+      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf(c.nome.replace(/'/g,"\\'")) !== -1) {
+        var tamanhosSafe = JSON.stringify(c.tamanhos).replace(/"/g,'&quot;');
+        btn.setAttribute('onclick',
+          "abrirChopeModal('" + c.nome.replace(/'/g,"\\'") + "','" + c.desc.replace(/'/g,"\\'") + "'," +
+          JSON.stringify(c.tamanhos) + ")");
+        // Atualiza preço "A partir de"
+        var card = btn.closest('.chope-body');
+        if (card) {
+          var priceEl = card.querySelector('.chope-price-val');
+          if (priceEl && c.tamanhos.length) {
+            var minPreco = Math.min.apply(null, c.tamanhos.map(function(t){ return t.preco; }));
+            priceEl.textContent = 'R$ ' + minPreco.toFixed(2).replace('.',',');
+          }
+        }
+      }
+    });
+  });
+}
 
 // ══════════════════════════════════════════════
 //  CONFIG TABS
@@ -3280,7 +3440,7 @@ function mudarCfgTab(tab, el) {
   el.classList.add('active');
   document.getElementById('cfg-panel-' + tab).classList.add('active');
   if (tab === 'estoque') window._renderEstoque();
-  if (tab === 'produtos') window._renderProdutosAdicionados();
+  if (tab === 'produtos') window._renderChopeEditor();
 }
 
 // ══════════════════════════════════════════════

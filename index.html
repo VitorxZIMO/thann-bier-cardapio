@@ -2278,8 +2278,12 @@ try {
   db = getDatabase(app);
 } catch(e) { console.warn('Firebase não configurado:', e.message); }
 
-// ── Listener bloqueio de pedidos (Firebase) ──
-if (typeof db !== 'undefined' && db) {
+window._fbSetBloqueio = async function(ativo) {
+  if (!db) return;
+  try { await set(ref(db, 'config/bloquear_pedidos'), ativo); } catch(e) { console.warn('Bloqueio error:', e); }
+};
+window._fbIniciarListenerBloqueio = function() {
+  if (!db) return;
   onValue(ref(db, 'config/bloquear_pedidos'), (snap) => {
     const val = snap.val();
     if (val !== null) {
@@ -2287,10 +2291,6 @@ if (typeof db !== 'undefined' && db) {
       if (typeof aplicarBloqueio === 'function') aplicarBloqueio();
     }
   });
-}
-window._fbSetBloqueio = async function(ativo) {
-  if (!db) return;
-  try { await set(ref(db, 'config/bloquear_pedidos'), ativo); } catch(e) { console.warn('Bloqueio error:', e); }
 };
 
 // ── Listener estoque ──
@@ -3178,9 +3178,12 @@ document.addEventListener('click', function(e) {
   }
 }, true);
 
-// Aplicar ao carregar
+// Aplicar ao carregar e iniciar listener Firebase
 document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(aplicarBloqueio, 500);
+  setTimeout(function() {
+    aplicarBloqueio();
+    if (window._fbIniciarListenerBloqueio) window._fbIniciarListenerBloqueio();
+  }, 800);
 });
 
 // ──────────────────────────────────────────

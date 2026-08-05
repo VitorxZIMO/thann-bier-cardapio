@@ -1,0 +1,3295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thänn Bier — Cardápio Digital</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sidebar-w: 230px;
+  --red: #c41a0a;
+  --gold: #d4a853;
+  --gold-light: #e8c070;
+  --dark: #0c0c0c;
+  --sidebar-bg: #111111;
+  --card-bg: #1a1a1a;
+  --border: #242424;
+  --text: #f0ece8;
+  --muted: #777;
+  --muted2: #999;
+}
+
+html, body { height: 100%; overflow: hidden; background: #080808; color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif; user-select: none; -webkit-font-smoothing: antialiased; }
+
+#app { display: flex; height: 100vh; overflow: hidden; position: relative; z-index: 1; }
+
+/* ── SIDEBAR ── */
+#sidebar { width: var(--sidebar-w); background: rgba(17,17,17,0.92); display: flex;
+  flex-direction: column; border-right: 1px solid var(--border); flex-shrink: 0; }
+
+.logo-area { padding: 20px 16px 16px; display: flex; flex-direction: column; align-items: center;
+  gap: 8px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#181010,var(--sidebar-bg)); }
+
+.logo-area img { width: 76px; height: 76px; object-fit: contain; border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(196,26,10,.3); }
+
+.logo-name { font-size: 15px; font-weight: 800; letter-spacing: 3px; text-align: center; }
+.logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: -4px; }
+
+.nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
+
+.nav-btn { background: none; border: none; color: var(--muted2); padding: 11px 13px; border-radius: 9px;
+  cursor: pointer; text-align: left; font-size: 13.5px; font-weight: 600; display: flex; align-items: center;
+  gap: 11px; transition: all .16s; letter-spacing: .2px; width: 100%; }
+
+.nav-btn:hover { background: #1e1e1e; color: var(--text); }
+.nav-btn.active { background: var(--red); color: #fff; box-shadow: 0 2px 12px rgba(196,26,10,.4); }
+
+/* Clock */
+.clock-area { padding: 10px 14px 12px; border-top: 1px solid var(--border); text-align: center; }
+#clock { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: 2px; }
+#date-display { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* WiFi Widget */
+.wifi-widget { margin: 0 10px 10px; background: #141a1a; border: 1px solid #1e2e2e; border-radius: 10px;
+  padding: 10px 12px; display: flex; align-items: flex-start; gap: 9px; }
+.wifi-icon { flex-shrink: 0; margin-top: 1px; }
+.wifi-info { flex: 1; }
+.wifi-title { font-size: 10px; font-weight: 700; color: #13bfce; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+.wifi-network { font-size: 10px; color: var(--muted2); }
+.wifi-pass { font-size: 11px; font-weight: 700; color: var(--text); margin-top: 1px; }
+
+/* ── MAIN AREA ── */
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(12,12,12,0.88); }
+
+/* Marquee */
+.ticker-wrap { background: var(--red); padding: 7px 0; overflow: hidden; flex-shrink: 0; white-space: nowrap; }
+.ticker-inner { display: inline-block; animation: marquee 30s linear infinite; }
+.ticker-inner span { font-size: 13px; font-weight: 700; letter-spacing: .5px; color: #fff;
+  padding: 0 50px; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Content */
+#content { flex: 1; overflow: hidden; position: relative; }
+.section { display: none; height: 100%; flex-direction: column; }
+.section.active { display: flex; }
+
+.section-header { padding: 20px 28px 14px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+.section-header h1 { font-size: 26px; font-weight: 800; }
+.section-header p { font-size: 12px; color: var(--muted2); margin-top: 4px; }
+
+.scroll-area { flex: 1; overflow-y: auto; padding: 20px 24px 30px; }
+.scroll-area::-webkit-scrollbar { width: 4px; }
+.scroll-area::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* ── SECTION DIVIDER ── */
+.sub-header { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
+  margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.sub-header span { background: var(--red); color: #fff; font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px; letter-spacing: .5px; text-transform: none; }
+
+/* ── GASTRONOMIA BG ANIMATION ── */
+.gastro-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.gastro-item {
+  position: absolute; font-size: 28px; opacity: 0;
+  animation: gastroFloat linear infinite;
+  filter: blur(0.5px);
+}
+@keyframes gastroFloat {
+  0%   { transform: translateY(110vh) rotate(0deg) scale(0.7); opacity: 0; }
+  5%   { opacity: 0.08; }
+  90%  { opacity: 0.06; }
+  100% { transform: translateY(-15vh) rotate(360deg) scale(1.1); opacity: 0; }
+}
+
+/* ── CONFIGURAÇÃO DE MESA (modal) ── */
+#mesa-modal { position: fixed; inset: 0; z-index: 950; display: none;
+  align-items: center; justify-content: center; background: rgba(0,0,0,.75); }
+#mesa-modal.open { display: flex; }
+.mesa-box { background: #1a1a1a; border: 1px solid #333; border-radius: 18px;
+  padding: 28px 24px; width: 280px; text-align: center; }
+.mesa-box h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.mesa-box p { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+.mesa-input { width: 100%; background: #111; border: 1px solid #333; border-radius: 10px;
+  color: #fff; font-size: 32px; font-weight: 800; text-align: center; padding: 12px;
+  margin-bottom: 14px; outline: none; }
+.mesa-input:focus { border-color: var(--red); }
+.mesa-save { width: 100%; background: var(--red); border: none; color: #fff; padding: 12px;
+  border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; }
+.mesa-save:hover { background: #e02010; }
+.mesa-badge { display: inline-flex; align-items: center; gap: 5px; background: #222;
+  border: 1px solid #333; border-radius: 20px; padding: 3px 10px; font-size: 10px;
+  color: var(--muted2); cursor: pointer; margin-top: 4px; }
+.mesa-badge:hover { border-color: var(--red); color: var(--text); }
+
+/* ── CHAMAR GARÇOM WIDGET ── */
+.garcom-widget { margin: 0 10px 10px; border-radius: 10px; overflow: hidden; }
+
+.garcom-btn { width: 100%; background: linear-gradient(135deg, #003d10, #006020);
+  border: 1px solid #00802a; border-radius: 10px; color: #fff;
+  padding: 11px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  transition: all .2s; }
+.garcom-btn:hover { background: linear-gradient(135deg, #004d15, #007a28); transform: scale(1.02); }
+.garcom-btn.active { background: linear-gradient(135deg, #005c18, #009030);
+  box-shadow: 0 0 0 2px rgba(0,220,80,.4), 0 4px 16px rgba(0,160,50,.4);
+  animation: garcomPulseBtn 1.8s ease-in-out infinite; }
+@keyframes garcomPulseBtn {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(0,220,80,.5), 0 4px 18px rgba(0,180,50,.5); }
+  50%       { box-shadow: 0 0 0 6px rgba(0,220,80,.15), 0 6px 24px rgba(0,200,60,.6); }
+}
+.garcom-icon { font-size: 20px; flex-shrink: 0; }
+.garcom-info { flex: 1; text-align: left; }
+.garcom-title { font-size: 11px; font-weight: 700; color: #4dff88; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 1px; }
+.garcom-title.called { color: #7fffaa; }
+.garcom-sub { font-size: 10px; color: rgba(255,255,255,.55); }
+
+/* ── ENGRENAGEM / CONFIG ── */
+#config-gear {
+  position: fixed; bottom: 18px; left: 18px; z-index: 400;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(30,30,30,.85); border: 1px solid #333;
+  color: #555; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; backdrop-filter: blur(6px);
+}
+#config-gear:hover { color: var(--gold); border-color: #555; transform: rotate(30deg); }
+
+/* ── CONFIG OVERLAY ── */
+#config-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  display: none; align-items: center; justify-content: center;
+}
+#config-overlay.open { display: flex; }
+.config-backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,.8);
+  backdrop-filter: blur(4px);
+}
+.config-box {
+  position: relative; z-index: 1;
+  background: #141414; border: 1px solid #2a2a2a; border-radius: 20px;
+  width: 320px; max-width: 95vw; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.7);
+  animation: configPop .25s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes configPop {
+  from { transform: scale(.92) translateY(10px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.config-header {
+  background: linear-gradient(135deg, #1a1200, #221800);
+  border-bottom: 1px solid #2a2000;
+  padding: 18px 20px; display: flex; align-items: center; justify-content: space-between;
+}
+.config-header-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.config-close {
+  background: #222; border: none; color: #777; width: 28px; height: 28px;
+  border-radius: 50%; cursor: pointer; font-size: 14px; display: flex;
+  align-items: center; justify-content: center; transition: all .15s;
+}
+.config-close:hover { background: #333; color: #fff; }
+
+/* Login panel */
+.config-login { padding: 24px 20px; }
+.config-login-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+.config-label { font-size: 11px; color: var(--muted2); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 6px; }
+.config-input {
+  width: 100%; background: #0e0e0e; border: 1px solid #2a2a2a; border-radius: 9px;
+  color: #fff; font-size: 15px; padding: 10px 14px; margin-bottom: 14px;
+  outline: none; transition: border-color .15s;
+}
+.config-input:focus { border-color: var(--gold); }
+.config-btn-login {
+  width: 100%; background: var(--gold); border: none; color: #111;
+  padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+}
+.config-btn-login:hover { background: var(--gold-light); }
+.config-login-error {
+  font-size: 12px; color: var(--red); text-align: center;
+  margin-top: 10px; display: none;
+}
+.config-login-error.show { display: block; }
+
+/* Settings panel (após login) */
+.config-panel { padding: 20px; display: none; }
+.config-panel.open { display: block; }
+
+.config-user-badge {
+  display: flex; align-items: center; gap: 10px; background: #1a1a1a;
+  border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 14px; margin-bottom: 20px;
+}
+.config-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #a07020);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800; color: #111; flex-shrink: 0;
+}
+.config-user-name { font-size: 14px; font-weight: 700; }
+.config-user-role { font-size: 11px; color: var(--muted); }
+
+.config-section { margin-bottom: 20px; }
+.config-section-title {
+  font-size: 10px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1.2px; margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.config-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid #1a1a1a;
+}
+.config-row:last-child { border-bottom: none; }
+.config-row-label { font-size: 13px; font-weight: 600; }
+.config-row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.config-row-action {
+  background: #1e1e1e; border: 1px solid #2a2a2a; color: var(--muted2);
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.config-row-action:hover { border-color: var(--gold); color: var(--gold); }
+.config-row-action.danger:hover { border-color: var(--red); color: var(--red); }
+
+.config-mesa-input {
+  width: 70px; background: #0e0e0e; border: 1px solid #2a2a2a; border-radius: 8px;
+  color: #fff; font-size: 18px; font-weight: 800; text-align: center;
+  padding: 6px 8px; outline: none;
+}
+.config-mesa-input:focus { border-color: var(--gold); }
+
+.config-btn-logout {
+  width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--muted);
+  padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 700;
+  cursor: pointer; margin-top: 4px; transition: all .15s;
+}
+.config-btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+/* Notif overlay pulsante (topo da tela) */
+#garcom-notif { position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  background: linear-gradient(90deg, #004d15, #009030, #004d15);
+  background-size: 200% 100%;
+  color: #fff; padding: 10px 20px; display: none;
+  align-items: center; justify-content: center; gap: 12px;
+  font-size: 14px; font-weight: 800; letter-spacing: .3px;
+  animation: garcomBanner 2s ease-in-out infinite;
+  box-shadow: 0 4px 20px rgba(0,160,50,.5); }
+#garcom-notif.visible { display: flex; }
+#garcom-notif.confirmado {
+  background: linear-gradient(90deg, #1a3a00, #2d6600, #1a3a00);
+  animation: none; background-position: 0% 50%; }
+@keyframes garcomBanner {
+  0%, 100% { background-position: 0% 50%; opacity: 1; }
+  50%       { background-position: 100% 50%; opacity: .85; }
+}
+
+/* Modal de confirmação do garçom */
+#garcom-confirmado-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.82); display: none;
+  align-items: flex-end; justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#garcom-confirmado-modal.open { display: flex; }
+.confirmado-sheet {
+  background: #0f1f0f; border: 1px solid #2a5a2a;
+  border-radius: 20px 20px 0 0; padding: 28px 24px 36px;
+  width: 100%; max-width: 420px;
+  animation: sheetUp .3s cubic-bezier(.2,.8,.3,1) both;
+  text-align: center;
+}
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+.confirmado-icon { font-size: 52px; margin-bottom: 12px; }
+.confirmado-title { font-size: 20px; font-weight: 900; color: #5dff8a; margin-bottom: 8px; }
+.confirmado-sub { font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 24px; line-height: 1.5; }
+.btn-chamar-novamente {
+  width: 100%; background: #1a2a1a; border: 1px solid #3a6a3a;
+  color: #7fff9a; padding: 14px; border-radius: 12px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  margin-bottom: 10px; transition: all .15s;
+}
+.btn-chamar-novamente:hover { background: #223322; border-color: #5aaa5a; }
+.btn-fechar-confirmado {
+  width: 100%; background: transparent; border: none;
+  color: rgba(255,255,255,.35); padding: 10px;
+  font-size: 13px; cursor: pointer;
+}
+
+/* ── FOOD CARDS ── */
+.food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.food-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+.food-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; display: flex; flex-direction: column; transition: transform .15s; }
+.food-card:hover { transform: translateY(-2px); }
+
+.food-img-wrap { height: 150px; overflow: hidden; background: #222; position: relative; }
+.food-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.food-img-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 42px; background: #1e1e1e; }
+.food-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+
+.food-card-body { padding: 13px 14px; flex: 1; display: flex; flex-direction: column; }
+.food-card-name { font-size: 13.5px; font-weight: 700; margin-bottom: 5px; line-height: 1.3; }
+.food-card-desc { font-size: 11px; color: var(--muted2); line-height: 1.4; flex: 1; margin-bottom: 10px; }
+.food-card-prices { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+
+.price-tag { background: #222; border: 1px solid var(--border); border-radius: 6px; padding: 4px 9px;
+  font-size: 11px; display: flex; align-items: center; gap: 5px; }
+.price-tag-label { color: var(--muted); }
+.price-tag-val { color: var(--gold); font-weight: 700; }
+.price-single { font-size: 17px; font-weight: 800; color: var(--gold); }
+
+/* ── PIZZAS ── */
+.pizza-size-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+
+.pizza-size-btn { background: linear-gradient(135deg, #1e1010, #2a1010); border: 2px solid #3a1a1a;
+  border-radius: 18px; padding: 28px 20px; cursor: pointer; text-align: center; transition: all .2s;
+  display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.pizza-size-btn:hover { border-color: var(--red); background: linear-gradient(135deg, #281515, #341818); transform: translateY(-3px); }
+.pizza-size-btn .size-emoji { font-size: 50px; }
+.pizza-size-btn .size-title { font-size: 22px; font-weight: 800; color: var(--text); }
+.pizza-size-btn .size-sub { font-size: 12px; color: var(--muted2); }
+.pizza-size-btn .size-prices { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+.pizza-size-btn .size-price-row { font-size: 12px; color: var(--muted2); }
+.pizza-size-btn .size-price-row b { color: var(--gold); }
+.pizza-size-btn .size-cta { margin-top: 10px; background: var(--red); color: #fff; font-size: 11px;
+  font-weight: 700; padding: 7px 18px; border-radius: 20px; letter-spacing: .5px; }
+
+/* Pizza Hero + Chef */
+.pizza-highlight { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+
+.pizza-hero { position: relative; border-radius: 16px; overflow: hidden; height: 190px; cursor: pointer; }
+.pizza-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pizza-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.8) 0%, transparent 55%); }
+.pizza-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 16px; }
+.pizza-hero-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--red);
+  color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-bottom: 6px; }
+.pizza-hero-name { font-size: 20px; font-weight: 800; }
+.pizza-hero-desc { font-size: 11px; color: rgba(255,255,255,.7); }
+
+.chef-card { background: linear-gradient(135deg, #1a1510, #221a10); border: 1px solid #3a2a10;
+  border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: center; }
+.chef-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--gold);
+  color: #111; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; }
+.chef-title { font-size: 13px; color: var(--muted2); margin-bottom: 4px; }
+.chef-name { font-size: 22px; font-weight: 800; color: var(--gold-light); margin-bottom: 6px; }
+.chef-desc { font-size: 11px; color: var(--muted2); line-height: 1.5; }
+
+/* Borda chips */
+.borda-section { margin-top: 22px; }
+.borda-section h3 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 12px; }
+.borda-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.borda-chip { background: #1e1e1e; border: 1px solid var(--border); border-radius: 20px;
+  padding: 7px 14px; font-size: 12px; color: var(--text); }
+.chip-price { color: var(--gold); font-weight: 700; margin-left: 6px; }
+
+/* ── PIZZA OVERLAY ── */
+#pizza-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column;
+  background: var(--dark); transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); }
+#pizza-overlay.open { transform: translateX(0); }
+
+.overlay-header { display: flex; align-items: center; gap: 16px; padding: 18px 24px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--sidebar-bg); }
+.overlay-back { background: #222; border: none; color: var(--text); padding: 9px 16px;
+  border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.overlay-back:hover { background: #333; }
+.overlay-title { font-size: 22px; font-weight: 800; }
+.overlay-subtitle { font-size: 12px; color: var(--muted2); margin-top: 2px; }
+
+.overlay-tabs { display: flex; gap: 8px; padding: 14px 24px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+.overlay-tab { background: #1e1e1e; border: 1px solid var(--border); color: var(--muted2);
+  padding: 9px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .15s; }
+.overlay-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+.overlay-scroll { flex: 1; overflow-y: auto; padding: 20px 24px 30px; }
+.overlay-scroll::-webkit-scrollbar { width: 4px; }
+.overlay-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+.flavor-panel { display: none; }
+.flavor-panel.active { display: block; }
+
+.flavors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+.flavor-card { background: #181818; border: 1px solid var(--border); border-radius: 12px;
+  padding: 13px 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.flavor-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.flavor-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.flavor-price { font-size: 14px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.flavor-price.special { color: #e8a030; }
+
+/* Pricing table */
+.pizza-price-table { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 22px; }
+.price-card { background: #181818; border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 12px; text-align: center; }
+.price-card .size-badge { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+.price-card .sabor-name { font-size: 10px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.price-card .price-value { font-size: 17px; font-weight: 800; color: var(--gold); }
+
+/* ── CHOPES ── */
+.chope-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+.chope-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; transition: transform .15s; }
+.chope-card:hover { transform: translateY(-2px); }
+
+.chope-img-wrap { height: 140px; overflow: hidden; background: #1a1a2e; position: relative; }
+.chope-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.chope-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+
+.chope-body { padding: 13px 14px; }
+.chope-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.chope-desc { font-size: 10.5px; color: var(--muted2); line-height: 1.4; margin-bottom: 10px; }
+.chope-prices { display: flex; flex-direction: column; gap: 4px; }
+.chope-price-row { display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; padding: 4px 0; border-bottom: 1px solid #1e1e1e; }
+.chope-price-row:last-child { border-bottom: none; }
+.chope-price-label { color: var(--muted); }
+.chope-price-val { color: var(--gold); font-weight: 700; }
+
+/* ── DRINKS ── */
+.drinks-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.drink-tab { background: #1e1e1e; border: 1px solid var(--border); color: var(--muted2);
+  padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .15s; }
+.drink-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+.drink-panel { display: none; }
+.drink-panel.active { display: block; }
+
+.drink-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+.drink-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; transition: transform .15s; }
+.drink-card:hover { transform: translateY(-2px); }
+
+.drink-img-wrap { height: 150px; overflow: hidden; position: relative; }
+.drink-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.drink-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+
+.drink-body { padding: 13px 14px; }
+.drink-name { font-size: 13.5px; font-weight: 700; margin-bottom: 4px; }
+.drink-desc { font-size: 11px; color: var(--muted2); line-height: 1.4; margin-bottom: 10px; }
+.drink-price { font-size: 17px; font-weight: 800; color: var(--gold); }
+
+/* ── BEBIDAS ── */
+.bebida-subsection { margin-bottom: 28px; }
+
+.bebida-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.bebida-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+/* Brand card for Refris */
+.refri-card { border-radius: 14px; padding: 18px 14px; text-align: center; display: flex;
+  flex-direction: column; align-items: center; gap: 8px; border: 1px solid transparent; }
+.refri-card.coca { background: linear-gradient(135deg, #3d0c0c, #1a0505); border-color: #5a1010; }
+.refri-card.fanta { background: linear-gradient(135deg, #3d2000, #1a0d00); border-color: #5a3000; }
+.refri-card.agua { background: linear-gradient(135deg, #0d2a3d, #051218); border-color: #0e3a5a; }
+.refri-card.suco { background: linear-gradient(135deg, #1a3a0d, #0a1a05); border-color: #2a5010; }
+.refri-card.guarana { background: linear-gradient(135deg, #0d2a10, #051008); border-color: #1a4a1a; }
+.refri-card.sprite { background: linear-gradient(135deg, #1a2a10, #0a1505); border-color: #2a4010; }
+
+.refri-logo { font-size: 40px; }
+.refri-name { font-size: 14px; font-weight: 800; color: var(--text); }
+.refri-variants { font-size: 10.5px; color: var(--muted2); }
+.refri-price { font-size: 16px; font-weight: 800; color: var(--gold); }
+
+/* Photo card for vinho/espumante */
+.bebida-photo-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
+  overflow: hidden; display: flex; flex-direction: column; transition: transform .15s; }
+.bebida-photo-card:hover { transform: translateY(-2px); }
+.bebida-photo-img { height: 140px; overflow: hidden; background: #1a1a2a; }
+.bebida-photo-img img { width: 100%; height: 100%; object-fit: cover; }
+.bebida-photo-img .bebida-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 44px; }
+.bebida-photo-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; }
+.bebida-photo-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.bebida-photo-desc { font-size: 11px; color: var(--muted2); flex: 1; margin-bottom: 8px; }
+.bebida-photo-price { font-size: 16px; font-weight: 800; color: var(--gold); }
+
+/* ══════════════════════════════════════
+   SISTEMA DE PEDIDOS — CARRINHO
+══════════════════════════════════════ */
+
+/* Botão + em cada item */
+.btn-add-item {
+  background: var(--red); border: none; color: #fff;
+  width: 30px; height: 30px; border-radius: 8px;
+  font-size: 18px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .15s; margin-top: auto;
+  line-height: 1;
+}
+.btn-add-item:hover { background: #e02020; transform: scale(1.1); }
+
+/* FAB do carrinho */
+#cart-fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 800;
+  background: var(--red); color: #fff;
+  border: none; border-radius: 50px;
+  padding: 14px 22px; font-size: 15px; font-weight: 800;
+  cursor: pointer; display: none; align-items: center; gap: 10px;
+  box-shadow: 0 6px 24px rgba(196,26,10,.5);
+  transition: all .2s;
+}
+#cart-fab.visible { display: flex; }
+#cart-fab:hover { transform: scale(1.04); box-shadow: 0 8px 30px rgba(196,26,10,.6); }
+#cart-count { background: #fff; color: var(--red); border-radius: 50%;
+  width: 22px; height: 22px; font-size: 12px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; }
+
+/* Drawer do carrinho */
+#cart-drawer {
+  position: fixed; inset: 0; z-index: 1100; display: none;
+  align-items: flex-end;
+}
+#cart-drawer.open { display: flex; }
+#cart-backdrop {
+  position: absolute; inset: 0; background: rgba(0,0,0,.7);
+}
+.cart-sheet {
+  position: relative; z-index: 1;
+  background: #0f0f0f; border: 1px solid #2a2a2a;
+  border-radius: 20px 20px 0 0; width: 100%; max-width: 480px;
+  margin: 0 auto; max-height: 88vh; display: flex; flex-direction: column;
+  animation: sheetUp .3s cubic-bezier(.2,.8,.3,1) both;
+}
+.cart-header {
+  padding: 20px 20px 14px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #222; flex-shrink: 0;
+}
+.cart-title { font-size: 18px; font-weight: 900; }
+.cart-close { background: #222; border: none; color: var(--muted); width: 32px; height: 32px;
+  border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+.cart-items { flex: 1; overflow-y: auto; padding: 12px 20px; }
+.cart-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0; border-bottom: 1px solid #1a1a1a;
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item-qty {
+  background: #222; color: var(--gold); font-weight: 900; font-size: 13px;
+  min-width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cart-item-info { flex: 1; }
+.cart-item-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.cart-item-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.cart-item-price { font-size: 14px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.cart-item-remove { background: none; border: none; color: #444; cursor: pointer; font-size: 16px;
+  padding: 2px 4px; border-radius: 4px; transition: color .15s; }
+.cart-item-remove:hover { color: var(--red); }
+
+.cart-footer { padding: 16px 20px; border-top: 1px solid #222; flex-shrink: 0; }
+.cart-total { display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; font-size: 16px; }
+.cart-total-label { font-weight: 700; color: var(--muted); }
+.cart-total-val { font-size: 22px; font-weight: 900; color: var(--gold); }
+.btn-finalizar {
+  width: 100%; background: var(--red); border: none; color: #fff;
+  padding: 16px; border-radius: 13px; font-size: 16px; font-weight: 900;
+  cursor: pointer; transition: all .15s;
+}
+.btn-finalizar:hover { background: #e02020; }
+.btn-limpar-cart {
+  width: 100%; background: transparent; border: none; color: #444;
+  padding: 8px; font-size: 12px; cursor: pointer; margin-top: 6px;
+}
+
+/* Modal de item (hamburguer, bebida, pizza simples) */
+#item-modal {
+  position: fixed; inset: 0; z-index: 1200; display: none; align-items: flex-end;
+}
+#item-modal.open { display: flex; }
+#item-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.75); }
+.item-sheet {
+  position: relative; z-index: 1;
+  background: #111; border: 1px solid #2a2a2a; border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 480px; margin: 0 auto; padding: 24px 20px 32px;
+  animation: sheetUp .28s cubic-bezier(.2,.8,.3,1) both;
+}
+.item-sheet-title { font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+.item-sheet-desc  { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+.item-opts-label  { font-size: 11px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px; margin-top: 14px; }
+.item-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.item-opt {
+  background: #1e1e1e; border: 1px solid #333; color: var(--muted2);
+  padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
+  transition: all .15s; white-space: nowrap;
+}
+.item-opt.selected { background: #2a1010; border-color: var(--red); color: #fff; }
+.item-opt.selected-green { background: #0a2010; border-color: #3a8a3a; color: #7fff9a; }
+.item-sheet-footer { margin-top: 20px; display: flex; align-items: center; gap: 12px; }
+.item-qty-ctrl { display: flex; align-items: center; gap: 10px; }
+.item-qty-btn { background: #222; border: 1px solid #333; color: var(--text); width: 36px; height: 36px;
+  border-radius: 9px; cursor: pointer; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.item-qty-val { font-size: 18px; font-weight: 900; min-width: 24px; text-align: center; }
+.btn-add-to-cart {
+  flex: 1; background: var(--red); border: none; color: #fff;
+  padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 900; cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* Modal de pizza (seletor de sabores integrado) */
+#pizza-pedido-modal {
+  position: fixed; inset: 0; z-index: 1200; display: none; flex-direction: column;
+  background: var(--dark);
+}
+#pizza-pedido-modal.open { display: flex; }
+.pizza-pedido-header {
+  display: flex; align-items: center; gap: 14px; padding: 18px 20px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--sidebar-bg);
+}
+.pizza-pedido-header h2 { font-size: 20px; font-weight: 900; flex: 1; }
+.pizza-pedido-price-bar {
+  background: #0d1a00; border-bottom: 1px solid #2a4a00;
+  padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.pizza-pedido-price-bar .pp-label { font-size: 12px; color: var(--muted); }
+.pizza-pedido-price-bar .pp-total { font-size: 22px; font-weight: 900; color: var(--gold); }
+.pizza-pedido-price-bar .pp-sabores { font-size: 12px; color: #7fff9a; font-weight: 600; }
+.pizza-pedido-scroll { flex: 1; overflow-y: auto; padding: 16px 20px 120px; }
+.pizza-pedido-footer {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #0f0f0f; border-top: 1px solid #222;
+  padding: 14px 20px 20px;
+}
+.flavor-selectable {
+  background: #181818; border: 1px solid var(--border); border-radius: 12px;
+  padding: 13px 14px; display: flex; justify-content: space-between; align-items: center;
+  gap: 10px; cursor: pointer; transition: all .15s; margin-bottom: 8px;
+}
+.flavor-selectable:hover { border-color: #444; }
+.flavor-selectable.selected { border-color: var(--red); background: #1a0a0a; }
+.flavor-selectable .fs-check { width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+  border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.flavor-selectable.selected .fs-check { background: var(--red); border-color: var(--red); color: #fff; }
+.flavor-selectable .fs-info { flex: 1; }
+.flavor-selectable .fs-name { font-size: 13px; font-weight: 700; }
+.flavor-selectable .fs-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.flavor-selectable .fs-price { font-size: 13px; font-weight: 800; color: var(--gold); white-space: nowrap; }
+.flavor-selectable .fs-extra { font-size: 11px; color: #e8a030; font-weight: 700; white-space: nowrap; }
+
+/* Borda selector no modal de pizza */
+.borda-selector { display: flex; flex-wrap: wrap; gap: 8px; }
+.borda-opt { background: #1e1e1e; border: 1px solid #333; color: var(--muted2);
+  padding: 7px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
+  transition: all .15s; }
+.borda-opt.selected { background: #1a1400; border-color: #5a4000; color: var(--gold); }
+
+/* Pedido enviado modal */
+#pedido-enviado-modal {
+  position: fixed; inset: 0; z-index: 1300; display: none; align-items: flex-end;
+}
+#pedido-enviado-modal.open { display: flex; }
+.pedido-enviado-sheet {
+  position: relative; z-index: 1;
+  background: #0a1a0a; border: 1px solid #2a5a2a;
+  border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; margin: 0 auto;
+  padding: 32px 24px 40px; text-align: center;
+  animation: sheetUp .3s cubic-bezier(.2,.8,.3,1) both;
+}
+#pedido-enviado-modal .pe-icon { font-size: 56px; margin-bottom: 14px; }
+#pedido-enviado-modal .pe-title { font-size: 22px; font-weight: 900; color: #5dff8a; margin-bottom: 8px; }
+#pedido-enviado-modal .pe-sub { font-size: 14px; color: rgba(255,255,255,.6); margin-bottom: 24px; line-height: 1.6; }
+#pedido-enviado-modal .pe-items { background: #0f1f0f; border: 1px solid #1a3a1a; border-radius: 12px;
+  padding: 14px; text-align: left; margin-bottom: 20px; font-size: 13px; color: var(--muted2); line-height: 1.8; }
+.btn-fechar-pedido { width: 100%; background: #1a2a1a; border: 1px solid #3a5a3a; color: #7fff9a;
+  padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+
+/* ── ESGOTADO ── */
+.esgotado-badge {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
+  background: #c41a0a; color: #fff; font-size: 10px; font-weight: 900;
+  padding: 4px 10px; border-radius: 20px; letter-spacing: 1px;
+  text-transform: uppercase; pointer-events: none;
+}
+.item-esgotado { opacity: .5; pointer-events: none; }
+.item-esgotado .btn-add-item { opacity: .4; cursor: not-allowed; }
+
+/* ── CONFIG TABS ── */
+.cfg-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.cfg-tab {
+  flex: 1; padding: 8px 0; font-size: 12px; font-weight: 700;
+  background: #1e1e1e; border: 1px solid #2a2a2a; color: #888;
+  border-radius: 8px; cursor: pointer; text-align: center; transition: all .15s;
+}
+.cfg-tab.active { background: #c41a0a; border-color: #c41a0a; color: #fff; }
+
+.cfg-panel { display: none; }
+.cfg-panel.active { display: block; }
+
+/* ── ESTOQUE LISTA ── */
+.estoque-list { display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
+.estoque-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 9px;
+  padding: 9px 12px; gap: 10px;
+}
+.estoque-item-nome { font-size: 12px; font-weight: 700; flex: 1; }
+.estoque-item-cat { font-size: 10px; color: #888; margin-top: 2px; }
+.estoque-toggle {
+  position: relative; width: 40px; height: 22px; flex-shrink: 0;
+}
+.estoque-toggle input { opacity: 0; width: 0; height: 0; }
+.estoque-toggle-slider {
+  position: absolute; inset: 0; background: #c41a0a; border-radius: 22px; cursor: pointer; transition: .2s;
+}
+.estoque-toggle-slider:before {
+  content: ''; position: absolute; height: 16px; width: 16px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: .2s;
+}
+.estoque-toggle input:checked + .estoque-toggle-slider { background: #2a7a2a; }
+.estoque-toggle input:checked + .estoque-toggle-slider:before { transform: translateX(18px); }
+.estoque-status { font-size: 10px; font-weight: 700; color: #c41a0a; }
+.estoque-status.ok { color: #2a9a2a; }
+
+/* ── PRODUTOS FORM ── */
+.produto-form { display: flex; flex-direction: column; gap: 10px; }
+.produto-form label { font-size: 11px; color: #888; margin-bottom: 3px; display: block; }
+.produto-form input, .produto-form select, .produto-form textarea {
+  width: 100%; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+  padding: 9px 12px; color: #fff; font-size: 13px; box-sizing: border-box;
+}
+.produto-form textarea { min-height: 60px; resize: vertical; }
+.produto-form-btn {
+  background: #c41a0a; color: #fff; border: none; border-radius: 9px;
+  padding: 11px; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 4px;
+}
+.produto-form-btn:hover { background: #e02020; }
+.produto-foto-preview {
+  width: 100%; height: 100px; border-radius: 8px; object-fit: cover;
+  display: none; margin-top: 6px; border: 1px solid #2a2a2a;
+}
+.produtos-adicionados { margin-top: 14px; }
+.produtos-adicionados h4 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.produto-adicionado-item {
+  display: flex; align-items: center; gap: 10px;
+  background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 9px;
+  padding: 9px 12px; margin-bottom: 6px;
+}
+.produto-adicionado-img { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; background: #222; flex-shrink: 0; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+.produto-adicionado-info { flex: 1; }
+.produto-adicionado-nome { font-size: 12px; font-weight: 700; }
+.produto-adicionado-cat { font-size: 10px; color: #888; }
+.produto-adicionado-del { background: none; border: none; color: #c41a0a; cursor: pointer; font-size: 16px; padding: 0 4px; }
+
+</style>
+</head>
+<body>
+
+<!-- ── GASTRO BG ── -->
+<div class="gastro-bg" id="gastro-bg"></div>
+
+<!-- ── ENGRENAGEM ── -->
+<button id="config-gear" onclick="abrirConfig()" title="Configurações">⚙️</button>
+
+<!-- ── CONFIG OVERLAY ── -->
+<div id="config-overlay">
+  <div class="config-backdrop" onclick="fecharConfig()"></div>
+  <div class="config-box">
+
+    <div class="config-header">
+      <div class="config-header-title">⚙️ Configurações</div>
+      <button class="config-close" onclick="fecharConfig()">✕</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="config-login-panel" class="config-login">
+      <div class="config-login-sub">Entre com seu usuário para acessar as configurações.</div>
+      <div class="config-label">Usuário</div>
+      <input class="config-input" id="cfg-user" type="text" placeholder="nome de usuário" autocomplete="off">
+      <div class="config-label">Senha</div>
+      <input class="config-input" id="cfg-pass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      <button class="config-btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="config-login-error" id="cfg-error">Usuário ou senha incorretos.</div>
+    </div>
+
+    <!-- PAINEL (após login) -->
+    <div id="config-painel" class="config-panel">
+
+      <div class="config-user-badge">
+        <div class="config-avatar" id="cfg-avatar">V</div>
+        <div>
+          <div class="config-user-name" id="cfg-username-display">Vitor</div>
+          <div class="config-user-role">Administrador</div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="cfg-tabs">
+        <button class="cfg-tab active" onclick="mudarCfgTab('geral',this)">⚙️ Geral</button>
+        <button class="cfg-tab" onclick="mudarCfgTab('estoque',this)">📦 Estoque</button>
+        <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">➕ Produtos</button>
+      </div>
+
+      <!-- PAINEL GERAL -->
+      <div class="cfg-panel active" id="cfg-panel-geral">
+        <div class="config-section">
+          <div class="config-section-title">🍽️ Mesa</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label">Número da Mesa</div>
+              <div class="config-row-sub">Configure o número deste tablet</div>
+            </div>
+            <input class="config-mesa-input" id="cfg-mesa-val" type="number" min="1" max="99" placeholder="—">
+          </div>
+          <div style="margin-top:10px">
+            <button class="config-row-action" onclick="salvarMesaConfig()" style="width:100%;padding:10px;border-radius:9px;font-size:13px">
+              💾 Salvar Mesa
+            </button>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-section-title">📡 WiFi</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label">Rede</div>
+              <div class="config-row-sub">Cervejaria Machadinho</div>
+            </div>
+            <span style="font-size:12px;color:var(--muted)">thannbier</span>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-section-title">🔗 Garçom</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label">Painel do Garçom</div>
+              <div class="config-row-sub">Abrir dashboard de chamadas</div>
+            </div>
+            <button class="config-row-action" onclick="window.open('garcom.html','_blank')">Abrir →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAINEL ESTOQUE -->
+      <div class="cfg-panel" id="cfg-panel-estoque">
+        <div class="config-section-title" style="margin-bottom:12px">📦 Controle de Estoque</div>
+        <p style="font-size:11px;color:#888;margin-bottom:14px">Marque como <b style="color:#c41a0a">ESGOTADO</b> para desativar o item no cardápio em tempo real.</p>
+        <div class="estoque-list" id="estoque-list">
+          <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando itens...</div>
+        </div>
+      </div>
+
+      <!-- PAINEL PRODUTOS -->
+      <div class="cfg-panel" id="cfg-panel-produtos">
+        <div class="config-section-title" style="margin-bottom:12px">➕ Adicionar Produto</div>
+        <div class="produto-form">
+          <div>
+            <label>Nome do produto *</label>
+            <input type="text" id="pf-nome" placeholder="Ex: Frango Crispy">
+          </div>
+          <div>
+            <label>Descrição</label>
+            <textarea id="pf-desc" placeholder="Ingredientes, detalhes..."></textarea>
+          </div>
+          <div>
+            <label>Preço (R$) *</label>
+            <input type="number" id="pf-preco" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div>
+            <label>Aba do cardápio *</label>
+            <select id="pf-aba">
+              <option value="burgers">🍔 Burgers</option>
+              <option value="porcoes">🍟 Porções</option>
+              <option value="pizzas">🍕 Pizzas</option>
+              <option value="bebidas">🍺 Bebidas</option>
+            </select>
+          </div>
+          <div>
+            <label>Foto (URL ou upload)</label>
+            <input type="text" id="pf-foto-url" placeholder="https://... ou deixe vazio para emoji">
+            <input type="file" id="pf-foto-file" accept="image/*" style="margin-top:6px;font-size:11px;color:#888">
+            <img id="pf-foto-preview" class="produto-foto-preview">
+          </div>
+          <button class="produto-form-btn" onclick="adicionarProduto()">✅ Adicionar ao Cardápio</button>
+        </div>
+        <div class="produtos-adicionados">
+          <h4>Produtos adicionados</h4>
+          <div id="produtos-lista">
+            <div style="color:#555;font-size:12px;text-align:center;padding:10px">Nenhum produto adicionado ainda.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="config-btn-logout" onclick="fazerLogout()" style="margin-top:16px">Sair da conta</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MODAL CONFIGURAR MESA ── -->
+<div id="mesa-modal">
+  <div class="mesa-box">
+    <h3>🍽️ Número da Mesa</h3>
+    <p>Configure o número desta mesa antes de chamar o garçom</p>
+    <input class="mesa-input" id="mesa-input" type="number" min="1" max="99" placeholder="00" maxlength="2">
+    <button class="mesa-save" onclick="salvarMesa()">Salvar Mesa</button>
+  </div>
+</div>
+
+<!-- ── GARCOM NOTIF BANNER ── -->
+<div id="garcom-notif">
+  <span id="garcom-notif-icon">🔔</span>
+  <span id="garcom-notif-text">Garçom chamado! Aguarde um momento...</span>
+  <button onclick="dismissGarcom()" style="background:rgba(255,255,255,.15);border:none;color:#fff;padding:4px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;margin-left:8px">✕</button>
+</div>
+
+<!-- ── MODAL GARÇOM CONFIRMOU ── -->
+<div id="garcom-confirmado-modal">
+  <div class="confirmado-sheet">
+    <div class="confirmado-icon">✅</div>
+    <div class="confirmado-title">O garçom está a caminho!</div>
+    <div class="confirmado-sub">Seu chamado foi visto e o garçom<br>já está indo até sua mesa.</div>
+    <button class="btn-chamar-novamente" onclick="chamarNovamente()">
+      🔔 Surgiu uma dúvida? Chamar novamente
+    </button>
+    <button class="btn-fechar-confirmado" onclick="fecharConfirmado()">
+      Fechar
+    </button>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside id="sidebar">
+    <div class="logo-area">
+      <img src="https://static.goomer.app/stores/151683/products/mobile_menu/templates/233644/logo_v1637155067.png"
+           alt="Thänn Bier" onerror="this.style.display='none'">
+      <div class="logo-name">THÄNN BIER</div>
+      <div class="logo-sub">Bar &amp; Restaurante</div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showSection(this,'pizzas')">
+        <span>🍕</span> Pizzas
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'porcoes')">
+        <span>🥩</span> Porções
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'burgers')">
+        <span>🍔</span> Hambúrgueres
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'chopes')">
+        <span>🍺</span> Chopes
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'drinks')">
+        <span>🍹</span> Drinks
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'bebidas')">
+        <span>🥤</span> Bebidas
+      </button>
+    </nav>
+
+    <!-- Garçom Widget -->
+    <div class="garcom-widget">
+      <button class="garcom-btn" id="garcom-btn" onclick="chamarGarcom()">
+        <span class="garcom-icon">🔔</span>
+        <div class="garcom-info">
+          <div class="garcom-title" id="garcom-title">Chamar Garçom</div>
+          <div class="garcom-sub" id="garcom-sub">Toque para chamar</div>
+        </div>
+      </button>
+      <div style="text-align:center;margin-top:5px">
+        <span class="mesa-badge" onclick="abrirMesaModal()">
+          ⚙️ Mesa: <b id="mesa-num-display">—</b>
+        </span>
+      </div>
+    </div>
+
+    <!-- WiFi Widget -->
+    <div class="wifi-widget">
+      <div class="wifi-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="#13bfce" stroke-width="2" stroke-linecap="round"/>
+          <path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="#13bfce" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="#13bfce" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="20" r="1.5" fill="#13bfce"/>
+        </svg>
+      </div>
+      <div class="wifi-info">
+        <div class="wifi-title">WiFi Grátis</div>
+        <div class="wifi-network">Cervejaria Machadinho</div>
+        <div class="wifi-pass">🔑 thannbier</div>
+      </div>
+    </div>
+
+    <div class="clock-area">
+      <div id="clock">--:--</div>
+      <div id="date-display">carregando...</div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div id="main">
+
+    <!-- Marquee Ticker -->
+    <div class="ticker-wrap">
+      <div class="ticker-inner">
+        <span>🍕 A melhor pizza da região é na Thänn Bier! &nbsp;·&nbsp; 🍺 12 tipos de chope &nbsp;·&nbsp; 🍹 Drinks autorais e clássicos &nbsp;·&nbsp; 🥩 Porções grelhadas a partir das 17h &nbsp;·&nbsp; 📞 (54) 99666-0141</span>
+        <span>🍕 A melhor pizza da região é na Thänn Bier! &nbsp;·&nbsp; 🍺 12 tipos de chope &nbsp;·&nbsp; 🍹 Drinks autorais e clássicos &nbsp;·&nbsp; 🥩 Porções grelhadas a partir das 17h &nbsp;·&nbsp; 📞 (54) 99666-0141</span>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- ════ PIZZAS ════ -->
+      <section id="pizzas" class="section active">
+        <div class="section-header">
+          <h1>🍕 Pizzas</h1>
+          <p>Massa caseira aberta na hora &nbsp;·&nbsp; Ingredientes frescos &nbsp;·&nbsp; Bordas recheadas disponíveis</p>
+        </div>
+        <div class="scroll-area">
+
+          <!-- Hero + Chef -->
+          <div class="pizza-highlight">
+            <div class="pizza-hero" onclick="openOverlay('media')">
+              <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=80" alt="Pizza Calabresa">
+              <div class="pizza-hero-overlay"></div>
+              <div class="pizza-hero-content">
+                <div class="pizza-hero-badge">⭐ Mais Pedida</div>
+                <div class="pizza-hero-name">Calabresa</div>
+                <div class="pizza-hero-desc">Calabresa, molho de tomate, mussarela e orégano</div>
+              </div>
+            </div>
+            <div class="chef-card">
+              <div class="chef-badge">👨‍🍳 Sugestão do Chef</div>
+              <div class="chef-title">Experimente também</div>
+              <div class="chef-name">Figo com Copa</div>
+              <div class="chef-desc">Figo fresco, copa lombo, mussarela e molho de tomate artesanal. Uma combinação única que conquistou nossos clientes!</div>
+            </div>
+          </div>
+
+          <!-- Size Cards -->
+          <div class="pizza-size-cards">
+            <div class="pizza-size-btn" onclick="abrirPizzaPedido('media')">
+              <div class="size-emoji">🍕</div>
+              <div class="size-title">Pizza Média</div>
+              <div class="size-sub">8 fatias · até 2 sabores</div>
+              <div class="size-prices">
+                <div class="size-price-row">1 sabor <b>R$ 64,90</b></div>
+                <div class="size-price-row">2 sabores <b>R$ 64,90</b></div>
+              </div>
+              <div class="size-cta">+ Pedir Pizza Média</div>
+            </div>
+            <div class="pizza-size-btn" onclick="abrirPizzaPedido('grande')">
+              <div class="size-emoji">🍕</div>
+              <div class="size-title">Pizza Grande</div>
+              <div class="size-sub">12 fatias · até 3 sabores</div>
+              <div class="size-prices">
+                <div class="size-price-row">1 sabor <b>R$ 69,90</b></div>
+                <div class="size-price-row">2 sabores <b>R$ 75,90</b></div>
+                <div class="size-price-row">3 sabores <b>R$ 75,90</b></div>
+              </div>
+              <div class="size-cta">+ Pedir Pizza Grande</div>
+            </div>
+          </div>
+
+          <!-- Bordas -->
+          <div class="borda-section">
+            <h3>🍕 Bordas Recheadas — opcional</h3>
+            <div class="borda-chips">
+              <div class="borda-chip">Catupiry <span class="chip-price">+R$ 12,00</span></div>
+              <div class="borda-chip">Cheddar <span class="chip-price">+R$ 12,00</span></div>
+              <div class="borda-chip">Vulcão Cheddar &amp; Catupiry <span class="chip-price">+R$ 16,00</span></div>
+              <div class="borda-chip">Bacon com Cheddar <span class="chip-price">+R$ 15,00</span></div>
+              <div class="borda-chip">Calabresa com Catupiry <span class="chip-price">+R$ 15,00</span></div>
+              <div class="borda-chip">Calabresa com Cheddar <span class="chip-price">+R$ 15,00</span></div>
+              <div class="borda-chip">Chocolate Branco <span class="chip-price">+R$ 15,00</span></div>
+              <div class="borda-chip">Chocolate Preto <span class="chip-price">+R$ 15,00</span></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ════ PORÇÕES ════ -->
+      <section id="porcoes" class="section">
+        <div class="section-header">
+          <h1>🥩 Porções</h1>
+          <p>Porções para compartilhar &nbsp;·&nbsp; Carnes disponíveis a partir das 17h</p>
+        </div>
+        <div class="scroll-area">
+
+          <div class="sub-header">🍟 Petiscos &amp; Fritas</div>
+          <div class="food-grid" style="margin-bottom:30px">
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322547/picture/large/260411233137"
+                     alt="Anéis de Cebola" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🧅</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Anéis de Cebola</div>
+                <div class="food-card-desc">Acompanha maionese caseira</div>
+                <div class="food-card-prices">
+                  <div class="price-tag"><span class="price-tag-label">150g</span><span class="price-tag-val">R$ 18,90</span></div>
+                  <div class="price-tag"><span class="price-tag-label">300g</span><span class="price-tag-val">R$ 34,90</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322527/picture/large/251117180935"
+                     alt="Batata Frita" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍟</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Batata Frita</div>
+                <div class="food-card-desc">Acompanha maionese caseira</div>
+                <div class="food-card-prices">
+                  <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 18,00</span></div>
+                  <div class="price-tag"><span class="price-tag-label">500g</span><span class="price-tag-val">R$ 29,90</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322563/picture/large/260411233148"
+                     alt="Batata Rústica" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥔</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Batata Rústica com Queijo e Bacon</div>
+                <div class="food-card-desc">Acompanha maionese caseira</div>
+                <div class="food-card-prices">
+                  <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 24,90</span></div>
+                  <div class="price-tag"><span class="price-tag-label">400g</span><span class="price-tag-val">R$ 39,90</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/11140104/picture/large/260312220751"
+                     alt="Mandioquinha" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🌽</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Mandioquinha com Bacon</div>
+                <div class="food-card-desc">Porção de 400g</div>
+                <div class="food-card-prices"><div class="price-single">R$ 26,90</div></div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322637/picture/large/260610221950"
+                     alt="Torre de Batata" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🗼</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Torre de Batata</div>
+                <div class="food-card-desc">Batata, molho 4 queijos, calabresa e bacon</div>
+                <div class="food-card-prices">
+                  <div class="price-tag"><span class="price-tag-label">700g</span><span class="price-tag-val">R$ 54,90</span></div>
+                  <div class="price-tag"><span class="price-tag-label">1,5kg</span><span class="price-tag-val">R$ 79,90</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="sub-header">🔥 Carnes &amp; Grelhados <span>A partir das 17h</span></div>
+          <div class="food-grid">
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322567/picture/large/260414223502"
+                     alt="Alcatra Acebolada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥩</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Alcatra Acebolada</div>
+                <div class="food-card-desc">Porção de 350g</div>
+                <div class="food-card-prices"><div class="price-single">R$ 57,90</div></div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322568/picture/large/260528212737"
+                     alt="Chorizo Argentino" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🌭</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Chorizo Argentino</div>
+                <div class="food-card-desc">Porção de 400g · Acompanha pasta de alho e pão místico</div>
+                <div class="food-card-prices"><div class="price-single">R$ 64,90</div></div>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322613/picture/large/260519214037"
+                     alt="Tilápia em Iscas" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🐟</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Tilápia em Iscas</div>
+                <div class="food-card-desc">Porção de 300g · Acompanha molho agridoce</div>
+                <div class="food-card-prices"><div class="price-single">R$ 57,00</div></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ HAMBÚRGUERES ════ -->
+      <section id="burgers" class="section">
+        <div class="section-header">
+          <h1>🍔 Hambúrgueres</h1>
+          <p>Hambúrgueres artesanais · Pão brioche · Acompanham 100g de fritas</p>
+        </div>
+        <div class="scroll-area">
+
+          <div class="sub-header">🍔 Clássicos</div>
+          <div class="food-grid" style="margin-bottom:30px">
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322715/picture/large/251116210333"
+                     alt="Burguer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍔</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Burguer</div>
+                <div class="food-card-desc">Pão brioche, maionese, hambúrguer, queijo mussarela</div>
+                <div class="food-card-prices"><div class="price-single">R$ 27,90</div></div>
+                <button class="btn-add-item" data-item-key="burguer" onclick="abrirBurger('Burguer','Pão brioche, maionese, hambúrguer, queijo mussarela',27.90)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322711/picture/large/251116211332"
+                     alt="Big Thänn" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍔</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Big Thänn</div>
+                <div class="food-card-desc">Pão brioche, maionese, hambúrguer, queijo cheddar, pepino agridoce e alface</div>
+                <div class="food-card-prices"><div class="price-single">R$ 34,90</div></div>
+                <button class="btn-add-item" data-item-key="big-thann" onclick="abrirBurger('Big Thänn','Pão brioche, maionese, hambúrguer, queijo cheddar, pepino agridoce e alface',34.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10322721/picture/large/251116211323"
+                     alt="Doble Smash" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍔</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Doble Smash</div>
+                <div class="food-card-desc">Pão brioche, hambúrguer smash, rodelas de cebola, queijo mussarela e alface</div>
+                <div class="food-card-prices"><div class="price-single">R$ 34,90</div></div>
+                <button class="btn-add-item" data-item-key="doble-smash" onclick="abrirBurger('Doble Smash','Pão brioche, hambúrguer smash, rodelas de cebola, queijo mussarela e alface',34.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488648/picture/large/251116211327"
+                     alt="Hambúrguer com Salada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥗</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Hambúrguer com Salada</div>
+                <div class="food-card-desc">Pão, hambúrguer, queijo cheddar, alface, tomate e maionese</div>
+                <div class="food-card-prices"><div class="price-single">R$ 32,90</div></div>
+                <button class="btn-add-item" data-item-key="hamburguer-salada" onclick="abrirBurger('Hambúrguer com Salada','Pão, hambúrguer, queijo cheddar, alface, tomate e maionese',32.9)">+</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="sub-header">⭐ Especiais</div>
+          <div class="food-grid">
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488572/picture/large/251116210328"
+                     alt="Hambúrguer com Maracujá" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🌺</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Maracujá</div>
+                <div class="food-card-desc">Pão, hambúrguer 180g, queijo coalho, cheddar, creme de maracujá e alface</div>
+                <div class="food-card-prices"><div class="price-single">R$ 36,90</div></div>
+                <button class="btn-add-item" data-item-key="maracuja" onclick="abrirBurger('Maracujá','Pão, hambúrguer 180g, queijo coalho, cheddar, creme de maracujá e alface',36.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488610/picture/large/260610221850"
+                     alt="Abacaxi e Lombo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍍</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Abacaxi &amp; Lombo Canadense</div>
+                <div class="food-card-desc">Pão, hambúrguer 180g, cheddar, rodelas de abacaxi, lombo canadense e creme de abacaxi</div>
+                <div class="food-card-prices"><div class="price-single">R$ 36,90</div></div>
+                <button class="btn-add-item" data-item-key="abacaxi-lombo" onclick="abrirBurger('Abacaxi & Lombo Canadense','Pão, hambúrguer 180g, cheddar, rodelas de abacaxi, lombo canadense e creme de abacaxi',36.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488629/picture/large/260212225245"
+                     alt="Figo e Copa Lombo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🍇</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Figo &amp; Copa Lombo</div>
+                <div class="food-card-desc">Pão, hambúrguer 180g, figo, creme de figo, cheddar e copa lombo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 37,90</div></div>
+                <button class="btn-add-item" data-item-key="figo-copa" onclick="abrirBurger('Figo & Copa Lombo','Pão, hambúrguer 180g, figo, creme de figo, cheddar e copa lombo',37.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488634/picture/large/251116211327"
+                     alt="Hambúrguer com Bacon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥓</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Bacon</div>
+                <div class="food-card-desc">Pão, hambúrguer 180g, cheddar, bacon em tiras, creme cheddar e alface</div>
+                <div class="food-card-prices"><div class="price-single">R$ 37,90</div></div>
+                <button class="btn-add-item" data-item-key="bacon" onclick="abrirBurger('Bacon','Pão, hambúrguer 180g, cheddar, bacon em tiras, creme cheddar e alface',37.9)">+</button>
+              </div>
+            </div>
+
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10488643/picture/large/251116211327"
+                     alt="Cebola Empanada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🧅</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Cebola Empanada</div>
+                <div class="food-card-desc">Pão, hambúrguer 180g, creme cheddar, cheddar, cebola empanada e alface</div>
+                <div class="food-card-prices"><div class="price-single">R$ 37,90</div></div>
+                <button class="btn-add-item" data-item-key="cebola-empanada" onclick="abrirBurger('Cebola Empanada','Pão, hambúrguer 180g, creme cheddar, cheddar, cebola empanada e alface',37.9)">+</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ CHOPES ════ -->
+      <section id="chopes" class="section">
+        <div class="section-header">
+          <h1>🍺 Chopes</h1>
+          <p>12 tipos de chope gelado &nbsp;·&nbsp; Chopp artesanal e importado &nbsp;·&nbsp; Torres disponíveis</p>
+        </div>
+        <div class="scroll-area">
+          <div class="chope-grid">
+
+            <!-- Pilsen Lager Premium -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <div class="chope-img-gradient" style="background:linear-gradient(135deg,#1a1400,#2a2000)">🍺</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Pilsen Lager Premium</div>
+                <div class="chope-desc">O clássico. Suave, refrescante e perfeitamente equilibrado.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 10,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 11,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 13,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 26,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 38,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pilsen Duplo Malte -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6886105/picture/large/260712211253"
+                     alt="Pilsen Duplo Malte" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a1400,#2a1800)">🍺</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Pilsen Duplo Malte</div>
+                <div class="chope-desc">Encorpado, com aroma maltado e cor dourada intensa.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 9,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 11,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 14,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 25,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 37,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- IPA -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6886137/picture/large/260414214624"
+                     alt="IPA" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0e00,#2a1200)">🌿</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">IPA</div>
+                <div class="chope-desc">India Pale Ale. Lupulado, aromático e com amargor marcante.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 15,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 17,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 20,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 30,00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Session IPA -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6894072/picture/large/251230221611"
+                     alt="Session IPA" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#0e1a00,#141e00)">🌱</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Session IPA</div>
+                <div class="chope-desc">Lupulado e refrescante, com teor alcoólico mais leve.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 27,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weiss -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6886149/picture/large/260405234831"
+                     alt="Weiss" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a1a00,#2a2600)">🌾</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Weiss</div>
+                <div class="chope-desc">Cerveja de trigo alemã. Frutada, levemente turva e cremosa.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 13,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 15,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 26,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vienna -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6886152/picture/large/260314215333"
+                     alt="Vienna" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0e00,#241200)">🏛️</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Vienna</div>
+                <div class="chope-desc">Lager âmbar vienense. Maltada, suave e com toque de caramelo.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 19,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 24,00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Malzbier -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/7162912/picture/large/260216221752"
+                     alt="Malzbier" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#0e0800,#1a1000)">🍫</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Malzbier</div>
+                <div class="chope-desc">Escura, levemente adocicada com notas de chocolate e caramelo.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 12,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 14,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">1 Litro</span><span class="chope-price-val">R$ 22,00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dunkel -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/8899420/picture/large/260323002810"
+                     alt="Chopp Dunkel" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#0a0400,#120800)">🌑</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Chopp Dunkel</div>
+                <div class="chope-desc">Dark Lager bávara. Tostada, com notas de pão escuro e casca de pão.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Taça Dublin</span><span class="chope-price-val">R$ 21,00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chope Vinho -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/6886158/picture/large/260519223732"
+                     alt="Chope Vinho" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0014,#12000e)">🍷</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Chope Vinho (Rosé)</div>
+                <div class="chope-desc">Cerveja rosé encorpada, com notas frutadas e toque de vinho.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 12,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 14,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 16,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 32,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chope Vinho Branco -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/10623492/picture/large/260414214404"
+                     alt="Chope Vinho Branco" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#0e1a0e,#121e0a)">🥂</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Chope Vinho Branco</div>
+                <div class="chope-desc">Cerveja branca com infusão de vinho branco. Leve e refrescante.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 17,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 38,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 54,50</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chope Maçã Verde -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/12130747/picture/large/260508224218"
+                     alt="Chope Maçã Verde" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1a00,#0e2a00)">🍏</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Chope Maçã Verde</div>
+                <div class="chope-desc">Cerveja frutada com sabor fresco de maçã verde.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,00</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chopp de Abacaxi -->
+            <div class="chope-card">
+              <div class="chope-img-wrap">
+                <img src="https://www.goomer.app/webmenu/thann-bier/product/7754843/picture/large/260526233309"
+                     alt="Chopp de Abacaxi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="chope-img-gradient" style="display:none;background:linear-gradient(135deg,#1a1400,#201800)">🍍</div>
+              </div>
+              <div class="chope-body">
+                <div class="chope-name">Chopp de Abacaxi</div>
+                <div class="chope-desc">Cerveja artesanal com infusão de abacaxi. Tropical e refrescante.</div>
+                <div class="chope-prices">
+                  <div class="chope-price-row"><span class="chope-price-label">Half Pint</span><span class="chope-price-val">R$ 14,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Pint</span><span class="chope-price-val">R$ 16,50</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Caneca</span><span class="chope-price-val">R$ 18,00</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 1,5L</span><span class="chope-price-val">R$ 36,90</span></div>
+                  <div class="chope-price-row"><span class="chope-price-label">Torre 2,5L</span><span class="chope-price-val">R$ 56,90</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ DRINKS ════ -->
+      <section id="drinks" class="section">
+        <div class="section-header">
+          <h1>🍹 Drinks</h1>
+          <p>Drinks autorais e clássicos &nbsp;·&nbsp; Caipiras &amp; Coquetéis &amp; Opções sem álcool</p>
+        </div>
+        <div class="scroll-area">
+          <div class="drinks-tabs">
+            <button class="drink-tab active" onclick="showDrinkTab(this,'caipiras')">🍋 Caipiras</button>
+            <button class="drink-tab" onclick="showDrinkTab(this,'classicos')">🍸 Clássicos</button>
+            <button class="drink-tab" onclick="showDrinkTab(this,'autorais')">✨ Autorais</button>
+            <button class="drink-tab" onclick="showDrinkTab(this,'semalcool')">🧃 Sem Álcool</button>
+          </div>
+
+          <!-- Caipiras -->
+          <div id="caipiras" class="drink-panel active">
+            <div class="drink-grid">
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <img src="https://www.goomer.app/webmenu/thann-bier/product/7768909/picture/large/7768909"
+                       alt="Caipirinhas" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1a00,#0e2800)">🍋</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Caipirinhas</div>
+                  <div class="drink-desc">Cachaça artesanal, limão, açúcar e gelo. O clássico brasileiro.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <img src="https://www.goomer.app/webmenu/thann-bier/product/10319832/picture/large/10319832"
+                       alt="Caipira de Chope" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a1000,#2a1600)">🍺🍋</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Caipira de Chope</div>
+                  <div class="drink-desc">A tradicional caipirinha com chope gelado. Única e refrescante.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0014,#0e000a)">🍶</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Sakerinha</div>
+                  <div class="drink-desc">Sake artesanal, limão siciliano, açúcar e gelo. Leve e aromática.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a0a,#2a0a14)">🍷🍋</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Caipirinha de Vinho</div>
+                  <div class="drink-desc">Vinho tinto, frutas vermelhas, limão e açúcar. Sofisticada e saborosa.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Clássicos -->
+          <div id="classicos" class="drink-panel">
+            <div class="drink-grid">
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a00,#280e00)">🍊</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Aperol Spritz</div>
+                  <div class="drink-desc">Aperol, prosecco, água com gás e laranja. O favorito italiano.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0e1a0e,#0a140a)">🌿</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Gin Tônica</div>
+                  <div class="drink-desc">Gin premium, água tônica e especiarias. Elegante e refrescante.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a1a00,#0e1e00)">🌿🍋</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Mojito Cubano</div>
+                  <div class="drink-desc">Rum branco, hortelã, limão, açúcar e água com gás.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a140e,#0e1a10)">🌱</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Mojito Inglês</div>
+                  <div class="drink-desc">Versão inglesa com gin no lugar do rum. Aromático e refrescante.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a00,#2a1000)">🍍🥥</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Piña Colada</div>
+                  <div class="drink-desc">Rum branco, creme de coco e suco de abacaxi. Tropical.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a0a,#200e0e)">🍑</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Sex on the Beach</div>
+                  <div class="drink-desc">Vodka, pêssego, suco de laranja e cranberry. Frutado e refrescante.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Autorais -->
+          <div id="autorais" class="drink-panel">
+            <div class="drink-grid">
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#000a1a,#00081e)">🌊</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Blue Hawaii</div>
+                  <div class="drink-desc">Drink autoral exclusivo da casa. Azul, gelado e irresistível.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#001020,#00081a)">❄️</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Blue Ice</div>
+                  <div class="drink-desc">Drink autoral gelado com visual impactante. Exclusivo Thänn Bier.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Sem Álcool -->
+          <div id="semalcool" class="drink-panel">
+            <div class="drink-grid">
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0e00,#201200)">🍍🥥</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Piña Descolada</div>
+                  <div class="drink-desc">Versão sem álcool da Piña Colada. Abacaxi, coco e gelo. Tropical!</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+              <div class="drink-card">
+                <div class="drink-img-wrap">
+                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a1a00,#0e2000)">🍏</div>
+                </div>
+                <div class="drink-body">
+                  <div class="drink-name">Drink Maçã Verde</div>
+                  <div class="drink-desc">Soda italiana, maçã verde e limão. Refrescante e sem álcool.</div>
+                  <div class="drink-price">Consulte</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ════ BEBIDAS ════ -->
+      <section id="bebidas" class="section">
+        <div class="section-header">
+          <h1>🥤 Bebidas</h1>
+          <p>Refrigerantes &nbsp;·&nbsp; Cervejas &nbsp;·&nbsp; Vinhos &nbsp;·&nbsp; Espumantes &nbsp;·&nbsp; Soda Italiana</p>
+        </div>
+        <div class="scroll-area">
+
+          <!-- Refrigerantes -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🥤 Refrigerantes</div>
+            <div class="bebida-grid-4">
+              <div class="refri-card coca">
+                <div class="refri-logo">🥤</div>
+                <div class="refri-name">Coca-Cola</div>
+                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml &nbsp;·&nbsp; 2L</div>
+                <div class="refri-price">A partir de R$ 6,00
+                <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirBebida('Coca-Cola','Lata 350ml · 600ml · 2L',6.0)">+</button>
+              </div>
+              </div>
+              <div class="refri-card fanta">
+                <div class="refri-logo">🍊</div>
+                <div class="refri-name">Fanta</div>
+                <div class="refri-variants">Laranja &nbsp;·&nbsp; Uva &nbsp;·&nbsp; Lata e Garrafa</div>
+                <div class="refri-price">A partir de R$ 6,00
+                <button class="btn-add-item" data-item-key="fanta" onclick="abrirBebida('Fanta','Laranja · Uva · Lata e Garrafa',6.0)">+</button>
+              </div>
+              </div>
+              <div class="refri-card guarana">
+                <div class="refri-logo">🌿</div>
+                <div class="refri-name">Guaraná Antarctica</div>
+                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
+                <div class="refri-price">A partir de R$ 6,00
+                <button class="btn-add-item" data-item-key="guarana" onclick="abrirBebida('Guaraná Antarctica','Lata 350ml · 600ml',6.0)">+</button>
+              </div>
+              </div>
+              <div class="refri-card sprite">
+                <div class="refri-logo">💚</div>
+                <div class="refri-name">Sprite</div>
+                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
+                <div class="refri-price">A partir de R$ 6,00
+                <button class="btn-add-item" data-item-key="sprite" onclick="abrirBebida('Sprite','Lata 350ml',6.0)">+</button>
+              </div>
+              </div>
+              <div class="refri-card agua">
+                <div class="refri-logo">💧</div>
+                <div class="refri-name">Água Mineral</div>
+                <div class="refri-variants">Com gás &nbsp;·&nbsp; Sem gás</div>
+                <div class="refri-price">A partir de R$ 5,00
+                <button class="btn-add-item" data-item-key="agua" onclick="abrirBebida('Água','Sem gás · Com gás',5.0)">+</button>
+              </div>
+              </div>
+              <div class="refri-card suco">
+                <div class="refri-logo">🥤</div>
+                <div class="refri-name">Suco Del Valle</div>
+                <div class="refri-variants">Uva &nbsp;·&nbsp; Pêssego &nbsp;·&nbsp; Laranja</div>
+                <div class="refri-price">A partir de R$ 7,00
+                <button class="btn-add-item" data-item-key="suco-natural" onclick="abrirBebida('Suco Natural','Laranja ou limão',10.9)">+</button>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Soda Italiana -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🫧 Soda Italiana</div>
+            <div class="bebida-grid-3">
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <img src="https://www.goomer.app/webmenu/thann-bier/product/11179745/picture/large/11179745"
+                       alt="Soda Italiana" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1020,#0e1430)">🫧</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Soda Italiana</div>
+                  <div class="bebida-photo-desc">Bebida artesanal gaseificada com sabores exclusivos. Sem álcool.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cervejas -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🍻 Cervejas em Garrafa</div>
+            <div class="bebida-grid-3">
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <img src="https://www.goomer.app/webmenu/thann-bier/product/10958519/picture/large/10958519"
+                       alt="Heineken 0%" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1a00,#0e2400)">🟢</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Heineken 0%</div>
+                  <div class="bebida-photo-desc">A Heineken sem álcool. Todo o sabor, sem o álcool.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Espumantes -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🥂 Espumantes</div>
+            <div class="bebida-grid-3">
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a1400,#221c00)">🥂</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Torres</div>
+                  <div class="bebida-photo-desc">Espumante espanhol. Elegante e frutado.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#0e140a,#141c0e)">✨</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Espumante da Casa</div>
+                  <div class="bebida-photo-desc">Seleção especial da Thänn Bier. Para os momentos especiais.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vinhos -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🍷 Vinhos</div>
+            <div class="bebida-grid-3">
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a0014,#100010)">🍷</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Taça Colonial</div>
+                  <div class="bebida-photo-desc">Vinho tinto encorpado com notas frutadas e terrosas.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#160010,#0e000c)">🌹</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Latitud 33°</div>
+                  <div class="bebida-photo-desc">Vinho argentino selecionado. Suave e elegante.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+              <div class="bebida-photo-card">
+                <div class="bebida-photo-img">
+                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a0808,#120404)">🏆</div>
+                </div>
+                <div class="bebida-photo-body">
+                  <div class="bebida-photo-name">Luiz Argenta</div>
+                  <div class="bebida-photo-desc">Gaúcho premiado. Um dos melhores vinhos do sul do Brasil.</div>
+                  <div class="bebida-photo-price">Consulte</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Doses -->
+          <div class="bebida-subsection">
+            <div class="sub-header">🥃 Doses &amp; Destilados</div>
+            <div class="bebida-grid-4">
+              <div class="refri-card" style="background:linear-gradient(135deg,#1a0e00,#120800);border-color:#2a1400">
+                <div class="refri-logo">🥃</div>
+                <div class="refri-name">Jägermeister</div>
+                <div class="refri-variants">Dose 50ml</div>
+                <div class="refri-price">Consulte</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+</div><!-- /app -->
+
+<!-- ── FAB CARRINHO ── -->
+<button id="cart-fab" onclick="abrirCarrinho()">
+  🛒 Ver Pedido <span id="cart-count">0</span>
+</button>
+
+<!-- ── DRAWER CARRINHO ── -->
+<div id="cart-drawer">
+  <div id="cart-backdrop" onclick="fecharCarrinho()"></div>
+  <div class="cart-sheet">
+    <div class="cart-header">
+      <div class="cart-title">🛒 Seu Pedido</div>
+      <button class="cart-close" onclick="fecharCarrinho()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items-list"></div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span class="cart-total-label">Total</span>
+        <span class="cart-total-val" id="cart-total-val">R$ 0,00</span>
+      </div>
+      <button class="btn-finalizar" onclick="finalizarPedido()">✅ Finalizar e Chamar Garçom</button>
+      <button class="btn-limpar-cart" onclick="limparCarrinho()">🗑 Limpar pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ITEM (hamburger/bebida/porção) ── -->
+<div id="item-modal">
+  <div id="item-backdrop" onclick="fecharItemModal()"></div>
+  <div class="item-sheet">
+    <div class="item-sheet-title" id="im-title">Item</div>
+    <div class="item-sheet-desc" id="im-desc"></div>
+    <div id="im-extras"></div>
+    <div class="item-sheet-footer">
+      <div class="item-qty-ctrl">
+        <button class="item-qty-btn" onclick="itemQty(-1)">−</button>
+        <div class="item-qty-val" id="im-qty">1</div>
+        <button class="item-qty-btn" onclick="itemQty(1)">+</button>
+      </div>
+      <button class="btn-add-to-cart" id="im-add-btn" onclick="confirmarItem()">
+        <span>Adicionar ao pedido</span>
+        <span id="im-add-price">R$ 0,00</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL PIZZA PEDIDO ── -->
+<div id="pizza-pedido-modal">
+  <div class="pizza-pedido-header">
+    <button class="overlay-back" onclick="fecharPizzaPedido()">← Voltar</button>
+    <h2 id="pp-title">Pizza Grande</h2>
+  </div>
+  <div class="pizza-pedido-price-bar">
+    <div>
+      <div class="pp-label">Valor do pedido</div>
+      <div class="pp-sabores" id="pp-sabores-info">Nenhum sabor selecionado</div>
+    </div>
+    <div class="pp-total" id="pp-total">R$ 0,00</div>
+  </div>
+  <div class="overlay-tabs" style="padding:12px 20px;flex-shrink:0;border-bottom:1px solid var(--border)">
+    <button class="overlay-tab active" id="pp-tab-sal" onclick="showPPTab('salgadas')">🧄 Salgadas</button>
+    <button class="overlay-tab" id="pp-tab-doc" onclick="showPPTab('doces')">🍫 Doces</button>
+  </div>
+  <div class="pizza-pedido-scroll" id="pp-scroll">
+    <!-- preenchido pelo JS -->
+  </div>
+  <div class="pizza-pedido-footer">
+    <!-- Borda -->
+    <div class="item-opts-label">Borda Recheada (opcional)</div>
+    <div class="borda-selector" id="pp-borda-sel"></div>
+    <div style="height:12px"></div>
+    <!-- Qty + Add -->
+    <div class="item-sheet-footer">
+      <div class="item-qty-ctrl">
+        <button class="item-qty-btn" onclick="ppQty(-1)">−</button>
+        <div class="item-qty-val" id="pp-qty">1</div>
+        <button class="item-qty-btn" onclick="ppQty(1)">+</button>
+      </div>
+      <button class="btn-add-to-cart" id="pp-add-btn" onclick="confirmarPizza()" style="opacity:.5;pointer-events:none">
+        <span>Adicionar pizza</span>
+        <span id="pp-add-price">—</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL PEDIDO ENVIADO ── -->
+<div id="pedido-enviado-modal">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.75)"></div>
+  <div class="pedido-enviado-sheet">
+    <div class="pe-icon">🎉</div>
+    <div class="pe-title">Pedido enviado!</div>
+    <div class="pe-sub">O garçom recebeu seu pedido e está a caminho da mesa <b id="pe-mesa-num">—</b>.</div>
+    <div class="pe-items" id="pe-items-list"></div>
+    <button class="btn-fechar-pedido" onclick="fecharPedidoEnviado()">✓ Ok, obrigado!</button>
+  </div>
+</div>
+
+<!-- ── PIZZA OVERLAY (visualização dos sabores) ── -->
+<div id="pizza-overlay">
+  <div class="overlay-header">
+    <button class="overlay-back" onclick="closeOverlay()">← Voltar</button>
+    <div>
+      <div class="overlay-title" id="overlay-title">Sabores de Pizza</div>
+      <div class="overlay-subtitle" id="overlay-subtitle">Escolha até 2 sabores</div>
+    </div>
+  </div>
+
+  <div style="padding:14px 24px 0;flex-shrink:0;background:var(--sidebar-bg);">
+    <div class="pizza-price-table">
+      <div class="price-card"><div class="size-badge">Média<br>8 fatias</div><div class="sabor-name">1 Sabor</div><div class="price-value">R$ 64,90</div></div>
+      <div class="price-card"><div class="size-badge">Média<br>8 fatias</div><div class="sabor-name">2 Sabores</div><div class="price-value">R$ 64,80</div></div>
+      <div class="price-card"><div class="size-badge">Grande<br>12 fatias</div><div class="sabor-name">1 Sabor</div><div class="price-value">R$ 69,90</div></div>
+      <div class="price-card"><div class="size-badge">Grande<br>12 fatias</div><div class="sabor-name">2 Sabores</div><div class="price-value">R$ 75,90</div></div>
+      <div class="price-card"><div class="size-badge">Grande<br>12 fatias</div><div class="sabor-name">3 Sabores</div><div class="price-value">R$ 75,90</div></div>
+    </div>
+  </div>
+
+  <div class="overlay-tabs">
+    <button class="overlay-tab active" onclick="showFlavorTab(this,'fl-salgadas')">🧄 Salgadas</button>
+    <button class="overlay-tab" onclick="showFlavorTab(this,'fl-doces')">🍫 Doces</button>
+  </div>
+
+  <div class="overlay-scroll">
+
+    <!-- Salgadas -->
+    <div id="fl-salgadas" class="flavor-panel active">
+      <div class="flavors-grid">
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Alho e Óleo</div><div class="flavor-desc">Molho de alho e azeite, mussarela e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Bacon</div><div class="flavor-desc">Bacon, molho de tomate, mussarela e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Bacon com Milho</div><div class="flavor-desc">Mussarela, bacon, milho, molho artesanal e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Brócolis com Bacon</div><div class="flavor-desc">Bacon, brócolis, mussarela, catupiry, molho de tomate e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#3a1a00"><div class="flavor-info"><div class="flavor-name">⭐ Calabresa</div><div class="flavor-desc">Calabresa, molho de tomate, mussarela e orégano — a mais pedida!</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Costela</div><div class="flavor-desc">Costela bovina desfiada, mussarela, molho de tomate, pimentão, catupiry, tomate e cebola</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Costela Premium</div><div class="flavor-desc">Queijo, molho agridoce, costela defumada, cebola, pimentão, tomate e catupiry</div></div><div class="flavor-price special">R$ 69,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">👨‍🍳 Figo com Copa</div><div class="flavor-desc">Figo, copa, mussarela e molho de tomate — Sugestão do Chef</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Filé com Fritas</div><div class="flavor-desc">Iscas de filé de gado, fritas, mussarela e molho da casa</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Frango com Catupiry</div><div class="flavor-desc">Frango desfiado, catupiry, mussarela e molho de tomate</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Lombo com Abacaxi</div><div class="flavor-desc">Molho de tomate, mussarela, lombo canadense, pedaços de abacaxi e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Lombo com Catupiry</div><div class="flavor-desc">Lombo canadense, catupiry, molho de tomate, mussarela e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Marguerita</div><div class="flavor-desc">Molho de tomate, mussarela, tomate, orégano e manjericão</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Mexicana</div><div class="flavor-desc">Doritos, ragú à bolonhesa, mussarela, molho de tomate, pimenta calabresa e cheddar</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Milho</div><div class="flavor-desc">Milho, mussarela, molho de tomate e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Pepperoni</div><div class="flavor-desc">Pepperoni, mussarela, molho caseiro e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Pizza Camarão</div><div class="flavor-desc">Camarão médio, molho de tomate, mussarela, raspas de limão siciliano, alho e pimentão</div></div><div class="flavor-price special">R$ 76,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Portuguesa</div><div class="flavor-desc">Massa caseira, molho de tomate fresco, mussarela, ovo, presunto e azeitona</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Quatro Queijos</div><div class="flavor-desc">Mussarela, provolone, parmesão, catupiry, molho de tomate e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Strogonoff de Gado</div><div class="flavor-desc">Strogonoff de carne bovina, mussarela, molho de tomate, batata palha e orégano</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Tomate Seco com Rúcula</div><div class="flavor-desc">Massa caseira, molho de tomate fresco, mussarela, tomate seco e rúcula</div></div><div class="flavor-price">R$ 64,90</div></div>
+      </div>
+    </div>
+
+    <!-- Doces -->
+    <div id="fl-doces" class="flavor-panel">
+      <div class="flavors-grid">
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Banana Fantástica</div><div class="flavor-desc">Creme de leite, mussarela, canela, banana e chocolate trento</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Chocolate Branco com Limão</div><div class="flavor-desc">Queijo, chocolate branco ralado e raspas de limão</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Confete</div><div class="flavor-desc">Chocolate ralado, confete, mussarela e leite condensado</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Dois Amores</div><div class="flavor-desc">Creme de leite, chocolate ao leite, chocolate branco e morango</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Duas Sensações</div><div class="flavor-desc">Chocolate branco, chocolate preto, morango, creme de leite, mussarela e leite condensado</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Guirlanda Pringles</div><div class="flavor-desc">Frango cremoso, bacon, mussarela, catupiry, cebola, tomate, pimentão e Pringles</div></div><div class="flavor-price special">R$ 104,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Marshmallow</div><div class="flavor-desc">Queijo, chocolate ao leite ralado e marshmallow</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Ouro Branco</div><div class="flavor-desc">Ouro branco, chocolate preto e creme de leite</div></div><div class="flavor-price special">R$ 69,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Paçoca</div><div class="flavor-desc">Queijo, paçoca e creme de leite</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Prestígio</div><div class="flavor-desc">Ganache, coco ralado e leite condensado</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Sensação Branca</div><div class="flavor-desc">Mussarela, chocolate branco ralado, morango e leite condensado</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Sensação Preta</div><div class="flavor-desc">Mussarela, chocolate ao leite ralado, morango e leite condensado</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Sonho Meu</div><div class="flavor-desc">Kinder Ovo, chocolate branco, chocolate preto, canudo de wafer, marshmallow e leite condensado</div></div><div class="flavor-price special">R$ 114,90</div></div>
+        <div class="flavor-card"><div class="flavor-info"><div class="flavor-name">Tropical</div><div class="flavor-desc">Creme de leite, banana, morango, abacaxi, ganache de chocolate e chocolate ao leite</div></div><div class="flavor-price">R$ 64,90</div></div>
+        <div class="flavor-card" style="border-color:#2a2000"><div class="flavor-info"><div class="flavor-name">Urbana</div><div class="flavor-desc">Mussarela, chocolate ralado branco e ao leite, baton branco e preto e morango</div></div><div class="flavor-price special">R$ 69,90</div></div>
+      </div>
+    </div>
+
+    <!-- Bordas -->
+    <div style="margin-top:24px">
+      <div class="borda-section">
+        <h3>🍕 Bordas Recheadas — opcional</h3>
+        <div class="borda-chips">
+          <div class="borda-chip">Catupiry <span class="chip-price">+R$ 12,00</span></div>
+          <div class="borda-chip">Cheddar <span class="chip-price">+R$ 12,00</span></div>
+          <div class="borda-chip">Vulcão Cheddar &amp; Catupiry <span class="chip-price">+R$ 16,00</span></div>
+          <div class="borda-chip">Bacon com Cheddar <span class="chip-price">+R$ 15,00</span></div>
+          <div class="borda-chip">Calabresa com Catupiry <span class="chip-price">+R$ 15,00</span></div>
+          <div class="borda-chip">Calabresa com Cheddar <span class="chip-price">+R$ 15,00</span></div>
+          <div class="borda-chip">Chocolate Branco <span class="chip-price">+R$ 15,00</span></div>
+          <div class="borda-chip">Chocolate Preto <span class="chip-price">+R$ 15,00</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getDatabase, ref, push, set, remove, onValue, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAE2ad8r6Ox6fsgkVQwLdVdvk15nKCqZ8U",
+  authDomain: "thann-bier-cardapio.firebaseapp.com",
+  databaseURL: "https://thann-bier-cardapio-default-rtdb.firebaseio.com",
+  projectId: "thann-bier-cardapio",
+  storageBucket: "thann-bier-cardapio.firebasestorage.app",
+  messagingSenderId: "784931366480",
+  appId: "1:784931366480:web:c8fc63920e27653edf9355",
+};
+
+let db = null;
+let activeChamadaKey = null;
+let activeChamadaUnsub = null;
+
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+} catch(e) { console.warn('Firebase não configurado:', e.message); }
+
+// ── Listener estoque ──
+window._dadosEstoque = {};
+window._fbSetEstoque = async function(itemKey, esgotado) {
+  if (!db) return;
+  try {
+    if (esgotado) {
+      await set(ref(db, 'estoque/' + itemKey), { esgotado: true });
+    } else {
+      await remove(ref(db, 'estoque/' + itemKey));
+    }
+  } catch(e) { console.warn('Estoque error:', e); }
+};
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'estoque'), (snap) => {
+    window._dadosEstoque = snap.val() || {};
+    if (typeof window._renderEstoque === 'function') window._renderEstoque();
+    if (typeof window._aplicarEsgotado === 'function') window._aplicarEsgotado();
+  });
+}
+
+// ── Listener produtos ──
+window._dadosProdutos = {};
+window._fbAddProduto = async function(dados) {
+  if (!db) return;
+  try { await push(ref(db, 'produtos'), dados); } catch(e) { console.warn('Produto error:', e); }
+};
+window._fbDelProduto = async function(key) {
+  if (!db) return;
+  try { await remove(ref(db, 'produtos/' + key)); } catch(e) { console.warn('Del produto error:', e); }
+};
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'produtos'), (snap) => {
+    window._dadosProdutos = snap.val() || {};
+    if (typeof window._renderProdutosAdicionados === 'function') window._renderProdutosAdicionados();
+    if (typeof window._renderProdutosNoCardapio === 'function') window._renderProdutosNoCardapio();
+  });
+}
+
+window._fbPush = async function(mesaNum) {
+  if (!db) return;
+  try {
+    // Cancela listener anterior se houver
+    if (activeChamadaUnsub) { activeChamadaUnsub(); activeChamadaUnsub = null; }
+
+    const newRef = await push(ref(db, 'chamadas'), {
+      mesa: mesaNum,
+      hora: serverTimestamp(),
+      status: 'aguardando'
+    });
+    activeChamadaKey = newRef.key;
+
+    // Ouve mudanças nessa chamada específica
+    activeChamadaUnsub = onValue(ref(db, 'chamadas/' + activeChamadaKey), (snap) => {
+      const data = snap.val();
+      if (!data) return;
+      if (data.status === 'atendida') {
+        window._garcomConfirmou();
+      }
+    });
+  } catch(e) { console.warn('Firebase push error:', e); }
+};
+
+window._garcomConfirmou = function() {
+  if (activeChamadaUnsub) { activeChamadaUnsub(); activeChamadaUnsub = null; }
+  activeChamadaKey = null;
+  document.getElementById('garcom-confirmado-modal').classList.add('open');
+  const notif = document.getElementById('garcom-notif');
+  notif.classList.add('confirmado');
+  document.getElementById('garcom-notif-icon').textContent = '✅';
+  document.getElementById('garcom-notif-text').textContent = 'Garçom viu seu chamado e está a caminho!';
+};
+
+// Push de PEDIDO completo
+window._fbPushPedido = async function(mesaNum, itens, total) {
+  if (!db) return;
+  try {
+    const itensSer = itens.map(i => ({
+      nome: i.nome,
+      detalhe: i.detalhe || '',
+      preco: i.preco,
+      qty: i.qty
+    }));
+    await push(ref(db, 'pedidos'), {
+      mesa: mesaNum,
+      hora: serverTimestamp(),
+      status: 'aguardando',
+      total: total,
+      itens: itensSer
+    });
+  } catch(e) { console.warn('Firebase pedido error:', e); }
+};
+</script>
+
+<script>
+// ═══════════════════════════════════════════
+//  GASTRO BACKGROUND ANIMATION
+// ═══════════════════════════════════════════
+(function() {
+  const emojis = ['🍕','🍺','🍔','🥩','🍹','🧅','🥓','🍟','🍻','🌽','🥃','🍷','🥂','🌿',
+                  '🧀','🍖','🫙','🫗','🍋','🥗','🫕','🥘','🍳','🫀'];
+  const container = document.getElementById('gastro-bg');
+  const count = 22;
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'gastro-item';
+    el.textContent = emojis[i % emojis.length];
+    const left = Math.random() * 96;
+    const dur  = 14 + Math.random() * 18;
+    const delay= -(Math.random() * dur);
+    const size = 22 + Math.random() * 20;
+    el.style.cssText = 'left:'+left+'%;font-size:'+size+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s';
+    container.appendChild(el);
+  }
+})();
+
+// ═══════════════════════════════════════════
+//  CONFIG / LOGIN
+// ═══════════════════════════════════════════
+const USUARIOS = {
+  'vitor': '2518',
+  'cris':  '104'
+};
+
+let configUser = null;
+
+function abrirConfig() {
+  document.getElementById('config-overlay').classList.add('open');
+  // Se já logado, vai direto pro painel
+  if (configUser) {
+    mostrarPainel(configUser);
+  } else {
+    document.getElementById('config-login-panel').style.display = 'block';
+    document.getElementById('config-painel').classList.remove('open');
+    document.getElementById('cfg-user').value = '';
+    document.getElementById('cfg-pass').value = '';
+    document.getElementById('cfg-error').classList.remove('show');
+    setTimeout(() => document.getElementById('cfg-user').focus(), 150);
+  }
+}
+
+function fecharConfig() {
+  document.getElementById('config-overlay').classList.remove('open');
+}
+
+function fazerLogin() {
+  const user = document.getElementById('cfg-user').value.trim().toLowerCase();
+  const pass = document.getElementById('cfg-pass').value.trim();
+  if (USUARIOS[user] && USUARIOS[user] === pass) {
+    configUser = user;
+    document.getElementById('cfg-error').classList.remove('show');
+    mostrarPainel(user);
+  } else {
+    document.getElementById('cfg-error').classList.add('show');
+    document.getElementById('cfg-pass').value = '';
+    document.getElementById('cfg-pass').focus();
+  }
+}
+
+function mostrarPainel(user) {
+  document.getElementById('config-login-panel').style.display = 'none';
+  document.getElementById('config-painel').classList.add('open');
+  const nome = user.charAt(0).toUpperCase() + user.slice(1);
+  document.getElementById('cfg-username-display').textContent = nome;
+  document.getElementById('cfg-avatar').textContent = nome.charAt(0);
+  // Preencher mesa atual
+  document.getElementById('cfg-mesa-val').value = mesaNumero || '';
+}
+
+function salvarMesaConfig() {
+  const val = document.getElementById('cfg-mesa-val').value.trim();
+  if (!val || isNaN(val) || +val < 1) { alert('Digite um número de mesa válido.'); return; }
+  mesaNumero = val;
+  localStorage.setItem('thann_mesa', val);
+  atualizarDisplayMesa();
+  fecharConfig();
+}
+
+function fazerLogout() {
+  configUser = null;
+  fecharConfig();
+}
+
+// ═══════════════════════════════════════════
+//  MESA CONFIG
+// ═══════════════════════════════════════════
+let mesaNumero = localStorage.getItem('thann_mesa') || '';
+
+function atualizarDisplayMesa() {
+  document.getElementById('mesa-num-display').textContent = mesaNumero || '—';
+}
+
+function abrirMesaModal() {
+  // Mesa só pode ser alterada por admin — abre config com login
+  abrirConfig();
+}
+
+function salvarMesa() {
+  const val = document.getElementById('mesa-input').value.trim();
+  if (!val || isNaN(val) || +val < 1) { alert('Digite um número de mesa válido.'); return; }
+  mesaNumero = val;
+  localStorage.setItem('thann_mesa', val);
+  atualizarDisplayMesa();
+  document.getElementById('mesa-modal').classList.remove('open');
+}
+
+// fechar modal ao clicar fora
+document.getElementById('mesa-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+atualizarDisplayMesa();
+
+// ═══════════════════════════════════════════
+//  CHAMAR GARÇOM
+// ═══════════════════════════════════════════
+let garcomTimer = null;
+
+function chamarGarcom() {
+  if (!mesaNumero) {
+    abrirMesaModal();
+    return;
+  }
+
+  const btn   = document.getElementById('garcom-btn');
+  const title = document.getElementById('garcom-title');
+  const sub   = document.getElementById('garcom-sub');
+  const notif = document.getElementById('garcom-notif');
+
+  btn.classList.add('active');
+  title.textContent = 'Garçom chamado!';
+  title.classList.add('called');
+  sub.textContent = 'Mesa ' + mesaNumero + ' · Aguarde...';
+
+  // Reset banner para estado "aguardando"
+  notif.classList.remove('confirmado');
+  document.getElementById('garcom-notif-icon').textContent = '🔔';
+  document.getElementById('garcom-notif-text').textContent = 'Mesa ' + mesaNumero + ' — Garçom chamado! Aguarde um momento...';
+  notif.classList.add('visible');
+
+  // Fechar modal se estava aberto
+  document.getElementById('garcom-confirmado-modal').classList.remove('open');
+
+  // Envia pro Firebase se disponível
+  if (window._fbPush) window._fbPush(mesaNumero);
+
+  if (garcomTimer) clearTimeout(garcomTimer);
+  garcomTimer = setTimeout(dismissGarcom, 120000); // 2 min timeout
+}
+
+function dismissGarcom() {
+  const btn   = document.getElementById('garcom-btn');
+  const title = document.getElementById('garcom-title');
+  const sub   = document.getElementById('garcom-sub');
+  const notif = document.getElementById('garcom-notif');
+
+  btn.classList.remove('active');
+  title.textContent = 'Chamar Garçom';
+  title.classList.remove('called');
+  sub.textContent = 'Toque para chamar';
+  notif.classList.remove('visible');
+  notif.classList.remove('confirmado');
+
+  if (garcomTimer) { clearTimeout(garcomTimer); garcomTimer = null; }
+}
+
+function chamarNovamente() {
+  document.getElementById('garcom-confirmado-modal').classList.remove('open');
+  // Pequeno delay para o modal fechar antes de chamar
+  setTimeout(() => chamarGarcom(), 200);
+}
+
+function fecharConfirmado() {
+  document.getElementById('garcom-confirmado-modal').classList.remove('open');
+  dismissGarcom();
+}
+
+// ═══════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════
+function showSection(btn, id) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+//  PIZZA OVERLAY
+// ═══════════════════════════════════════════
+function openOverlay(size) {
+  const titles = { media: 'Pizza Média', grande: 'Pizza Grande' };
+  const subs   = { media: '8 fatias · até 2 sabores', grande: '12 fatias · até 3 sabores' };
+  document.getElementById('overlay-title').textContent = titles[size];
+  document.getElementById('overlay-subtitle').textContent = subs[size];
+  document.getElementById('pizza-overlay').classList.add('open');
+}
+
+function closeOverlay() {
+  document.getElementById('pizza-overlay').classList.remove('open');
+}
+
+function showFlavorTab(btn, id) {
+  document.querySelectorAll('.overlay-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.flavor-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─ DRINKS TABS ─
+function showDrinkTab(btn, id) {
+  document.querySelectorAll('.drink-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.drink-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ─ CLOCK ─
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = h + ':' + m;
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('date-display').textContent =
+    days[now.getDay()] + ' ' + now.getDate() + ' ' + months[now.getMonth()];
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ─ KIOSK ─
+document.body.addEventListener('click', function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+}, { once: true });
+
+document.addEventListener('keydown', function(e) {
+  const blocked = ['F5','F12','F11'];
+  if (blocked.includes(e.key)) { e.preventDefault(); return; }
+  if (e.ctrlKey && ['r','R','w','W','t','T','l','L','u','U'].includes(e.key)) { e.preventDefault(); return; }
+  if (e.altKey && e.key === 'F4') { e.preventDefault(); return; }
+});
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// ═══════════════════════════════════════════════════════
+//  SISTEMA DE PEDIDOS
+// ═══════════════════════════════════════════════════════
+
+let carrinho = []; // [{id, nome, detalhe, preco, qty}]
+let itemModalData = {};
+let pizzaPedidoData = {
+  tamanho: null,   // 'media' | 'grande'
+  tipoAtual: 'salgadas',
+  saboresSelecionados: [], // [{nome, preco, extra}]
+  bordaSelecionada: null,
+  qty: 1
+};
+
+// ── Preços base das pizzas ──
+const PIZZA_BASE = {
+  media:  { base: 64.90, max: 2, label: 'Média' },
+  grande: { base: 75.90, max: 3, label: 'Grande' }
+};
+
+// Sabores com preço extra relativo à base
+const SABORES_SALGADOS = [
+  { nome: 'Alho e Óleo',         desc: 'Molho de alho e azeite, mussarela e orégano',                                         extra: 0 },
+  { nome: 'Bacon',               desc: 'Bacon, molho de tomate, mussarela e orégano',                                          extra: 0 },
+  { nome: 'Bacon com Milho',     desc: 'Mussarela, bacon, milho, molho artesanal e orégano',                                   extra: 0 },
+  { nome: 'Brócolis com Bacon',  desc: 'Bacon, brócolis, mussarela, catupiry, molho de tomate e orégano',                      extra: 0 },
+  { nome: '⭐ Calabresa',        desc: 'Calabresa, molho de tomate, mussarela e orégano — a mais pedida!',                     extra: 0 },
+  { nome: 'Costela',             desc: 'Costela bovina desfiada, mussarela, molho de tomate, pimentão, catupiry, tomate e cebola', extra: 0 },
+  { nome: 'Costela Premium',     desc: 'Queijo, molho agridoce, costela defumada, cebola, pimentão, tomate e catupiry',        extra: 5 },
+  { nome: '👨‍🍳 Figo com Copa',  desc: 'Figo, copa, mussarela e molho de tomate — Sugestão do Chef',                          extra: 0 },
+  { nome: 'Filé com Fritas',     desc: 'Iscas de filé de gado, fritas, mussarela e molho da casa',                             extra: 0 },
+  { nome: 'Frango com Catupiry', desc: 'Frango desfiado, catupiry, mussarela e molho de tomate',                               extra: 0 },
+  { nome: 'Lombo com Abacaxi',   desc: 'Molho de tomate, mussarela, lombo canadense, pedaços de abacaxi e orégano',            extra: 0 },
+  { nome: 'Lombo com Catupiry',  desc: 'Lombo canadense, catupiry, molho de tomate, mussarela e orégano',                     extra: 0 },
+  { nome: 'Marguerita',          desc: 'Molho de tomate, mussarela, tomate, orégano e manjericão',                             extra: 0 },
+  { nome: 'Mexicana',            desc: 'Doritos, ragú à bolonhesa, mussarela, molho de tomate, pimenta calabresa e cheddar',   extra: 0 },
+  { nome: 'Milho',               desc: 'Milho, mussarela, molho de tomate e orégano',                                          extra: 0 },
+  { nome: 'Pepperoni',           desc: 'Pepperoni, mussarela, molho caseiro e orégano',                                        extra: 0 },
+  { nome: 'Pizza Camarão',       desc: 'Camarão médio, molho de tomate, mussarela, raspas de limão siciliano, alho e pimentão', extra: 12 },
+  { nome: 'Portuguesa',          desc: 'Massa caseira, molho de tomate fresco, mussarela, ovo, presunto e azeitona',           extra: 0 },
+  { nome: 'Quatro Queijos',      desc: 'Mussarela, provolone, parmesão, catupiry, molho de tomate e orégano',                  extra: 0 },
+  { nome: 'Strogonoff de Gado',  desc: 'Strogonoff de carne bovina, mussarela, molho de tomate, batata palha e orégano',       extra: 0 },
+  { nome: 'Tomate Seco com Rúcula', desc: 'Massa caseira, molho de tomate fresco, mussarela, tomate seco e rúcula',           extra: 0 },
+];
+const SABORES_DOCES = [
+  { nome: 'Banana Fantástica',          desc: 'Creme de leite, mussarela, canela, banana e chocolate trento',                                 extra: 0 },
+  { nome: 'Chocolate Branco com Limão', desc: 'Queijo, chocolate branco ralado e raspas de limão',                                            extra: 0 },
+  { nome: 'Confete',                    desc: 'Chocolate ralado, confete, mussarela e leite condensado',                                      extra: 0 },
+  { nome: 'Dois Amores',                desc: 'Creme de leite, chocolate ao leite, chocolate branco e morango',                               extra: 0 },
+  { nome: 'Duas Sensações',             desc: 'Chocolate branco, chocolate preto, morango, creme de leite, mussarela e leite condensado',     extra: 0 },
+  { nome: 'Guirlanda Pringles',         desc: 'Frango cremoso, bacon, mussarela, catupiry, cebola, tomate, pimentão e Pringles',              extra: 40 },
+  { nome: 'Marshmallow',                desc: 'Queijo, chocolate ao leite ralado e marshmallow',                                              extra: 0 },
+  { nome: 'Ouro Branco',               desc: 'Ouro branco, chocolate preto e creme de leite',                                                extra: 5 },
+  { nome: 'Paçoca',                     desc: 'Queijo, paçoca e creme de leite',                                                              extra: 0 },
+  { nome: 'Prestígio',                  desc: 'Ganache, coco ralado e leite condensado',                                                      extra: 0 },
+  { nome: 'Sensação Branca',            desc: 'Mussarela, chocolate branco ralado, morango e leite condensado',                               extra: 0 },
+  { nome: 'Sensação Preta',             desc: 'Mussarela, chocolate ao leite ralado, morango e leite condensado',                             extra: 0 },
+  { nome: 'Sonho Meu',                  desc: 'Kinder Ovo, chocolate branco, chocolate preto, canudo de wafer, marshmallow e leite condensado', extra: 50 },
+  { nome: 'Tropical',                   desc: 'Creme de leite, banana, morango, abacaxi, ganache de chocolate e chocolate ao leite',          extra: 0 },
+  { nome: 'Urbana',                     desc: 'Mussarela, chocolate ralado branco e ao leite, baton branco e preto e morango',                extra: 5 },
+];
+const BORDAS = [
+  { nome: 'Catupiry',               preco: 12 },
+  { nome: 'Cheddar',                preco: 12 },
+  { nome: 'Vulcão Cheddar & Catupiry', preco: 16 },
+  { nome: 'Bacon com Cheddar',      preco: 15 },
+  { nome: 'Calabresa com Catupiry', preco: 15 },
+  { nome: 'Calabresa com Cheddar',  preco: 15 },
+  { nome: 'Chocolate Branco',       preco: 15 },
+  { nome: 'Chocolate Preto',        preco: 15 },
+];
+
+// ──────────────────────────────────────────
+//  CARRINHO — helpers
+// ──────────────────────────────────────────
+function carrinhoTotal() {
+  return carrinho.reduce((s, i) => s + i.preco * i.qty, 0);
+}
+function formatBRL(v) {
+  return 'R$ ' + v.toFixed(2).replace('.', ',');
+}
+function atualizarFAB() {
+  const total = carrinho.reduce((s, i) => s + i.qty, 0);
+  const fab = document.getElementById('cart-fab');
+  document.getElementById('cart-count').textContent = total;
+  if (total > 0) fab.classList.add('visible');
+  else fab.classList.remove('visible');
+}
+function renderCarrinho() {
+  const list = document.getElementById('cart-items-list');
+  list.innerHTML = '';
+  if (carrinho.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:#555;padding:30px 0;font-size:13px">Nenhum item adicionado ainda.</div>';
+  }
+  carrinho.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'cart-item';
+    el.innerHTML = '<div class="cart-item-qty">'+item.qty+'x</div>'
+      + '<div class="cart-item-info"><div class="cart-item-name">'+item.nome+'</div>'
+      + (item.detalhe ? '<div class="cart-item-detail">'+item.detalhe+'</div>' : '')
+      + '</div><div class="cart-item-price">'+formatBRL(item.preco*item.qty)+'</div>'
+      + '<button class="cart-item-remove" onclick="removerItem('+idx+')">✕</button>';
+
+
+
+
+    list.appendChild(el);
+  });
+  document.getElementById('cart-total-val').textContent = formatBRL(carrinhoTotal());
+  atualizarFAB();
+}
+function adicionarAoCarrinho(item) {
+  // Agrupa itens iguais (mesmo nome + detalhe)
+  const existing = carrinho.find(i => i.nome === item.nome && i.detalhe === item.detalhe);
+  if (existing) existing.qty += item.qty;
+  else carrinho.push({ ...item });
+  atualizarFAB();
+}
+function removerItem(idx) {
+  carrinho.splice(idx, 1);
+  renderCarrinho();
+}
+function limparCarrinho() {
+  if (!confirm('Limpar todos os itens?')) return;
+  carrinho = [];
+  renderCarrinho();
+  fecharCarrinho();
+}
+function abrirCarrinho() {
+  renderCarrinho();
+  document.getElementById('cart-drawer').classList.add('open');
+}
+function fecharCarrinho() {
+  document.getElementById('cart-drawer').classList.remove('open');
+}
+
+// ──────────────────────────────────────────
+//  MODAL ITEM GENÉRICO (hamburger, bebidas, porções)
+// ──────────────────────────────────────────
+let _imCurrentItem = null;
+
+function abrirItemModal(nome, desc, preco, extras) {
+  // extras: [{label, opcoes: [{txt, preco_extra}]}]
+  _imCurrentItem = { nome, desc, preco, extras: extras || [] };
+  document.getElementById('im-title').textContent = nome;
+  document.getElementById('im-desc').textContent = desc || '';
+  document.getElementById('im-qty').textContent = '1';
+
+  const extrasEl = document.getElementById('im-extras');
+  extrasEl.innerHTML = '';
+  (extras || []).forEach(grupo => {
+    const lbl = document.createElement('div');
+    lbl.className = 'item-opts-label';
+    lbl.textContent = grupo.label;
+    extrasEl.appendChild(lbl);
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'item-opts';
+    optsDiv.dataset.grupoId = grupo.id;
+    grupo.opcoes.forEach(op => {
+      const btn = document.createElement('button');
+      btn.className = 'item-opt';
+      btn.textContent = op.txt + (op.preco_extra ? ' (+R$ ' + op.preco_extra.toFixed(2).replace('.', ',') + ')' : '');
+      btn.dataset.precoExtra = op.preco_extra || 0;
+      btn.onclick = function() {
+        // Desseleciona outros do mesmo grupo
+        optsDiv.querySelectorAll('.item-opt').forEach(b => b.classList.remove('selected', 'selected-green'));
+        btn.classList.add('selected');
+        atualizarPrecoModal();
+      };
+      if (grupo.required && grupo.opcoes.indexOf(op) === 0) {
+        btn.classList.add('selected');
+      }
+      optsDiv.appendChild(btn);
+    });
+    extrasEl.appendChild(optsDiv);
+  });
+
+  atualizarPrecoModal();
+  document.getElementById('item-modal').classList.add('open');
+}
+
+function atualizarPrecoModal() {
+  if (!_imCurrentItem) return;
+  const qty = parseInt(document.getElementById('im-qty').textContent) || 1;
+  let extra = 0;
+  document.querySelectorAll('#im-extras .item-opt.selected').forEach(btn => {
+    extra += parseFloat(btn.dataset.precoExtra) || 0;
+  });
+  const total = (_imCurrentItem.preco + extra) * qty;
+  document.getElementById('im-add-price').textContent = formatBRL(total);
+  // Guardar preco + extra no data atual
+  _imCurrentItem._precoComExtra = _imCurrentItem.preco + extra;
+}
+
+function itemQty(delta) {
+  const el = document.getElementById('im-qty');
+  let v = parseInt(el.textContent) + delta;
+  if (v < 1) v = 1;
+  el.textContent = v;
+  atualizarPrecoModal();
+}
+
+function fecharItemModal() {
+  document.getElementById('item-modal').classList.remove('open');
+  _imCurrentItem = null;
+}
+
+function confirmarItem() {
+  if (!_imCurrentItem) return;
+  const qty = parseInt(document.getElementById('im-qty').textContent) || 1;
+
+  // Coletar opções selecionadas para o detalhe
+  let detalhes = [];
+  document.querySelectorAll('#im-extras .item-opts').forEach(grupo => {
+    const sel = grupo.querySelector('.item-opt.selected');
+    if (sel) {
+      // Pegar apenas o texto sem o preço entre parênteses
+      detalhes.push(sel.textContent.replace(/\s*\(.*\)/, '').trim());
+    }
+  });
+
+  adicionarAoCarrinho({
+    nome: _imCurrentItem.nome,
+    detalhe: detalhes.join(' · ') || '',
+    preco: _imCurrentItem._precoComExtra || _imCurrentItem.preco,
+    qty
+  });
+
+  fecharItemModal();
+  // Mostrar feedback rápido
+  const fab = document.getElementById('cart-fab');
+  fab.style.transform = 'scale(1.15)';
+  setTimeout(() => fab.style.transform = '', 200);
+}
+
+// ──────────────────────────────────────────
+//  MODAL PIZZA PEDIDO
+// ──────────────────────────────────────────
+function abrirPizzaPedido(tamanho) {
+  pizzaPedidoData.tamanho = tamanho;
+  pizzaPedidoData.saboresSelecionados = [];
+  pizzaPedidoData.bordaSelecionada = null;
+  pizzaPedidoData.qty = 1;
+  pizzaPedidoData.tipoAtual = 'salgadas';
+
+  document.getElementById('pp-title').textContent = 'Pizza ' + PIZZA_BASE[tamanho].label;
+  document.getElementById('pp-qty').textContent = '1';
+  document.getElementById('pp-tab-sal').classList.add('active');
+  document.getElementById('pp-tab-doc').classList.remove('active');
+
+  renderPPSabores();
+  renderPPBordas();
+  calcularPizzaTotal();
+
+  document.getElementById('pizza-pedido-modal').classList.add('open');
+}
+
+function fecharPizzaPedido() {
+  document.getElementById('pizza-pedido-modal').classList.remove('open');
+}
+
+function showPPTab(tipo) {
+  pizzaPedidoData.tipoAtual = tipo;
+  document.getElementById('pp-tab-sal').classList.toggle('active', tipo === 'salgadas');
+  document.getElementById('pp-tab-doc').classList.toggle('active', tipo === 'doces');
+  renderPPSabores();
+}
+
+function renderPPSabores() {
+  const tamanho = pizzaPedidoData.tamanho;
+  const config = PIZZA_BASE[tamanho];
+  const lista = pizzaPedidoData.tipoAtual === 'salgadas' ? SABORES_SALGADOS : SABORES_DOCES;
+  // Doces: max 2 sabores
+  const maxSabores = pizzaPedidoData.tipoAtual === 'doces' ? 2 : config.max;
+  const scroll = document.getElementById('pp-scroll');
+  scroll.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">Escolha até ' + maxSabores + ' sabor' + (maxSabores > 1 ? 'es' : '') + '</div>';
+
+  lista.forEach(s => {
+    const isSelected = pizzaPedidoData.saboresSelecionados.some(x => x.nome === s.nome);
+    const div = document.createElement('div');
+    div.className = 'flavor-selectable' + (isSelected ? ' selected' : '');
+    div.innerHTML = '<div class="fs-check">'+(isSelected?'✓':'')+'</div>'
+      + '<div class="fs-info"><div class="fs-name">'+s.nome+'</div><div class="fs-desc">'+s.desc+'</div></div>'
+      + (s.extra>0?'<div class="fs-extra">+R$ '+s.extra.toFixed(2).replace('.',',')+'</div>':'<div class="fs-price">'+formatBRL(config.base+s.extra)+'</div>');
+
+
+
+
+
+    div.onclick = () => toggleSabor(s, maxSabores);
+    scroll.appendChild(div);
+  });
+}
+
+function toggleSabor(sabor, maxSabores) {
+  const idx = pizzaPedidoData.saboresSelecionados.findIndex(x => x.nome === sabor.nome);
+  if (idx >= 0) {
+    pizzaPedidoData.saboresSelecionados.splice(idx, 1);
+  } else {
+    if (pizzaPedidoData.saboresSelecionados.length >= maxSabores) {
+      // Remove o primeiro para substituir
+      pizzaPedidoData.saboresSelecionados.shift();
+    }
+    pizzaPedidoData.saboresSelecionados.push(sabor);
+  }
+  renderPPSabores();
+  calcularPizzaTotal();
+}
+
+function renderPPBordas() {
+  const sel = document.getElementById('pp-borda-sel');
+  sel.innerHTML = '';
+  BORDAS.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'borda-opt' + (pizzaPedidoData.bordaSelecionada === b.nome ? ' selected' : '');
+    btn.textContent = b.nome + ' +R$ ' + b.preco.toFixed(2).replace('.', ',');
+    btn.onclick = () => {
+      pizzaPedidoData.bordaSelecionada = (pizzaPedidoData.bordaSelecionada === b.nome) ? null : b.nome;
+      renderPPBordas();
+      calcularPizzaTotal();
+    };
+    sel.appendChild(btn);
+  });
+}
+
+function calcularPizzaTotal() {
+  const tamanho = pizzaPedidoData.tamanho;
+  const config = PIZZA_BASE[tamanho];
+  const sabores = pizzaPedidoData.saboresSelecionados;
+  const qty = parseInt(document.getElementById('pp-qty').textContent) || 1;
+
+  let precoBase = config.base;
+  // Adicional = extra do sabor mais caro
+  if (sabores.length > 0) {
+    const maxExtra = Math.max(...sabores.map(s => s.extra || 0));
+    precoBase += maxExtra;
+  }
+  // Borda
+  if (pizzaPedidoData.bordaSelecionada) {
+    const borda = BORDAS.find(b => b.nome === pizzaPedidoData.bordaSelecionada);
+    if (borda) precoBase += borda.preco;
+  }
+
+  const total = precoBase * qty;
+
+  // Atualizar UI
+  const nSab = sabores.length;
+  const maxSab = pizzaPedidoData.tipoAtual === 'doces' ? 2 : config.max;
+  document.getElementById('pp-sabores-info').textContent = nSab === 0
+    ? 'Nenhum sabor selecionado'
+    : sabores.map(s => s.nome.replace(/[⭐👨‍🍳]/g, '').trim()).join(' + ');
+  document.getElementById('pp-total').textContent = formatBRL(total);
+  document.getElementById('pp-add-price').textContent = formatBRL(total);
+
+  // Habilita botão se pelo menos 1 sabor
+  const addBtn = document.getElementById('pp-add-btn');
+  if (nSab > 0) {
+    addBtn.style.opacity = '1';
+    addBtn.style.pointerEvents = 'auto';
+  } else {
+    addBtn.style.opacity = '0.5';
+    addBtn.style.pointerEvents = 'none';
+  }
+
+  pizzaPedidoData._precoUnitario = precoBase;
+}
+
+function ppQty(delta) {
+  const el = document.getElementById('pp-qty');
+  let v = parseInt(el.textContent) + delta;
+  if (v < 1) v = 1;
+  el.textContent = v;
+  calcularPizzaTotal();
+}
+
+function confirmarPizza() {
+  const sabores = pizzaPedidoData.saboresSelecionados;
+  if (sabores.length === 0) return;
+  const tamanho = pizzaPedidoData.tamanho;
+  const qty = parseInt(document.getElementById('pp-qty').textContent) || 1;
+
+  const nomeSabores = sabores.map(s => s.nome.replace(/[⭐👨‍🍳]/g, '').trim()).join(' + ');
+  let detalhe = 'Pizza ' + PIZZA_BASE[tamanho].label;
+  if (pizzaPedidoData.bordaSelecionada) detalhe += ' · Borda: ' + pizzaPedidoData.bordaSelecionada;
+
+  adicionarAoCarrinho({
+    nome: '🍕 ' + nomeSabores,
+    detalhe,
+    preco: pizzaPedidoData._precoUnitario,
+    qty
+  });
+
+  fecharPizzaPedido();
+  const fab = document.getElementById('cart-fab');
+  fab.style.transform = 'scale(1.15)';
+  setTimeout(() => fab.style.transform = '', 200);
+}
+
+// ──────────────────────────────────────────
+//  FINALIZAR PEDIDO → Firebase
+// ──────────────────────────────────────────
+async function finalizarPedido() {
+  if (!mesaNumero) { alert('Configure o número da mesa primeiro.'); abrirMesaModal(); return; }
+  if (carrinho.length === 0) { alert('Adicione itens ao pedido primeiro.'); return; }
+
+  const itensTxt = carrinho.map(i =>
+    i.qty+'x '+i.nome+(i.detalhe ? ' ('+i.detalhe+')' : '')+' — '+formatBRL(i.preco * i.qty)
+  ).join('\n');
+
+  fecharCarrinho();
+
+  // Enviar para Firebase
+  if (window._fbPushPedido) {
+    await window._fbPushPedido(mesaNumero, carrinho, carrinhoTotal());
+  }
+
+  // Mostrar modal de confirmação
+  document.getElementById('pe-mesa-num').textContent = mesaNumero;
+  document.getElementById('pe-items-list').innerHTML = itensTxt.split('\n').map(function(l){return '<div>'+l+'</div>';}).join('');
+  document.getElementById('pedido-enviado-modal').classList.add('open');
+
+  // Limpar carrinho
+  carrinho = [];
+  atualizarFAB();
+}
+
+function fecharPedidoEnviado() {
+  document.getElementById('pedido-enviado-modal').classList.remove('open');
+}
+
+// ──────────────────────────────────────────
+//  Expor ao módulo Firebase
+// ──────────────────────────────────────────
+// window._fbPushPedido será definido no módulo Firebase
+
+// ──────────────────────────────────────────
+//  HELPERS DE ABERTURA POR TIPO
+// ──────────────────────────────────────────
+function abrirBurger(nome, desc, preco) {
+  abrirItemModal(nome, desc, preco, [
+    {
+      id: 'ponto', label: '🥩 Ponto da carne', required: true,
+      opcoes: [
+        { txt: 'Ao ponto', preco_extra: 0 },
+        { txt: 'Mal passado', preco_extra: 0 },
+        { txt: 'Bem passado', preco_extra: 0 },
+      ]
+    }
+  ]);
+}
+
+function abrirBebida(nome, desc, preco) {
+  abrirItemModal(nome, desc, preco, [
+    {
+      id: 'extras', label: '🧊 Opcionais', required: false,
+      opcoes: [
+        { txt: 'Sem extras', preco_extra: 0 },
+        { txt: 'Com limão', preco_extra: 0 },
+        { txt: 'Com gelo', preco_extra: 0 },
+        { txt: 'Com limão e gelo', preco_extra: 0 },
+      ]
+    }
+  ]);
+}
+
+function abrirPorcao(nome, desc, preco) {
+  abrirItemModal(nome, desc, preco, []);
+}
+
+function abrirChope(nome, desc, preco, tamanho) {
+  abrirItemModal(nome + ' (' + tamanho + ')', desc, preco, []);
+}
+
+
+// ══════════════════════════════════════════════
+//  CONFIG TABS
+// ══════════════════════════════════════════════
+function mudarCfgTab(tab, el) {
+  document.querySelectorAll('.cfg-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cfg-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('cfg-panel-' + tab).classList.add('active');
+  if (tab === 'estoque') window._renderEstoque();
+  if (tab === 'produtos') window._renderProdutosAdicionados();
+}
+
+// ══════════════════════════════════════════════
+//  ESTOQUE
+// ══════════════════════════════════════════════
+
+// Lista completa de itens do cardápio (para o painel de estoque)
+const TODOS_ITENS = [
+  // Burgers
+  { key: 'burguer', nome: 'Burguer', cat: 'Burgers' },
+  { key: 'big-thann', nome: 'Big Thänn', cat: 'Burgers' },
+  { key: 'doble-smash', nome: 'Doble Smash', cat: 'Burgers' },
+  { key: 'hamburguer-salada', nome: 'Hambúrguer com Salada', cat: 'Burgers' },
+  { key: 'maracuja', nome: 'Maracujá', cat: 'Burgers' },
+  { key: 'abacaxi-lombo', nome: 'Abacaxi & Lombo Canadense', cat: 'Burgers' },
+  { key: 'figo-copa', nome: 'Figo & Copa Lombo', cat: 'Burgers' },
+  { key: 'bacon', nome: 'Bacon', cat: 'Burgers' },
+  { key: 'cebola-empanada', nome: 'Cebola Empanada', cat: 'Burgers' },
+  // Porções
+  { key: 'batata-frita', nome: 'Batata Frita', cat: 'Porções' },
+  { key: 'onion-rings', nome: 'Onion Rings', cat: 'Porções' },
+  { key: 'nuggets', nome: 'Nuggets', cat: 'Porções' },
+  // Bebidas
+  { key: 'coca-cola', nome: 'Coca-Cola', cat: 'Bebidas' },
+  { key: 'fanta', nome: 'Fanta', cat: 'Bebidas' },
+  { key: 'guarana', nome: 'Guaraná Antarctica', cat: 'Bebidas' },
+  { key: 'sprite', nome: 'Sprite', cat: 'Bebidas' },
+  { key: 'agua', nome: 'Água', cat: 'Bebidas' },
+  { key: 'suco-natural', nome: 'Suco Natural', cat: 'Bebidas' },
+];
+
+window._renderEstoque = function() {
+  const list = document.getElementById('estoque-list');
+  if (!list) return;
+  const dados = window._dadosEstoque || {};
+  list.innerHTML = TODOS_ITENS.map(item => {
+    const esg = !!(dados[item.key] && dados[item.key].esgotado);
+    return '<div class="estoque-item"><div><div class="estoque-item-nome">'+item.nome+'</div><div class="estoque-item-cat">'+item.cat+'</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
+  }).join('');
+
+  // Também renderizar produtos adicionados do Firebase
+  const prods = window._dadosProdutos || {};
+  Object.entries(prods).forEach(([key, p]) => {
+    const esg = !!(dados[key] && dados[key].esgotado);
+    list.innerHTML += '<div class="estoque-item"><div><div class="estoque-item-nome">'+p.nome+'</div><div class="estoque-item-cat">'+(p.aba||'Produto')+' · Adicionado</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
+  });
+};
+
+function toggleEstoque(key, esgotado) {
+  if (window._fbSetEstoque) window._fbSetEstoque(key, esgotado);
+  // Atualizar badge local imediatamente
+  window._dadosEstoque = window._dadosEstoque || {};
+  if (esgotado) window._dadosEstoque[key] = { esgotado: true };
+  else delete window._dadosEstoque[key];
+  window._aplicarEsgotado();
+}
+
+window._aplicarEsgotado = function() {
+  const dados = window._dadosEstoque || {};
+  // Aplica em btn-add-item com data-item-key
+  document.querySelectorAll('[data-item-key]').forEach(el => {
+    const key = el.getAttribute('data-item-key');
+    const esg = !!(dados[key] && dados[key].esgotado);
+    const card = el.closest('.food-card, .bebida-photo-card, .refri-card, .chope-card, .drink-card');
+    if (card) {
+      card.classList.toggle('item-esgotado', esg);
+      const badge = card.querySelector('.esgotado-badge');
+      if (esg && !badge) {
+        const b = document.createElement('div');
+        b.className = 'esgotado-badge';
+        b.textContent = 'Esgotado';
+        const wrap = card.querySelector('.food-img-wrap, .drink-img-wrap, .bebida-photo-img, .chope-img-wrap');
+        if (wrap) wrap.style.position = 'relative', wrap.appendChild(b);
+      } else if (!esg && badge) badge.remove();
+      const btn = card.querySelector('.btn-add-item');
+      if (btn) btn.disabled = esg;
+    }
+  });
+};
+
+// ══════════════════════════════════════════════
+//  PRODUTOS ADICIONADOS
+// ══════════════════════════════════════════════
+const ABA_EMOJIS = { burgers: '🍔', porcoes: '🍟', pizzas: '🍕', bebidas: '🍺' };
+
+window._renderProdutosAdicionados = function() {
+  const lista = document.getElementById('produtos-lista');
+  if (!lista) return;
+  const prods = window._dadosProdutos || {};
+  const keys = Object.keys(prods);
+  if (!keys.length) {
+    lista.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:10px">Nenhum produto adicionado ainda.</div>';
+    return;
+  }
+  lista.innerHTML = keys.map(key => {
+    const p = prods[key];
+    const emoji = ABA_EMOJIS[p.aba] || '🍽️';
+    const imgHtml = p.foto
+      ? '<img src="'+p.foto+'" style="width:36px;height:36px;border-radius:6px;object-fit:cover">'
+      : '<span style="font-size:20px">'+emoji+'</span>';
+    return '<div class="produto-adicionado-item"><div class="produto-adicionado-img">'+imgHtml+'</div><div class="produto-adicionado-info"><div class="produto-adicionado-nome">'+p.nome+'</div><div class="produto-adicionado-cat">'+emoji+' '+(p.aba||'')+' · R$ '+parseFloat(p.preco||0).toFixed(2)+'</div></div><button class="produto-adicionado-del" onclick="deletarProduto(\''+key+'\')">🗑️</button></div>';
+  }).join('');
+};
+
+function deletarProduto(key) {
+  if (!confirm('Remover este produto do cardápio?')) return;
+  if (window._fbDelProduto) window._fbDelProduto(key);
+}
+
+async function adicionarProduto() {
+  const nome = document.getElementById('pf-nome').value.trim();
+  const desc = document.getElementById('pf-desc').value.trim();
+  const preco = parseFloat(document.getElementById('pf-preco').value) || 0;
+  const aba = document.getElementById('pf-aba').value;
+  const fotoUrl = document.getElementById('pf-foto-url').value.trim();
+  const fotoFile = document.getElementById('pf-foto-file').files[0];
+
+  if (!nome) { alert('Informe o nome do produto.'); return; }
+  if (!preco) { alert('Informe o preço do produto.'); return; }
+
+  let foto = fotoUrl;
+
+  // Se tem arquivo, converter para base64
+  if (fotoFile && !fotoUrl) {
+    foto = await new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.readAsDataURL(fotoFile);
+    });
+  }
+
+  const dados = { nome, desc, preco, aba, foto: foto || '' };
+  if (window._fbAddProduto) {
+    await window._fbAddProduto(dados);
+    // Limpar form
+    document.getElementById('pf-nome').value = '';
+    document.getElementById('pf-desc').value = '';
+    document.getElementById('pf-preco').value = '';
+    document.getElementById('pf-foto-url').value = '';
+    document.getElementById('pf-foto-file').value = '';
+    document.getElementById('pf-foto-preview').style.display = 'none';
+    alert('✅ Produto adicionado ao cardápio!');
+  } else {
+    alert('Firebase não conectado. Produto não salvo.');
+  }
+}
+
+// Preview de foto
+document.addEventListener('DOMContentLoaded', () => {
+  const urlInput = document.getElementById('pf-foto-url');
+  const fileInput = document.getElementById('pf-foto-file');
+  const preview = document.getElementById('pf-foto-preview');
+  if (urlInput) urlInput.addEventListener('input', () => {
+    if (urlInput.value) { preview.src = urlInput.value; preview.style.display = 'block'; }
+    else preview.style.display = 'none';
+  });
+  if (fileInput) fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Aplicar esgotados ao carregar
+  setTimeout(() => window._aplicarEsgotado && window._aplicarEsgotado(), 1500);
+});
+
+// ══════════════════════════════════════════════
+//  PRODUTOS DO FIREBASE NO CARDÁPIO
+// ══════════════════════════════════════════════
+window._renderProdutosNoCardapio = function() {
+  const prods = window._dadosProdutos || {};
+  const abas = { burgers: 'food-grid', porcoes: 'porcoes-grid', pizzas: null, bebidas: 'bebidas-extra-grid' };
+
+  // Remover produtos dinâmicos anteriores
+  document.querySelectorAll('.produto-dinamico').forEach(el => el.remove());
+
+  Object.entries(prods).forEach(([key, p]) => {
+    // Criar seção especial de produtos adicionados na aba correta
+    // Buscar container pela aba
+    const emoji = ABA_EMOJIS[p.aba] || '🍽️';
+    const esgDados = window._dadosEstoque || {};
+    const esg = !!(esgDados[key] && esgDados[key].esgotado);
+    const card = document.createElement('div');
+    card.className = 'food-card produto-dinamico' + (esg ? ' item-esgotado' : '');
+    card.innerHTML = '<div class="food-img-wrap" style="position:relative">'
+      + (p.foto ? '<img src="'+p.foto+'" alt="'+p.nome+'">' : '<div class="food-img-gradient">'+emoji+'</div>')
+      + (esg ? '<div class="esgotado-badge">Esgotado</div>' : '')
+      + '</div><div class="food-card-body">'
+      + '<div class="food-card-name">'+p.nome+'</div>'
+      + '<div class="food-card-desc">'+(p.desc||'')+'</div>'
+      + '<div class="food-card-prices" style="justify-content:space-between;align-items:center">'
+      + '<span class="price-single">R$ '+parseFloat(p.preco).toFixed(2)+'</span>'
+      + '<button class="btn-add-item" data-item-key="'+key+'" '+(esg?'disabled':'')+' onclick="abrirPorcao(\''+p.nome+'\',\''+(p.desc||'')+'\','+p.preco+')">+</button>'
+      + '</div></div>';
+
+    // Tentar inserir na grid correta
+    let target = null;
+    if (p.aba === 'burgers') {
+      target = document.querySelector('.food-grid');
+    } else if (p.aba === 'porcoes') {
+      // Procurar seção de porções
+      const sections = document.querySelectorAll('.section-title');
+      sections.forEach(s => { if (s.textContent.includes('Porç')) target = s.closest('.section')?.querySelector('.food-grid') || s.parentElement; });
+    } else if (p.aba === 'bebidas') {
+      target = document.querySelector('.drink-grid');
+    }
+    if (!target) {
+      // Fallback: adicionar numa seção genérica no final do main
+      target = document.querySelector('main') || document.querySelector('.content-area') || document.body;
+    }
+    target.appendChild(card);
+  });
+};
+
+</script>
+</body>
+</html>

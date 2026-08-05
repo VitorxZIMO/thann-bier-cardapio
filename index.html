@@ -3035,11 +3035,14 @@ async function finalizarPedido() {
     // Ouvir quando garçom marcar como atendido
     if (pedidoKey && window._fbOuvirPedido) {
       activePedidoUnsub = window._fbOuvirPedido(pedidoKey, function(data) {
+        console.log('Callback status:', data.status);
         if (data.status === 'atendido') {
-          if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
-          // Fechar modal de "enviado" e mostrar confirmação do garçom
-          document.getElementById('pedido-enviado-modal').classList.remove('open');
-          mostrarPedidoLancado();
+          // Usar setTimeout para garantir que activePedidoUnsub já foi atribuído
+          setTimeout(function() {
+            if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
+            document.getElementById('pedido-enviado-modal').classList.remove('open');
+            mostrarPedidoLancado();
+          }, 0);
         }
       });
     }

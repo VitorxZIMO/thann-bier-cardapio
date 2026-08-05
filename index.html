@@ -2353,12 +2353,24 @@ window._fbPushPedido = async function(mesaNum, itens, total) {
 
 window._fbOuvirPedido = function(key, callback) {
   if (!db || !key) return null;
+  let disparou = false;
+  let eraAguardando = false;
   const pedidoRef = ref(db, 'pedidos/' + key);
   const unsub = onValue(pedidoRef, (snap) => {
     const data = snap.val();
-    if (data && data.status === 'atendido') {
-      unsub();
+    if (!data) {
+      // Nó deletado — se já estava aguardando, garçom provavelmente atendeu e deletou
+      if (!disparou && eraAguardando) {
+        disparou = true;
+        callback();
+      }
+      return;
+    }
+    if (data.status === 'aguardando') eraAguardando = true;
+    if (!disparou && data.status === 'atendido') {
+      disparou = true;
       callback();
+      setTimeout(function() { try { unsub(); } catch(e) {} }, 100);
     }
   });
   return unsub;

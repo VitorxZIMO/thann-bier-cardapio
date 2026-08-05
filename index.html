@@ -873,6 +873,19 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             <button class="config-row-action" onclick="window.open('garcom.html','_blank')">Abrir →</button>
           </div>
         </div>
+        <div class="config-section">
+          <div class="config-section-title">🛑 Pedido na Mesa</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label" id="pedido-mesa-label">Pedidos bloqueados</div>
+              <div class="config-row-sub">Quando ativo, o cliente não pode fazer pedidos</div>
+            </div>
+            <label class="estoque-toggle" style="width:48px;height:26px">
+              <input type="checkbox" id="toggle-bloquear-pedido" onchange="toggleBloquearPedido(this.checked)">
+              <span class="estoque-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
       </div>
 
       <!-- PAINEL ESTOQUE -->
@@ -2111,6 +2124,13 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   </div>
 </div>
 
+<!-- ── BANNER PEDIDO BLOQUEADO ── -->
+<div id="pedido-bloqueado-banner" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:800;background:#1a0a0a;border:2px solid #c41a0a;border-radius:14px;padding:16px 24px;text-align:center;max-width:320px;width:90%;box-shadow:0 4px 24px rgba(196,26,10,.4)">
+  <div style="font-size:22px;margin-bottom:8px">🛑</div>
+  <div style="font-size:15px;font-weight:800;color:#ff4444;margin-bottom:6px">Pedidos encerrados</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.5">Deseja fazer um pedido?<br><b style="color:#fff;cursor:pointer" onclick="chamarGarcom()">Chame o garçom clicando aqui 🔔</b></div>
+</div>
+
 <!-- ── BANNER PEDIDO LANÇADO ── -->
 <div id="pedido-lancado-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#004d15,#009030,#004d15);color:#fff;padding:16px;text-align:center;font-size:16px;font-weight:800;letter-spacing:.3px;box-shadow:0 4px 20px rgba(0,160,50,.5)">
   ✅ Seu pedido foi lançado com sucesso pelo garçom!
@@ -3092,6 +3112,61 @@ function fecharPedidoEnviado() {
 }
 
 // ──────────────────────────────────────────
+//  BLOQUEAR PEDIDOS NA MESA
+// ──────────────────────────────────────────
+let pedidosBloqueados = localStorage.getItem('thann_bloqueado') === '1';
+
+function toggleBloquearPedido(ativo) {
+  pedidosBloqueados = ativo;
+  localStorage.setItem('thann_bloqueado', ativo ? '1' : '0');
+  aplicarBloqueio();
+}
+
+function aplicarBloqueio() {
+  const banner = document.getElementById('pedido-bloqueado-banner');
+  const label = document.getElementById('pedido-mesa-label');
+  const toggle = document.getElementById('toggle-bloquear-pedido');
+  if (toggle) toggle.checked = pedidosBloqueados;
+  if (label) label.textContent = pedidosBloqueados ? 'Pedidos BLOQUEADOS ✓' : 'Pedidos liberados';
+  if (banner) banner.style.display = pedidosBloqueados ? 'block' : 'none';
+  // Esconder/mostrar todos os botões +
+  document.querySelectorAll('.btn-add-item, .btn-add-to-cart, #pp-add-btn').forEach(el => {
+    el.style.display = pedidosBloqueados ? 'none' : '';
+  });
+  // Botão "Pedir Pizza"
+  document.querySelectorAll('.pizza-order-btn').forEach(el => {
+    el.style.display = pedidosBloqueados ? 'none' : '';
+  });
+  // FAB carrinho
+  const fab = document.getElementById('cart-fab');
+  if (fab) fab.style.display = pedidosBloqueados ? 'none' : '';
+}
+
+// Interceptar cliques quando bloqueado
+document.addEventListener('click', function(e) {
+  if (!pedidosBloqueados) return;
+  const btn = e.target.closest('.btn-add-item, .pizza-order-btn, #pp-add-btn, .btn-add-to-cart');
+  if (btn) {
+    e.preventDefault();
+    e.stopPropagation();
+    // Mostrar banner por 4 segundos
+    const banner = document.getElementById('pedido-bloqueado-banner');
+    if (banner) {
+      banner.style.display = 'block';
+      clearTimeout(window._bannerTimer);
+      window._bannerTimer = setTimeout(function() {
+        if (pedidosBloqueados) banner.style.display = 'block'; // manter visível enquanto bloqueado
+      }, 100);
+    }
+  }
+}, true);
+
+// Aplicar ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(aplicarBloqueio, 500);
+});
+
+// ──────────────────────────────────────────
 //  Expor ao módulo Firebase
 // ──────────────────────────────────────────
 // window._fbPushPedido será definido no módulo Firebase
@@ -3153,16 +3228,49 @@ function mudarCfgTab(tab, el) {
 
 // Lista completa de itens do cardápio (para o painel de estoque)
 const TODOS_ITENS = [
-  // Burgers
-  { key: 'burguer', nome: 'Burguer', cat: 'Burgers' },
-  { key: 'big-thann', nome: 'Big Thänn', cat: 'Burgers' },
-  { key: 'doble-smash', nome: 'Doble Smash', cat: 'Burgers' },
-  { key: 'hamburguer-salada', nome: 'Hambúrguer com Salada', cat: 'Burgers' },
-  { key: 'maracuja', nome: 'Maracujá', cat: 'Burgers' },
-  { key: 'abacaxi-lombo', nome: 'Abacaxi & Lombo Canadense', cat: 'Burgers' },
-  { key: 'figo-copa', nome: 'Figo & Copa Lombo', cat: 'Burgers' },
-  { key: 'bacon', nome: 'Bacon', cat: 'Burgers' },
-  { key: 'cebola-empanada', nome: 'Cebola Empanada', cat: 'Burgers' },
+  // Pizzas Salgadas
+  { key: 'pizza-alho-oleo', nome: 'Alho e Óleo', cat: 'Pizzas' },
+  { key: 'pizza-bacon', nome: 'Bacon', cat: 'Pizzas' },
+  { key: 'pizza-bacon-milho', nome: 'Bacon com Milho', cat: 'Pizzas' },
+  { key: 'pizza-brocolis-bacon', nome: 'Brócolis com Bacon', cat: 'Pizzas' },
+  { key: 'pizza-calabresa', nome: 'Calabresa', cat: 'Pizzas' },
+  { key: 'pizza-costela', nome: 'Costela', cat: 'Pizzas' },
+  { key: 'pizza-costela-premium', nome: 'Costela Premium', cat: 'Pizzas' },
+  { key: 'pizza-figo-copa', nome: 'Figo com Copa', cat: 'Pizzas' },
+  { key: 'pizza-file-fritas', nome: 'Filé com Fritas', cat: 'Pizzas' },
+  { key: 'pizza-frango-catupiry', nome: 'Frango com Catupiry', cat: 'Pizzas' },
+  { key: 'pizza-lombo-abacaxi', nome: 'Lombo com Abacaxi', cat: 'Pizzas' },
+  { key: 'pizza-lombo-catupiry', nome: 'Lombo com Catupiry', cat: 'Pizzas' },
+  { key: 'pizza-marguerita', nome: 'Marguerita', cat: 'Pizzas' },
+  { key: 'pizza-mexicana', nome: 'Mexicana', cat: 'Pizzas' },
+  { key: 'pizza-milho', nome: 'Milho', cat: 'Pizzas' },
+  { key: 'pizza-pepperoni', nome: 'Pepperoni', cat: 'Pizzas' },
+  { key: 'pizza-camarao', nome: 'Pizza Camarão', cat: 'Pizzas' },
+  { key: 'pizza-portuguesa', nome: 'Portuguesa', cat: 'Pizzas' },
+  { key: 'pizza-quatro-queijos', nome: 'Quatro Queijos', cat: 'Pizzas' },
+  { key: 'pizza-strogonoff', nome: 'Strogonoff de Gado', cat: 'Pizzas' },
+  { key: 'pizza-tomate-rucula', nome: 'Tomate Seco com Rúcula', cat: 'Pizzas' },
+  // Pizzas Doces
+  { key: 'pizza-banana', nome: 'Banana Fantástica', cat: 'Pizzas Doces' },
+  { key: 'pizza-choc-limao', nome: 'Chocolate Branco com Limão', cat: 'Pizzas Doces' },
+  { key: 'pizza-confete', nome: 'Confete', cat: 'Pizzas Doces' },
+  { key: 'pizza-dois-amores', nome: 'Dois Amores', cat: 'Pizzas Doces' },
+  { key: 'pizza-duas-sensacoes', nome: 'Duas Sensações', cat: 'Pizzas Doces' },
+  { key: 'pizza-marshmallow', nome: 'Marshmallow', cat: 'Pizzas Doces' },
+  { key: 'pizza-ouro-branco', nome: 'Ouro Branco', cat: 'Pizzas Doces' },
+  { key: 'pizza-pacoca', nome: 'Paçoca', cat: 'Pizzas Doces' },
+  { key: 'pizza-prestigio', nome: 'Prestígio', cat: 'Pizzas Doces' },
+  { key: 'pizza-sensacao-branca', nome: 'Sensação Branca', cat: 'Pizzas Doces' },
+  // Hambúrgueres
+  { key: 'burguer', nome: 'Burguer', cat: 'Hambúrgueres' },
+  { key: 'big-thann', nome: 'Big Thänn', cat: 'Hambúrgueres' },
+  { key: 'doble-smash', nome: 'Doble Smash', cat: 'Hambúrgueres' },
+  { key: 'hamburguer-salada', nome: 'Hambúrguer com Salada', cat: 'Hambúrgueres' },
+  { key: 'maracuja', nome: 'Maracujá', cat: 'Hambúrgueres' },
+  { key: 'abacaxi-lombo', nome: 'Abacaxi & Lombo Canadense', cat: 'Hambúrgueres' },
+  { key: 'figo-copa', nome: 'Figo & Copa Lombo', cat: 'Hambúrgueres' },
+  { key: 'bacon', nome: 'Bacon', cat: 'Hambúrgueres' },
+  { key: 'cebola-empanada', nome: 'Cebola Empanada', cat: 'Hambúrgueres' },
   // Porções
   { key: 'batata-frita', nome: 'Batata Frita', cat: 'Porções' },
   { key: 'onion-rings', nome: 'Onion Rings', cat: 'Porções' },
@@ -3180,17 +3288,31 @@ window._renderEstoque = function() {
   const list = document.getElementById('estoque-list');
   if (!list) return;
   const dados = window._dadosEstoque || {};
-  list.innerHTML = TODOS_ITENS.map(item => {
-    const esg = !!(dados[item.key] && dados[item.key].esgotado);
-    return '<div class="estoque-item"><div><div class="estoque-item-nome">'+item.nome+'</div><div class="estoque-item-cat">'+item.cat+'</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
-  }).join('');
 
-  // Também renderizar produtos adicionados do Firebase
+  // Agrupar por categoria
+  const cats = {};
+  TODOS_ITENS.forEach(item => {
+    if (!cats[item.cat]) cats[item.cat] = [];
+    cats[item.cat].push(item);
+  });
+
+  // Produtos adicionados do Firebase
   const prods = window._dadosProdutos || {};
   Object.entries(prods).forEach(([key, p]) => {
-    const esg = !!(dados[key] && dados[key].esgotado);
-    list.innerHTML += '<div class="estoque-item"><div><div class="estoque-item-nome">'+p.nome+'</div><div class="estoque-item-cat">'+(p.aba||'Produto')+' · Adicionado</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
+    const cat = p.aba || 'Produtos Extras';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push({ key: key, nome: p.nome, cat: cat });
   });
+
+  let html = '';
+  Object.entries(cats).forEach(([cat, itens]) => {
+    html += '<div style="font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a">'+cat+'</div>';
+    itens.forEach(item => {
+      const esg = !!(dados[item.key] && dados[item.key].esgotado);
+      html += '<div class="estoque-item"><div><div class="estoque-item-nome">'+item.nome+'</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
+    });
+  });
+  list.innerHTML = html;
 };
 
 function toggleEstoque(key, esgotado) {

@@ -2278,6 +2278,21 @@ try {
   db = getDatabase(app);
 } catch(e) { console.warn('Firebase não configurado:', e.message); }
 
+// ── Listener bloqueio de pedidos (Firebase) ──
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'config/bloquear_pedidos'), (snap) => {
+    const val = snap.val();
+    if (val !== null) {
+      pedidosBloqueados = !!val;
+      if (typeof aplicarBloqueio === 'function') aplicarBloqueio();
+    }
+  });
+}
+window._fbSetBloqueio = async function(ativo) {
+  if (!db) return;
+  try { await set(ref(db, 'config/bloquear_pedidos'), ativo); } catch(e) { console.warn('Bloqueio error:', e); }
+};
+
 // ── Listener estoque ──
 window._dadosEstoque = {};
 window._fbSetEstoque = async function(itemKey, esgotado) {
@@ -3119,6 +3134,8 @@ let pedidosBloqueados = localStorage.getItem('thann_bloqueado') === '1';
 function toggleBloquearPedido(ativo) {
   pedidosBloqueados = ativo;
   localStorage.setItem('thann_bloqueado', ativo ? '1' : '0');
+  // Salvar no Firebase — atualiza todos os tablets em tempo real
+  if (window._fbSetBloqueio) window._fbSetBloqueio(ativo);
   aplicarBloqueio();
 }
 
@@ -3441,45 +3458,36 @@ document.addEventListener('DOMContentLoaded', () => {
 // ══════════════════════════════════════════════
 window._renderProdutosNoCardapio = function() {
   const prods = window._dadosProdutos || {};
-  const abas = { burgers: 'food-grid', porcoes: 'porcoes-grid', pizzas: null, bebidas: 'bebidas-extra-grid' };
 
   // Remover produtos dinâmicos anteriores
   document.querySelectorAll('.produto-dinamico').forEach(el => el.remove());
 
   Object.entries(prods).forEach(([key, p]) => {
-    // Criar seção especial de produtos adicionados na aba correta
-    // Buscar container pela aba
     const emoji = ABA_EMOJIS[p.aba] || '🍽️';
     const esgDados = window._dadosEstoque || {};
     const esg = !!(esgDados[key] && esgDados[key].esgotado);
     const card = document.createElement('div');
     card.className = 'food-card produto-dinamico' + (esg ? ' item-esgotado' : '');
     card.innerHTML = '<div class="food-img-wrap" style="position:relative">'
-      + (p.foto ? '<img src="'+p.foto+'" alt="'+p.nome+'">' : '<div class="food-img-gradient">'+emoji+'</div>')
+      + (p.foto ? '<img src="'+p.foto+'" alt="'+p.nome+'">' : '<div class="food-img-gradient" style="display:flex;align-items:center;justify-content:center;height:100%;font-size:48px">'+emoji+'</div>')
       + (esg ? '<div class="esgotado-badge">Esgotado</div>' : '')
       + '</div><div class="food-card-body">'
       + '<div class="food-card-name">'+p.nome+'</div>'
       + '<div class="food-card-desc">'+(p.desc||'')+'</div>'
       + '<div class="food-card-prices" style="justify-content:space-between;align-items:center">'
-      + '<span class="price-single">R$ '+parseFloat(p.preco).toFixed(2)+'</span>'
+      + '<span class="price-single">R$ '+parseFloat(p.preco).toFixed(2).replace('.',',')+'</span>'
       + '<button class="btn-add-item" data-item-key="'+key+'" '+(esg?'disabled':'')+' onclick="abrirPorcao(\''+p.nome+'\',\''+(p.desc||'')+'\','+p.preco+')">+</button>'
       + '</div></div>';
 
-    // Tentar inserir na grid correta
+    // Inserir na section correta — pega o último food-grid dentro da section
+    const secId = p.aba || 'porcoes';
+    const section = document.getElementById(secId);
     let target = null;
-    if (p.aba === 'burgers') {
-      target = document.querySelector('.food-grid');
-    } else if (p.aba === 'porcoes') {
-      // Procurar seção de porções
-      const sections = document.querySelectorAll('.section-title');
-      sections.forEach(s => { if (s.textContent.includes('Porç')) target = s.closest('.section')?.querySelector('.food-grid') || s.parentElement; });
-    } else if (p.aba === 'bebidas') {
-      target = document.querySelector('.drink-grid');
+    if (section) {
+      const grids = section.querySelectorAll('.food-grid');
+      target = grids[grids.length - 1]; // último grid da seção
     }
-    if (!target) {
-      // Fallback: adicionar numa seção genérica no final do main
-      target = document.querySelector('main') || document.querySelector('.content-area') || document.body;
-    }
+    if (!target) target = document.getElementById('porcoes')?.querySelector('.food-grid') || document.body;
     target.appendChild(card);
   });
 };

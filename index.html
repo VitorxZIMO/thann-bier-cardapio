@@ -870,7 +870,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <div class="config-row-label">Rede</div>
               <div class="config-row-sub">Cervejaria Machadinho</div>
             </div>
-            <span style="font-size:12px;color:var(--muted)">thannbier</span>
+            <span style="font-size:12px;color:var(--muted)">thann bier</span>
           </div>
         </div>
         <div class="config-section">
@@ -995,13 +995,20 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
            alt="Thänn Bier" onerror="this.style.display='none'" style="width:48px;height:48px;border-radius:10px;object-fit:contain;box-shadow:0 4px 20px rgba(196,26,10,.3);flex-shrink:0">
       <div style="flex:1;min-width:0">
         <div class="logo-name" style="font-size:13px;letter-spacing:2px;text-align:left">THÄNN BIER</div>
-        <div class="logo-sub" style="text-align:left">Bar &amp; Restaurante</div>
+        <div class="logo-sub" style="text-align:left;margin-top:4px">Bar &amp; Restaurante</div>
       </div>
       <!-- Número da mesa — canto superior direito -->
       <div style="flex-shrink:0;text-align:center;background:rgba(196,26,10,.18);border:1px solid rgba(196,26,10,.45);border-radius:10px;padding:5px 10px;min-width:48px">
         <div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;line-height:1">Mesa</div>
         <div id="mesa-sidebar-display" style="font-size:22px;font-weight:900;color:#fff;line-height:1.1">—</div>
       </div>
+    </div>
+
+    <!-- Botão Como usar o cardápio — logo abaixo do cabeçalho -->
+    <div style="padding:10px 10px 4px">
+      <button onclick="abrirTutorial()" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#aaa;padding:9px 14px;cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;transition:all .2s" onmouseover="this.style.background='#222';this.style.color='#fff'" onmouseout="this.style.background='#1a1a1a';this.style.color='#aaa'">
+        <span style="font-size:15px">❓</span> Como usar o cardápio
+      </button>
     </div>
 
     <nav class="nav">
@@ -1024,13 +1031,6 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         <span>🥤</span> Bebidas
       </button>
     </nav>
-
-    <!-- Botão Como usar o cardápio -->
-    <div style="padding:0 10px 12px">
-      <button onclick="abrirTutorial()" style="width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;color:#aaa;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;transition:all .2s" onmouseover="this.style.background='#222';this.style.color='#fff'" onmouseout="this.style.background='#1a1a1a';this.style.color='#aaa'">
-        <span style="font-size:16px">❓</span> Como usar o cardápio
-      </button>
-    </div>
   </aside>
 
   <!-- ── BOTÃO CHAMAR GARÇOM FLUTUANTE ── -->
@@ -2125,7 +2125,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 <!-- ── WIFI CHIP ── -->
 <div style="position:fixed;bottom:14px;left:calc(var(--sidebar-w) + 14px);z-index:600;background:rgba(14,22,22,.9);border:1px solid #1e2e2e;border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:7px;backdrop-filter:blur(6px)">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12.55a11 11 0 0 1 14.08 0" stroke="#13bfce" stroke-width="2.5" stroke-linecap="round"/><path d="M1.42 9a16 16 0 0 1 21.16 0" stroke="#13bfce" stroke-width="2.5" stroke-linecap="round" opacity=".4"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0" stroke="#13bfce" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1.5" fill="#13bfce"/></svg>
-  <span style="font-size:11px;color:#888">Wi-Fi: <b style="color:#13bfce;font-weight:700">thannbier</b> · sem senha</span>
+  <span style="font-size:11px;color:#888">Wi-Fi: <b style="color:#13bfce;font-weight:700">Cervejaria Machadinho</b> · Senha: <b style="color:#fff;font-weight:700">thann bier</b></span>
 </div>
 
 <!-- ── MODAL TUTORIAL ── -->

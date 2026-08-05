@@ -787,7 +787,30 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .estoque-status.ok { color: #2a9a2a; }
 
 /* ── PRODUTOS FORM ── */
-/* ── EDITOR DE CHOPES ── */
+/* ── SUB-TABS DE CATEGORIA DE PREÇOS ── */
+.preco-cats { display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px; }
+.preco-cat { background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;
+  padding:5px 9px;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.3px; }
+.preco-cat.active { background:#1a1a2a;border-color:#13bfce;color:#13bfce; }
+
+/* ── EDITOR DE PREÇOS GERAL ── */
+.preco-item { display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+  padding:10px 0;border-bottom:1px solid #1a1a1a; }
+.preco-item:last-child { border-bottom:none; }
+.preco-item-nome { font-size:12px;font-weight:700;color:#ddd;flex:1;min-width:0; }
+.preco-item-sub { font-size:10px;color:#555;margin-top:2px; }
+.preco-item-fields { display:flex;flex-direction:column;gap:4px;flex-shrink:0; }
+.preco-field-row { display:flex;align-items:center;gap:5px; }
+.preco-field-label { font-size:10px;color:#666;min-width:45px;text-align:right; }
+.preco-field-input { width:72px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;
+  color:#d4a853;font-size:12px;font-weight:700;padding:4px 7px;outline:none;text-align:right; }
+.preco-field-input:focus { border-color:#d4a853; }
+.preco-save-btn { width:100%;margin-top:12px;background:#1a1a2e;border:1px solid #2a2a5e;
+  color:#7ab4ff;border-radius:9px;padding:9px;font-size:12px;font-weight:800;cursor:pointer;transition:all .15s; }
+.preco-save-btn:hover { background:#222244;border-color:#5580dd; }
+.preco-saved-msg { display:none;text-align:center;font-size:11px;color:#5dff8a;margin-top:6px; }
+
+/* ── EDITOR DE CHOPES (mantido para chopes com tamanhos) ── */
 .chope-editor-card { background: #0d0d0d; border: 1px solid #222; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
 .chope-editor-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; user-select: none; }
 .chope-editor-name { font-size: 13px; font-weight: 800; color: #fff; }
@@ -880,7 +903,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
       <div class="cfg-tabs">
         <button class="cfg-tab active" onclick="mudarCfgTab('geral',this)">⚙️ Geral</button>
         <button class="cfg-tab" onclick="mudarCfgTab('estoque',this)">📦 Estoque</button>
-        <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">🍺 Chopes</button>
+        <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">✏️ Preços</button>
       </div>
 
       <!-- PAINEL GERAL -->
@@ -944,12 +967,20 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         </div>
       </div>
 
-      <!-- PAINEL PRODUTOS -->
+      <!-- PAINEL PREÇOS -->
       <div class="cfg-panel" id="cfg-panel-produtos">
-        <div class="config-section-title" style="margin-bottom:4px">🍺 Editar Chopes</div>
-        <p style="font-size:11px;color:#666;margin-bottom:12px">Altere ml e preços. Salva e atualiza em todos os tablets na hora.</p>
-        <div id="chope-editor-list">
-          <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando chopes...</div>
+        <div class="config-section-title" style="margin-bottom:4px">✏️ Editor de Preços</div>
+        <p style="font-size:11px;color:#666;margin-bottom:10px">Edite e salve — atualiza em todos os tablets na hora.</p>
+        <!-- sub-tabs por categoria -->
+        <div class="preco-cats" id="preco-cats">
+          <button class="preco-cat active" onclick="mudarPrecoCat('porcoes',this)">🥩 Porções</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('burgers',this)">🍔 Burgers</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('bebidas',this)">🥤 Bebidas</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('drinks',this)">🍹 Drinks</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('chopes',this)">🍺 Chopes</button>
+        </div>
+        <div id="preco-editor-body">
+          <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando...</div>
         </div>
       </div>
 
@@ -3188,7 +3219,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     aplicarBloqueio();
     if (window._fbIniciarListenerBloqueio) window._fbIniciarListenerBloqueio();
-    if (window._iniciarChopeSync) window._iniciarChopeSync();
+    if (window._iniciarPrecosSync) window._iniciarPrecosSync();
   }, 800);
 
   // Atualizar display de mesa na sidebar
@@ -3276,7 +3307,260 @@ function fecharChopeModal() {
 }
 
 // ══════════════════════════════════════════════
-//  EDITOR DE CHOPES (config panel)
+//  EDITOR GERAL DE PREÇOS (config panel)
+// ══════════════════════════════════════════════
+
+// ── Catálogo completo com preços padrão ──
+var _CATALOGO = {
+  porcoes: [
+    { id:'aneis-cebola',     nome:'Anéis de Cebola',                 sub:'Acompanha maionese caseira',         campos:[{l:'150g',v:18.90},{l:'300g',v:34.90}] },
+    { id:'batata-frita',     nome:'Batata Frita',                     sub:'Acompanha maionese caseira',         campos:[{l:'200g',v:18.00},{l:'500g',v:29.90}] },
+    { id:'batata-rustica',   nome:'Batata Rústica com Queijo e Bacon',sub:'Acompanha maionese caseira',         campos:[{l:'200g',v:24.90},{l:'400g',v:39.90}] },
+    { id:'mandioquinha',     nome:'Mandioquinha com Bacon',           sub:'Porção de 400g',                     campos:[{l:'400g',v:26.90}] },
+    { id:'torre-batata',     nome:'Torre de Batata',                  sub:'Batata, molho 4 queijos, calabresa e bacon', campos:[{l:'700g',v:54.90},{l:'1,5kg',v:79.90}] },
+    { id:'alcatra',          nome:'Alcatra Acebolada',                sub:'Porção de 350g',                     campos:[{l:'350g',v:57.90}] },
+    { id:'chorizo',          nome:'Chorizo Argentino',                sub:'Porção de 400g',                     campos:[{l:'400g',v:64.90}] },
+    { id:'tilapia',          nome:'Tilápia em Iscas',                 sub:'Porção de 300g',                     campos:[{l:'300g',v:57.00}] },
+  ],
+  burgers: [
+    { id:'burguer',          nome:'Burguer',                         sub:'Pão brioche, maionese, hambúrguer, queijo mussarela',      campos:[{l:'Un.',v:27.90}] },
+    { id:'big-thann',        nome:'Big Thänn',                       sub:'Pão brioche, cheddar, pepino agridoce e alface',           campos:[{l:'Un.',v:34.90}] },
+    { id:'doble-smash',      nome:'Doble Smash',                     sub:'Pão brioche, hambúrguer smash, cebola, mussarela',         campos:[{l:'Un.',v:34.90}] },
+    { id:'hamburguer-salada',nome:'Hambúrguer com Salada',           sub:'Pão, cheddar, alface, tomate e maionese',                  campos:[{l:'Un.',v:32.90}] },
+    { id:'maracuja',         nome:'Maracujá',                        sub:'180g, queijo coalho, cheddar, creme de maracujá',          campos:[{l:'Un.',v:36.90}] },
+    { id:'abacaxi-lombo',    nome:'Abacaxi & Lombo Canadense',       sub:'180g, cheddar, abacaxi, lombo canadense',                  campos:[{l:'Un.',v:36.90}] },
+    { id:'figo-copa',        nome:'Figo & Copa Lombo',               sub:'180g, figo, creme de figo, cheddar',                       campos:[{l:'Un.',v:37.90}] },
+    { id:'bacon',            nome:'Bacon',                           sub:'180g, cheddar, bacon em tiras, creme cheddar',             campos:[{l:'Un.',v:37.90}] },
+    { id:'cebola-empanada',  nome:'Cebola Empanada',                 sub:'180g, creme cheddar, cebola empanada',                     campos:[{l:'Un.',v:37.90}] },
+  ],
+  bebidas: [
+    { id:'coca-cola',        nome:'Coca-Cola',                       sub:'Lata 350ml · 600ml · 2L',            campos:[{l:'A partir',v:6.00}] },
+    { id:'fanta',            nome:'Fanta',                           sub:'Laranja · Uva · Lata e Garrafa',     campos:[{l:'A partir',v:6.00}] },
+    { id:'guarana',          nome:'Guaraná Antarctica',              sub:'Lata 350ml · 600ml',                 campos:[{l:'A partir',v:6.00}] },
+    { id:'sprite',           nome:'Sprite',                          sub:'Lata 350ml · 600ml',                 campos:[{l:'A partir',v:6.00}] },
+    { id:'agua',             nome:'Água Mineral',                    sub:'Com gás · Sem gás',                  campos:[{l:'A partir',v:5.00}] },
+    { id:'suco-natural',     nome:'Suco Natural',                    sub:'Laranja ou limão',                   campos:[{l:'Un.',v:10.90}] },
+  ],
+  drinks: [
+    { id:'caipirinha',       nome:'Caipirinhas',                     sub:'Cachaça artesanal',                  campos:[{l:'Un.',v:0}] },
+    { id:'caipira-chope',    nome:'Caipira de Chope',                sub:'Caipirinha com chope',               campos:[{l:'Un.',v:0}] },
+    { id:'sakerinha',        nome:'Sakerinha',                       sub:'Sake artesanal com limão',           campos:[{l:'Un.',v:0}] },
+    { id:'caipirinha-vinho', nome:'Caipirinha de Vinho',             sub:'Vinho, frutas vermelhas e limão',    campos:[{l:'Un.',v:0}] },
+    { id:'aperol-spritz',    nome:'Aperol Spritz',                   sub:'Aperol, prosecco e laranja',         campos:[{l:'Un.',v:0}] },
+    { id:'gin-tonica',       nome:'Gin Tônica',                      sub:'Gin premium e tônica',               campos:[{l:'Un.',v:0}] },
+    { id:'mojito-cubano',    nome:'Mojito Cubano',                   sub:'Rum, hortelã e limão',               campos:[{l:'Un.',v:0}] },
+    { id:'mojito-ingles',    nome:'Mojito Inglês',                   sub:'Gin, hortelã e limão',               campos:[{l:'Un.',v:0}] },
+    { id:'pina-colada',      nome:'Piña Colada',                     sub:'Rum, coco e abacaxi',                campos:[{l:'Un.',v:0}] },
+    { id:'sex-on-beach',     nome:'Sex on the Beach',                sub:'Vodka, pêssego e laranja',           campos:[{l:'Un.',v:0}] },
+    { id:'blue-hawaii',      nome:'Blue Hawaii',                     sub:'Drink autoral exclusivo',            campos:[{l:'Un.',v:0}] },
+    { id:'blue-ice',         nome:'Blue Ice',                        sub:'Drink autoral exclusivo',            campos:[{l:'Un.',v:0}] },
+    { id:'pina-descolada',   nome:'Piña Descolada',                  sub:'Sem álcool · Abacaxi e coco',        campos:[{l:'Un.',v:0}] },
+    { id:'drink-maca-verde', nome:'Drink Maçã Verde',                sub:'Sem álcool · Soda italiana',         campos:[{l:'Un.',v:0}] },
+  ],
+  chopes: [
+    { id:'pilsen',       nome:'Pilsen Lager Premium',  sub:'O clássico. Suave e refrescante.',          campos:[{l:'Half Pint',v:10.50},{l:'Pint',v:11.50},{l:'Caneca',v:13.50},{l:'Torre 1,5L',v:26.00},{l:'Torre 2,5L',v:38.50}] },
+    { id:'duplo-malte',  nome:'Pilsen Duplo Malte',    sub:'Encorpado e maltado.',                      campos:[{l:'Half Pint',v:9.50},{l:'Pint',v:11.50},{l:'Caneca',v:14.00},{l:'Torre 1,5L',v:25.50},{l:'Torre 2,5L',v:37.50}] },
+    { id:'ipa',          nome:'IPA',                   sub:'India Pale Ale.',                           campos:[{l:'Half Pint',v:15.00},{l:'Pint',v:17.00},{l:'Caneca',v:20.00},{l:'1 Litro',v:30.00}] },
+    { id:'session-ipa',  nome:'Session IPA',           sub:'Lupulado e leve.',                          campos:[{l:'Half Pint',v:14.50},{l:'Pint',v:16.50},{l:'Caneca',v:18.50},{l:'1 Litro',v:27.50}] },
+    { id:'weiss',        nome:'Weiss',                 sub:'Cerveja de trigo.',                         campos:[{l:'Half Pint',v:13.50},{l:'Pint',v:15.50},{l:'Caneca',v:18.50},{l:'1 Litro',v:26.50}] },
+    { id:'vienna',       nome:'Vienna',                sub:'Lager âmbar vienense.',                     campos:[{l:'Half Pint',v:14.50},{l:'Pint',v:16.00},{l:'Caneca',v:19.00},{l:'1 Litro',v:24.00}] },
+    { id:'malzbier',     nome:'Malzbier',              sub:'Escura e adocicada.',                       campos:[{l:'Half Pint',v:12.00},{l:'Pint',v:14.00},{l:'Caneca',v:18.00},{l:'1 Litro',v:22.00}] },
+    { id:'dunkel',       nome:'Chopp Dunkel',          sub:'Dark Lager bávara.',                        campos:[{l:'Taça Dublin',v:21.00}] },
+    { id:'vinho-rose',   nome:'Chope Vinho Rosé',      sub:'Notas frutadas e toque de vinho.',          campos:[{l:'Half Pint',v:12.50},{l:'Pint',v:14.00},{l:'Caneca',v:16.50},{l:'Torre 1,5L',v:32.50}] },
+    { id:'vinho-branco', nome:'Chope Vinho Branco',    sub:'Infusão de vinho branco.',                  campos:[{l:'Half Pint',v:14.00},{l:'Pint',v:17.00},{l:'Caneca',v:18.00},{l:'Torre 1,5L',v:38.00},{l:'Torre 2,5L',v:54.50}] },
+    { id:'maca-verde',   nome:'Chope Maçã Verde',      sub:'Cerveja frutada.',                          campos:[{l:'Pint',v:16.00}] },
+    { id:'abacaxi',      nome:'Chopp de Abacaxi',      sub:'Tropical e refrescante.',                   campos:[{l:'Half Pint',v:14.00},{l:'Pint',v:16.50},{l:'Caneca',v:18.00},{l:'Torre 1,5L',v:36.90},{l:'Torre 2,5L',v:56.90}] },
+  ]
+};
+
+// Preços em memória (Firebase sobrescreve)
+var _precos = {};
+var _precoCatAtual = 'porcoes';
+
+function mudarPrecoCat(cat, el) {
+  _precoCatAtual = cat;
+  document.querySelectorAll('.preco-cat').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  _renderPrecoEditor();
+}
+
+window._renderChopeEditor = function() { _renderPrecoEditor(); };
+
+function _renderPrecoEditor() {
+  var body = document.getElementById('preco-editor-body');
+  if (!body) return;
+  var cat = _precoCatAtual;
+  var itens = _CATALOGO[cat] || [];
+  var html = '<div id="preco-list-' + cat + '">';
+  itens.forEach(function(item, ii) {
+    html += '<div class="preco-item">';
+    html += '<div><div class="preco-item-nome">' + item.nome + '</div><div class="preco-item-sub">' + item.sub + '</div></div>';
+    html += '<div class="preco-item-fields">';
+    item.campos.forEach(function(c, ci) {
+      var val = (_precos[cat] && _precos[cat][item.id] && _precos[cat][item.id][ci] !== undefined)
+        ? _precos[cat][item.id][ci] : c.v;
+      var displayVal = (val === 0 || val === '0') ? '' : parseFloat(val).toFixed(2);
+      var placeholder = (cat === 'drinks') ? 'Consulte' : '0.00';
+      html += '<div class="preco-field-row">';
+      html += '<span class="preco-field-label">' + c.l + '</span>';
+      html += '<input class="preco-field-input" type="number" step="0.01" min="0" '
+            + 'value="' + displayVal + '" placeholder="' + placeholder + '" '
+            + 'data-cat="' + cat + '" data-id="' + item.id + '" data-ci="' + ci + '" '
+            + 'onchange="_onPrecoChange(this)">';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  html += '<button class="preco-save-btn" onclick="_salvarPrecos(\'' + cat + '\')">💾 Salvar ' + _catLabel(cat) + '</button>';
+  html += '<div class="preco-saved-msg" id="preco-saved-msg">✅ Salvo! Atualizando em todos os tablets...</div>';
+  body.innerHTML = html;
+}
+
+function _catLabel(cat) {
+  return {porcoes:'Porções',burgers:'Hambúrgueres',bebidas:'Bebidas',drinks:'Drinks',chopes:'Chopes'}[cat]||cat;
+}
+
+function _onPrecoChange(input) {
+  var cat = input.getAttribute('data-cat');
+  var id  = input.getAttribute('data-id');
+  var ci  = parseInt(input.getAttribute('data-ci'));
+  if (!_precos[cat]) _precos[cat] = {};
+  if (!_precos[cat][id]) _precos[cat][id] = {};
+  _precos[cat][id][ci] = parseFloat(input.value) || 0;
+}
+
+function _salvarPrecos(cat) {
+  if (!window._fbRef || !window._fbSet || !window._fbDb) {
+    alert('Firebase não conectado.'); return;
+  }
+  // Monta objeto com valores atuais dos inputs para esta categoria
+  var dados = {};
+  var itens = _CATALOGO[cat] || [];
+  itens.forEach(function(item) {
+    dados[item.id] = {};
+    item.campos.forEach(function(c, ci) {
+      var input = document.querySelector('[data-cat="'+cat+'"][data-id="'+item.id+'"][data-ci="'+ci+'"]');
+      dados[item.id][ci] = input ? (parseFloat(input.value) || 0) : c.v;
+    });
+  });
+  _precos[cat] = dados;
+  window._fbSet(window._fbRef(window._fbDb, 'cardapio_precos/' + cat), dados)
+    .then(function() {
+      var msg = document.getElementById('preco-saved-msg');
+      if (msg) { msg.style.display = 'block'; setTimeout(function(){ msg.style.display='none'; }, 3000); }
+      _aplicarPrecosNoCardapio(cat, dados);
+    })
+    .catch(function(e) { alert('Erro: ' + e.message); });
+}
+
+// Aplica os novos preços diretamente no DOM do cardápio (todos os tablets via Firebase listener)
+function _aplicarPrecosNoCardapio(cat, dados) {
+  var itens = _CATALOGO[cat] || [];
+  itens.forEach(function(item) {
+    var vals = dados[item.id] || {};
+    if (cat === 'burgers') {
+      // Atualiza onclick do btn-add-item
+      var btn = document.querySelector('[data-item-key="' + item.id + '"]');
+      if (btn) {
+        var preco = vals[0] !== undefined ? vals[0] : item.campos[0].v;
+        var desc = item.sub;
+        btn.setAttribute('onclick', "abrirBurger('" + item.nome.replace(/'/g,"\\'") + "','" + desc.replace(/'/g,"\\'") + "'," + preco + ")");
+        // Atualiza display do preço no card
+        var priceEl = btn.closest('.food-card-body');
+        if (priceEl) {
+          var ps = priceEl.querySelector('.price-single');
+          if (ps) ps.textContent = 'R$ ' + parseFloat(preco).toFixed(2).replace('.',',');
+        }
+      }
+    } else if (cat === 'porcoes') {
+      var allPriceTags = document.querySelectorAll('.food-card-name');
+      allPriceTags.forEach(function(nameEl) {
+        if (nameEl.textContent.trim() === item.nome) {
+          var body = nameEl.closest('.food-card-body');
+          if (!body) return;
+          var tags = body.querySelectorAll('.price-tag-val, .price-single');
+          tags.forEach(function(tag, ti) {
+            var v = vals[ti] !== undefined ? vals[ti] : (item.campos[ti] ? item.campos[ti].v : 0);
+            if (v > 0) tag.textContent = 'R$ ' + parseFloat(v).toFixed(2).replace('.',',');
+          });
+        }
+      });
+    } else if (cat === 'bebidas') {
+      var btn2 = document.querySelector('[data-item-key="' + item.id + '"]');
+      if (btn2) {
+        var preco2 = vals[0] !== undefined ? vals[0] : item.campos[0].v;
+        btn2.setAttribute('onclick', "abrirBebida('" + item.nome.replace(/'/g,"\\'") + "','" + item.sub.replace(/'/g,"\\'") + "'," + preco2 + ")");
+        var priceContainer = btn2.closest('[class*="refri-price"], [class*="bebida"]');
+        if (priceContainer) {
+          var txt = priceContainer.childNodes[0];
+          if (txt && txt.nodeType === 3) txt.textContent = 'A partir de R$ ' + parseFloat(preco2).toFixed(2).replace('.',',') + '\n';
+        }
+      }
+    } else if (cat === 'drinks') {
+      var btn3 = document.querySelector('[data-item-key="' + item.id + '"]');
+      if (btn3) {
+        var preco3 = vals[0] !== undefined ? vals[0] : 0;
+        btn3.setAttribute('onclick', "adicionarItemDireto('" + item.nome.replace(/'/g,"\\'") + "','" + item.sub.replace(/'/g,"\\'") + "'," + preco3 + ")");
+        var priceDiv = btn3.closest('.drink-price');
+        if (priceDiv && preco3 > 0) {
+          var txtNode = priceDiv.childNodes[0];
+          if (txtNode && txtNode.nodeType === 3) txtNode.textContent = 'R$ ' + parseFloat(preco3).toFixed(2).replace('.',',');
+        }
+      }
+    } else if (cat === 'chopes') {
+      // Atualiza o btn "Ver tamanhos" com novos preços e o "A partir de"
+      var btns = document.querySelectorAll('.chope-ver-btn');
+      btns.forEach(function(btn) {
+        var oc = btn.getAttribute('onclick') || '';
+        if (oc.indexOf(item.nome.replace(/'/g,"\\'")) !== -1 || oc.indexOf(item.nome) !== -1) {
+          var tamanhos = item.campos.map(function(c, ci) {
+            return { tam: c.l, preco: vals[ci] !== undefined ? vals[ci] : c.v };
+          });
+          // Atualiza onclick
+          var desc = item.sub.replace(/'/g,"\\'");
+          btn.setAttribute('onclick', "abrirChopeModal('" + item.nome.replace(/'/g,"\\'") + "','" + desc + "'," + JSON.stringify(tamanhos) + ")");
+          // Atualiza "A partir de"
+          var minP = Math.min.apply(null, tamanhos.map(function(t){ return t.preco; }));
+          var priceEl2 = btn.closest('.chope-body');
+          if (priceEl2) {
+            var pv = priceEl2.querySelector('.chope-price-val');
+            if (pv && minP > 0) pv.textContent = 'R$ ' + minP.toFixed(2).replace('.',',');
+          }
+        }
+      });
+    }
+  });
+}
+
+// Listener Firebase: carrega preços salvos e aplica ao cardápio
+window._iniciarPrecosSync = function() {
+  if (!window._fbRef || !window._fbOnValue || !window._fbDb) return;
+  window._fbOnValue(window._fbRef(window._fbDb, 'cardapio_precos'), function(snap) {
+    var val = snap.val();
+    if (!val) return;
+    _precos = val;
+    // Aplica todas as categorias no cardápio
+    Object.keys(val).forEach(function(cat) { _aplicarPrecosNoCardapio(cat, val[cat]); });
+    // Re-renderiza editor se aberto
+    var panel = document.getElementById('cfg-panel-produtos');
+    if (panel && panel.classList.contains('active')) _renderPrecoEditor();
+  });
+};
+
+// ── Dados padrão dos chopes (mantido para compatibilidade com _chopeMl) ──
+var _CHOPES_DEFAULT = _CATALOGO.chopes.map(function(c) {
+  return { id: c.id, nome: c.nome, desc: c.sub,
+    tamanhos: c.campos.map(function(f) { return { tam: f.l, ml: _chopeMl[f.l]||'', preco: f.v }; }) };
+});
+var _chopesData = JSON.parse(JSON.stringify(_CHOPES_DEFAULT));
+
+// ── Mantidos para compatibilidade ──
+window._renderChopeEditor = function() { _renderPrecoEditor(); };
+window._iniciarChopeSync = function() { window._iniciarPrecosSync(); };
+
+// ══════════════════════════════════════════════
+//  EDITOR DE CHOPES — LEGADO (mantido por compatibilidade com _chopeMl)
 // ══════════════════════════════════════════════
 
 // Dados padrão dos chopes (fonte de verdade inicial, sobrescrita pelo Firebase)

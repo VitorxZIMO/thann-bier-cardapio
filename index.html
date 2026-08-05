@@ -3733,61 +3733,6 @@ function salvarChopeEditor(ci) {
   });
 }
 
-function _atualizarChopeMl(c) {
-  c.tamanhos.forEach(function(t) { _chopeMl[t.tam] = t.ml; });
-}
-
-// Carrega dados do Firebase ao iniciar (e fica ouvindo mudanças)
-window._iniciarChopeSync = function() {
-  if (!window._fbRef || !window._fbOnValue || !window._fbDb) return;
-  var dbRef = window._fbRef(window._fbDb, 'chopes');
-  window._fbOnValue(dbRef, function(snap) {
-    var val = snap.val();
-    if (!val) return; // sem dados no Firebase ainda, usa defaults
-    // Mescla dados do Firebase com defaults
-    _chopesData = _CHOPES_DEFAULT.map(function(def) {
-      var fb = val[def.id];
-      if (!fb) return def;
-      return { id: def.id, nome: fb.nome || def.nome, desc: fb.desc || def.desc,
-        tamanhos: (fb.tamanhos && fb.tamanhos.length) ? fb.tamanhos : def.tamanhos };
-    });
-    // Atualiza _chopeMl em memória
-    _chopesData.forEach(function(c) { _atualizarChopeMl(c); });
-    // Re-renderiza editor se estiver aberto
-    if (document.getElementById('chope-editor-list') &&
-        document.getElementById('cfg-panel-produtos').classList.contains('active')) {
-      window._renderChopeEditor();
-    }
-    // Atualiza os botões dos cards de chopes no cardápio
-    _atualizarCardapioChopeData();
-  });
-};
-
-function _atualizarCardapioChopeData() {
-  // Atualiza os onclick dos botões "Ver tamanhos e pedir" com dados mais recentes
-  _chopesData.forEach(function(c) {
-    // Encontra o botão pelo nome do chope
-    var btns = document.querySelectorAll('.chope-ver-btn');
-    btns.forEach(function(btn) {
-      if (btn.getAttribute('onclick') && btn.getAttribute('onclick').indexOf(c.nome.replace(/'/g,"\\'")) !== -1) {
-        var tamanhosSafe = JSON.stringify(c.tamanhos).replace(/"/g,'&quot;');
-        btn.setAttribute('onclick',
-          "abrirChopeModal('" + c.nome.replace(/'/g,"\\'") + "','" + c.desc.replace(/'/g,"\\'") + "'," +
-          JSON.stringify(c.tamanhos) + ")");
-        // Atualiza preço "A partir de"
-        var card = btn.closest('.chope-body');
-        if (card) {
-          var priceEl = card.querySelector('.chope-price-val');
-          if (priceEl && c.tamanhos.length) {
-            var minPreco = Math.min.apply(null, c.tamanhos.map(function(t){ return t.preco; }));
-            priceEl.textContent = 'R$ ' + minPreco.toFixed(2).replace('.',',');
-          }
-        }
-      }
-    });
-  });
-}
-
 // ══════════════════════════════════════════════
 //  CONFIG TABS
 // ══════════════════════════════════════════════

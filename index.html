@@ -2111,9 +2111,14 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   </div>
 </div>
 
+<!-- ── BANNER PEDIDO LANÇADO ── -->
+<div id="pedido-lancado-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#004d15,#009030,#004d15);color:#fff;padding:16px;text-align:center;font-size:16px;font-weight:800;letter-spacing:.3px;box-shadow:0 4px 20px rgba(0,160,50,.5)">
+  ✅ Seu pedido foi lançado com sucesso!
+</div>
+
 <!-- ── MODAL PEDIDO LANÇADO PELO GARÇOM ── -->
 <div id="pedido-lancado-modal" style="position:fixed;inset:0;z-index:1400;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85)">
-  <div style="background:#0a1a0a;border:2px solid #2a7a2a;border-radius:20px;padding:40px 32px;text-align:center;max-width:320px;width:90%;animation:sheetUp .3s cubic-bezier(.2,.8,.3,1) both">
+  <div style="background:#0a1a0a;border:2px solid #2a7a2a;border-radius:20px;padding:40px 32px;text-align:center;max-width:320px;width:90%">
     <div style="font-size:60px;margin-bottom:16px">✅</div>
     <div style="font-size:20px;font-weight:900;color:#5dff8a;margin-bottom:10px">Pedido lançado!</div>
     <div style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.6">Seu pedido foi lançado<br>com sucesso pelo garçom.</div>
@@ -3054,10 +3059,17 @@ async function finalizarPedido() {
 }
 
 function mostrarPedidoLancado() {
+  // Fechar qualquer modal aberto
+  document.getElementById('pedido-enviado-modal').classList.remove('open');
+  // Mostrar banner no topo
+  var banner = document.getElementById('pedido-lancado-banner');
+  banner.style.display = 'flex';
+  setTimeout(function() { banner.style.display = 'none'; }, 6000);
+  // Mostrar modal também
   document.getElementById('pedido-lancado-modal').classList.add('open');
   setTimeout(function() {
     document.getElementById('pedido-lancado-modal').classList.remove('open');
-  }, 5000);
+  }, 6000);
 }
 
 function fecharPedidoEnviado() {

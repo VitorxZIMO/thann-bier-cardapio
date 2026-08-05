@@ -802,6 +802,31 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .estoque-status.ok { color: #2a9a2a; }
 
 /* ── PRODUTOS FORM ── */
+/* ── EXTRA EMOJI CARD (produtos sem foto) ── */
+.extra-emoji-card { background:#111;display:flex;align-items:center;justify-content:center;min-height:90px; }
+
+/* ── ADICIONAR PRODUTO ── */
+.addprod-form { display:flex;flex-direction:column;gap:9px; }
+.addprod-field { display:flex;flex-direction:column;gap:3px; }
+.addprod-field label { font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.8px; }
+.addprod-field input, .addprod-field select, .addprod-field textarea {
+  background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#fff;
+  font-size:13px;padding:8px 10px;outline:none;width:100%;box-sizing:border-box; }
+.addprod-field textarea { min-height:52px;resize:vertical; }
+.addprod-field input:focus, .addprod-field select:focus, .addprod-field textarea:focus { border-color:#d4a853; }
+.addprod-btn { background:var(--red);border:none;color:#fff;border-radius:10px;
+  padding:11px;font-size:13px;font-weight:800;cursor:pointer;margin-top:4px;transition:all .15s; }
+.addprod-btn:hover { background:#e02020; }
+.addprod-saved { display:none;text-align:center;font-size:11px;color:#5dff8a;margin-top:6px;font-weight:700; }
+.addprod-erro { font-size:11px;color:#ff6b6b;margin-top:4px;min-height:14px; }
+.addprod-item { display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:#111;border:1px solid #1e1e1e;border-radius:9px;padding:9px 12px;margin-bottom:6px; }
+.addprod-item-info { flex:1;min-width:0; }
+.addprod-item-nome { font-size:12px;font-weight:700;color:#ddd; }
+.addprod-item-sub { font-size:10px;color:#555;margin-top:1px; }
+.addprod-del { background:none;border:none;color:#555;font-size:16px;cursor:pointer;padding:2px 6px;flex-shrink:0; }
+.addprod-del:hover { color:#c41a0a; }
+
 /* ── SUB-TABS DE CATEGORIA DE PREÇOS ── */
 .preco-cats { display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px; }
 .preco-cat { background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#777;
@@ -919,6 +944,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         <button class="cfg-tab active" onclick="mudarCfgTab('geral',this)">⚙️ Geral</button>
         <button class="cfg-tab" onclick="mudarCfgTab('estoque',this)">📦 Estoque</button>
         <button class="cfg-tab" onclick="mudarCfgTab('produtos',this)">✏️ Preços</button>
+        <button class="cfg-tab" onclick="mudarCfgTab('addprod',this)">➕ Produtos</button>
       </div>
 
       <!-- PAINEL GERAL -->
@@ -996,6 +1022,55 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         </div>
         <div id="preco-editor-body" style="flex:1;overflow-y:auto;padding-bottom:8px">
           <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando...</div>
+        </div>
+      </div>
+
+      <!-- PAINEL ADICIONAR PRODUTOS -->
+      <div class="cfg-panel" id="cfg-panel-addprod">
+        <div class="config-section-title" style="margin-bottom:4px">➕ Adicionar Produto</div>
+        <p style="font-size:11px;color:#666;margin-bottom:12px">Aparece no cardápio em todos os tablets na hora.</p>
+
+        <div class="addprod-form">
+          <div class="addprod-field">
+            <label>Nome *</label>
+            <input type="text" id="ap-nome" placeholder="Ex: Bruschetta">
+          </div>
+          <div class="addprod-field">
+            <label>Descrição</label>
+            <textarea id="ap-desc" placeholder="Ingredientes, detalhes..."></textarea>
+          </div>
+          <div class="addprod-field">
+            <label>Categoria *</label>
+            <select id="ap-cat">
+              <option value="porcoes">🥩 Porções</option>
+              <option value="burgers">🍔 Hambúrgueres</option>
+              <option value="bebidas">🥤 Bebidas</option>
+              <option value="drinks">🍹 Drinks</option>
+              <option value="chopes">🍺 Chopes</option>
+            </select>
+          </div>
+          <div class="addprod-field">
+            <label>Preço (R$)</label>
+            <input type="number" id="ap-preco" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="addprod-field" id="ap-ml-field">
+            <label>Volume / Tamanho <span style="color:#555">(opcional — ex: 500ml, 300g)</span></label>
+            <input type="text" id="ap-ml" placeholder="Ex: 500ml">
+          </div>
+          <div class="addprod-field">
+            <label>Emoji do card <span style="color:#555">(aparece se não tiver foto)</span></label>
+            <input type="text" id="ap-emoji" placeholder="Ex: 🍕" maxlength="4" style="width:70px">
+          </div>
+          <button class="addprod-btn" onclick="salvarNovoProduto()">✅ Adicionar ao Cardápio</button>
+          <div class="addprod-saved" id="addprod-saved">✅ Produto adicionado! Já aparece em todos os tablets.</div>
+          <div class="addprod-erro" id="addprod-erro"></div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="config-section-title" style="margin-bottom:8px;font-size:11px">Produtos adicionados</div>
+          <div id="addprod-lista">
+            <div style="color:#555;font-size:12px;text-align:center;padding:12px">Nenhum produto extra ainda.</div>
+          </div>
         </div>
       </div>
 
@@ -1213,6 +1288,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">150g</span><span class="price-tag-val">R$ 18,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">300g</span><span class="price-tag-val">R$ 34,90</span></div>
                 </div>
+                <button class="btn-add-item" data-item-key="aneis-cebola" onclick="abrirPorcao('Anéis de Cebola','Acompanha maionese caseira',18.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1229,6 +1305,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 18,00</span></div>
                   <div class="price-tag"><span class="price-tag-label">500g</span><span class="price-tag-val">R$ 29,90</span></div>
                 </div>
+                <button class="btn-add-item" data-item-key="batata-frita" onclick="abrirPorcao('Batata Frita','Acompanha maionese caseira',18.00)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1245,6 +1322,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 24,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">400g</span><span class="price-tag-val">R$ 39,90</span></div>
                 </div>
+                <button class="btn-add-item" data-item-key="batata-rustica" onclick="abrirPorcao('Batata Rústica com Queijo e Bacon','Acompanha maionese caseira',24.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1258,6 +1336,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-card-name">Mandioquinha com Bacon</div>
                 <div class="food-card-desc">Porção de 400g</div>
                 <div class="food-card-prices"><div class="price-single">R$ 26,90</div></div>
+                <button class="btn-add-item" data-item-key="mandioquinha" onclick="abrirPorcao('Mandioquinha com Bacon','Porção de 400g',26.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1274,6 +1353,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">700g</span><span class="price-tag-val">R$ 54,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">1,5kg</span><span class="price-tag-val">R$ 79,90</span></div>
                 </div>
+                <button class="btn-add-item" data-item-key="torre-batata" onclick="abrirPorcao('Torre de Batata','Batata, molho 4 queijos, calabresa e bacon',54.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1292,6 +1372,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-card-name">Alcatra Acebolada</div>
                 <div class="food-card-desc">Porção de 350g</div>
                 <div class="food-card-prices"><div class="price-single">R$ 57,90</div></div>
+                <button class="btn-add-item" data-item-key="alcatra" onclick="abrirPorcao('Alcatra Acebolada','Porção de 350g',57.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1305,6 +1386,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-card-name">Chorizo Argentino</div>
                 <div class="food-card-desc">Porção de 400g · Acompanha pasta de alho e pão místico</div>
                 <div class="food-card-prices"><div class="price-single">R$ 64,90</div></div>
+                <button class="btn-add-item" data-item-key="chorizo" onclick="abrirPorcao('Chorizo Argentino','Porção de 400g · Acompanha pasta de alho e pão místico',64.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1318,6 +1400,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-card-name">Tilápia em Iscas</div>
                 <div class="food-card-desc">Porção de 300g · Acompanha molho agridoce</div>
                 <div class="food-card-prices"><div class="price-single">R$ 57,00</div></div>
+                <button class="btn-add-item" data-item-key="tilapia" onclick="abrirPorcao('Tilápia em Iscas','Porção de 300g · Acompanha molho agridoce',57.00)" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1943,7 +2026,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Soda Italiana</div>
                   <div class="bebida-photo-desc">Bebida artesanal gaseificada com sabores exclusivos. Sem álcool.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="soda-italiana" onclick="adicionarItemDireto('Soda Italiana','Bebida artesanal gaseificada',0)">+</button></div>
                 </div>
               </div>
             </div>
@@ -1962,7 +2045,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Heineken 0%</div>
                   <div class="bebida-photo-desc">A Heineken sem álcool. Todo o sabor, sem o álcool.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="heineken-0" onclick="adicionarItemDireto('Heineken 0%','A Heineken sem álcool',0)">+</button></div>
                 </div>
               </div>
             </div>
@@ -1979,7 +2062,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Torres</div>
                   <div class="bebida-photo-desc">Espumante espanhol. Elegante e frutado.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="espumante-torres" onclick="adicionarItemDireto('Espumante Torres','Espumante espanhol',0)">+</button></div>
                 </div>
               </div>
               <div class="bebida-photo-card">
@@ -1989,7 +2072,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Espumante da Casa</div>
                   <div class="bebida-photo-desc">Seleção especial da Thänn Bier. Para os momentos especiais.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="espumante-casa" onclick="adicionarItemDireto('Espumante da Casa','Seleção especial Thänn Bier',0)">+</button></div>
                 </div>
               </div>
             </div>
@@ -2006,7 +2089,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Taça Colonial</div>
                   <div class="bebida-photo-desc">Vinho tinto encorpado com notas frutadas e terrosas.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="vinho-colonial" onclick="adicionarItemDireto('Taça Colonial','Vinho tinto encorpado',0)">+</button></div>
                 </div>
               </div>
               <div class="bebida-photo-card">
@@ -2016,7 +2099,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Latitud 33°</div>
                   <div class="bebida-photo-desc">Vinho argentino selecionado. Suave e elegante.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="vinho-latitud" onclick="adicionarItemDireto('Latitud 33°','Vinho argentino',0)">+</button></div>
                 </div>
               </div>
               <div class="bebida-photo-card">
@@ -2026,7 +2109,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Luiz Argenta</div>
                   <div class="bebida-photo-desc">Gaúcho premiado. Um dos melhores vinhos do sul do Brasil.</div>
-                  <div class="bebida-photo-price">Consulte</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="vinho-luiz-argenta" onclick="adicionarItemDireto('Luiz Argenta','Vinho gaúcho premiado',0)">+</button></div>
                 </div>
               </div>
             </div>
@@ -2040,7 +2123,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="refri-logo">🥃</div>
                 <div class="refri-name">Jägermeister</div>
                 <div class="refri-variants">Dose 50ml</div>
-                <div class="refri-price">Consulte</div>
+                <div class="refri-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="jagermeister" onclick="adicionarItemDireto('Jägermeister','Dose 50ml',0)">+</button></div>
               </div>
             </div>
           </div>
@@ -2338,7 +2421,11 @@ try {
   window._fbDb = db;
   window._fbRef = ref;
   window._fbSet = set;
+  window._fbPush = push;
+  window._fbRemove = remove;
   window._fbOnValue = onValue;
+  // get para leitura única
+  window._fbGet = function(r) { return new Promise(function(res,rej){ onValue(r,function(s){res(s);},{onlyOnce:true}); }); };
 } catch(e) { console.warn('Firebase não configurado:', e.message); }
 
 window._fbSetBloqueio = async function(ativo) {
@@ -3293,6 +3380,7 @@ document.addEventListener('DOMContentLoaded', function() {
     aplicarBloqueio();
     if (window._fbIniciarListenerBloqueio) window._fbIniciarListenerBloqueio();
     if (window._iniciarPrecosSync) window._iniciarPrecosSync();
+    if (window._iniciarProdutosExtrasSync) window._iniciarProdutosExtrasSync();
   }, 800);
 
   // Atualizar display de mesa na sidebar
@@ -3621,6 +3709,180 @@ window._iniciarPrecosSync = function() {
   });
 };
 
+// ══════════════════════════════════════════════
+//  ADICIONAR PRODUTO
+// ══════════════════════════════════════════════
+
+function salvarNovoProduto() {
+  var nome  = (document.getElementById('ap-nome')  || {}).value || '';
+  var desc  = (document.getElementById('ap-desc')  || {}).value || '';
+  var cat   = (document.getElementById('ap-cat')   || {}).value || 'porcoes';
+  var preco = parseFloat((document.getElementById('ap-preco') || {}).value) || 0;
+  var ml    = (document.getElementById('ap-ml')    || {}).value || '';
+  var emoji = (document.getElementById('ap-emoji') || {}).value || '🍽️';
+  var erro  = document.getElementById('addprod-erro');
+  var ok    = document.getElementById('addprod-saved');
+
+  if (erro) erro.textContent = '';
+  if (ok) ok.style.display = 'none';
+
+  if (!nome.trim()) {
+    if (erro) erro.textContent = '⚠️ Digite o nome do produto.';
+    return;
+  }
+  if (!window._fbRef || !window._fbSet || !window._fbDb || !window._fbPush) {
+    if (erro) erro.textContent = '⚠️ Firebase não conectado.';
+    return;
+  }
+
+  var key = nome.trim().toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').substring(0,40)
+          + '-' + Date.now();
+  var obj = { nome: nome.trim(), desc: desc.trim(), cat: cat,
+              preco: preco, ml: ml.trim(), emoji: emoji.trim(), key: key };
+
+  window._fbSet(window._fbRef(window._fbDb, 'produtos_extras/' + key), obj)
+    .then(function() {
+      if (ok) { ok.style.display = 'block'; setTimeout(function(){ ok.style.display='none'; }, 3500); }
+      // Limpa form
+      ['ap-nome','ap-desc','ap-preco','ap-ml','ap-emoji'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      _renderAddprodLista();
+    })
+    .catch(function(e) {
+      if (erro) erro.textContent = '❌ Erro: ' + e.message;
+    });
+}
+
+function _deletarProdutoExtra(key) {
+  if (!window._fbRef || !window._fbRemove || !window._fbDb) return;
+  if (!confirm('Remover este produto do cardápio?')) return;
+  window._fbRemove(window._fbRef(window._fbDb, 'produtos_extras/' + key))
+    .then(function() { _renderAddprodLista(); })
+    .catch(function(e) { alert('Erro: ' + e.message); });
+}
+
+function _renderAddprodLista(dados) {
+  var lista = document.getElementById('addprod-lista');
+  if (!lista) return;
+  // Se dados passados (do listener), usa direto; senão lê do Firebase
+  if (dados !== undefined) {
+    _renderAddprodListaHTML(lista, dados);
+    return;
+  }
+  if (!window._fbRef || !window._fbGet || !window._fbDb) {
+    lista.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:12px">Firebase não conectado.</div>';
+    return;
+  }
+  window._fbGet(window._fbRef(window._fbDb, 'produtos_extras'))
+    .then(function(snap) { _renderAddprodListaHTML(lista, snap.val()); })
+    .catch(function() { lista.innerHTML = '<div style="color:#555;font-size:11px">Erro ao carregar.</div>'; });
+}
+
+function _renderAddprodListaHTML(lista, dados) {
+  if (!dados || !Object.keys(dados).length) {
+    lista.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:12px">Nenhum produto extra ainda.</div>';
+    return;
+  }
+  var catLabel = { porcoes:'Porções', burgers:'Hambúrgueres', bebidas:'Bebidas', drinks:'Drinks', chopes:'Chopes' };
+  var html = '';
+  Object.keys(dados).forEach(function(k) {
+    var p = dados[k];
+    var sub = [catLabel[p.cat]||p.cat];
+    if (p.ml) sub.push(p.ml);
+    if (p.preco > 0) sub.push('R$ ' + parseFloat(p.preco).toFixed(2).replace('.',','));
+    html += '<div class="addprod-item">'
+          + '<div class="addprod-item-info">'
+          + '<div class="addprod-item-nome">' + (p.emoji||'') + ' ' + p.nome + '</div>'
+          + '<div class="addprod-item-sub">' + sub.join(' · ') + '</div>'
+          + '</div>'
+          + '<button class="addprod-del" onclick="_deletarProdutoExtra(\'' + k + '\')">✕</button>'
+          + '</div>';
+  });
+  lista.innerHTML = html;
+}
+
+// Listener Firebase: sincroniza produtos_extras em todos os tablets
+window._iniciarProdutosExtrasSync = function() {
+  if (!window._fbRef || !window._fbOnValue || !window._fbDb) return;
+  window._fbOnValue(window._fbRef(window._fbDb, 'produtos_extras'), function(snap) {
+    var dados = snap.val();
+    // Atualiza lista no painel (se aberto)
+    var panel = document.getElementById('cfg-panel-addprod');
+    if (panel && panel.classList.contains('active')) {
+      _renderAddprodListaHTML(document.getElementById('addprod-lista'), dados);
+    }
+    // Injeta produtos no cardápio
+    _aplicarProdutosExtras(dados);
+  });
+};
+
+// Injeta produtos extras nas seções do cardápio
+function _aplicarProdutosExtras(dados) {
+  // Remove injeções anteriores
+  document.querySelectorAll('.extra-produto-injetado').forEach(function(el){ el.remove(); });
+  if (!dados) return;
+
+  Object.keys(dados).forEach(function(k) {
+    var p = dados[k];
+    var cat = p.cat || 'porcoes';
+    var nome = p.nome || '';
+    var desc = p.desc || '';
+    var preco = parseFloat(p.preco) || 0;
+    var ml = p.ml || '';
+    var emoji = p.emoji || '🍽️';
+    var precoFmt = preco > 0 ? 'R$ ' + preco.toFixed(2).replace('.',',') : 'Consulte';
+
+    var card = '';
+    if (cat === 'porcoes') {
+      card = '<div class="food-card extra-produto-injetado" data-extra-key="' + k + '">'
+           + '<div class="food-card-photo extra-emoji-card"><span style="font-size:48px">' + emoji + '</span></div>'
+           + '<div class="food-card-body">'
+           + '<div class="food-card-name">' + nome + '</div>'
+           + (desc ? '<div class="food-card-desc">' + desc + '</div>' : '')
+           + '<div class="food-card-prices"><span class="price-single">' + precoFmt + '</span></div>'
+           + '<button class="btn-add-item extra-produto-injetado" onclick="abrirPorcao(\'' + nome.replace(/'/g,"\\'") + '\',\'' + desc.replace(/'/g,"\\'") + '\',' + preco + ')" style="margin-top:8px;width:100%">+ Adicionar</button>'
+           + '</div></div>';
+      var pSec = document.getElementById('porcoes');
+      var pGrids = pSec ? pSec.querySelectorAll('.food-grid') : [];
+      var grid = pGrids.length ? pGrids[pGrids.length-1] : document.querySelector('.food-grid');
+      if (grid) grid.insertAdjacentHTML('beforeend', card);
+
+    } else if (cat === 'burgers') {
+      card = '<div class="food-card extra-produto-injetado" data-extra-key="' + k + '">'
+           + '<div class="food-card-photo extra-emoji-card"><span style="font-size:48px">' + emoji + '</span></div>'
+           + '<div class="food-card-body">'
+           + '<div class="food-card-name">' + nome + '</div>'
+           + (desc ? '<div class="food-card-desc">' + desc + '</div>' : '')
+           + '<div class="food-card-prices"><span class="price-single">' + precoFmt + '</span></div>'
+           + '<button class="btn-add-item extra-produto-injetado" data-extra-key="' + k + '" onclick="abrirBurger(\'' + nome.replace(/'/g,"\\'") + '\',\'' + desc.replace(/'/g,"\\'") + '\',' + preco + ')" style="margin-top:8px;width:100%">+ Adicionar</button>'
+           + '</div></div>';
+      var bSec = document.getElementById('burgers');
+      var bGrids = bSec ? bSec.querySelectorAll('.food-grid') : [];
+      var bGrid = bGrids.length ? bGrids[bGrids.length-1] : null;
+      if (bGrid) bGrid.insertAdjacentHTML('beforeend', card);
+
+    } else if (cat === 'bebidas' || cat === 'drinks' || cat === 'chopes') {
+      // Para bebidas/drinks/chopes injetamos uma row simples no final da seção
+      var sectionId = { bebidas:'bebidas', drinks:'drinks', chopes:'chopes' }[cat] || cat;
+      var target = document.getElementById(sectionId);
+      if (target) {
+        var row = '<div class="extra-produto-injetado" data-extra-key="' + k + '" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #1a1a1a">'
+                + '<div><div style="font-size:13px;font-weight:700;color:#ddd">' + emoji + ' ' + nome + '</div>'
+                + (desc ? '<div style="font-size:11px;color:#666;margin-top:2px">' + desc + '</div>' : '')
+                + (ml ? '<div style="font-size:11px;color:#555;margin-top:1px">' + ml + '</div>' : '')
+                + '</div>'
+                + '<div style="display:flex;align-items:center;gap:8px">'
+                + '<span style="font-size:13px;color:#ccc">' + precoFmt + '</span>'
+                + '<button class="btn-add-item extra-produto-injetado" style="padding:6px 12px;font-size:12px" onclick="adicionarItemDireto(\'' + nome.replace(/'/g,"\\'") + '\',\'' + desc.replace(/'/g,"\\'") + '\',' + preco + ')">+</button>'
+                + '</div></div>';
+        target.insertAdjacentHTML('beforeend', row);
+      }
+    }
+  });
+}
+
 // ── Dados padrão dos chopes (mantido para compatibilidade com _chopeMl) ──
 var _CHOPES_DEFAULT = _CATALOGO.chopes.map(function(c) {
   return { id: c.id, nome: c.nome, desc: c.sub,
@@ -3743,6 +4005,7 @@ function mudarCfgTab(tab, el) {
   document.getElementById('cfg-panel-' + tab).classList.add('active');
   if (tab === 'estoque') window._renderEstoque();
   if (tab === 'produtos') window._renderChopeEditor();
+  if (tab === 'addprod') _renderAddprodLista();
 }
 
 // ══════════════════════════════════════════════

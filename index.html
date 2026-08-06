@@ -733,6 +733,21 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   transition: all .15s; }
 .borda-opt-none:hover { border-color: #444; color: #888; }
 
+/* Modal comanda */
+#comanda-modal { position:fixed;inset:0;z-index:1350;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8); }
+#comanda-modal.open { display:flex; }
+.comanda-box { background:#141414;border:1px solid #2a2a2a;border-radius:20px;width:320px;max-width:92vw;padding:32px 24px;text-align:center;animation:configPop .25s cubic-bezier(.2,.8,.3,1) both; }
+.comanda-icon { font-size:52px;margin-bottom:12px; }
+.comanda-title { font-size:18px;font-weight:900;color:#fff;margin-bottom:6px; }
+.comanda-sub { font-size:13px;color:#666;margin-bottom:20px;line-height:1.5; }
+.comanda-input { width:100%;background:#0a0a0a;border:2px solid #2a2a2a;border-radius:12px;color:#fff;font-size:32px;font-weight:900;text-align:center;padding:14px 10px;box-sizing:border-box;outline:none;letter-spacing:4px;margin-bottom:16px; }
+.comanda-input:focus { border-color:#d4a853; }
+.comanda-input::placeholder { color:#333;font-size:18px;letter-spacing:1px; }
+.comanda-erro { font-size:12px;color:#ff6b6b;min-height:16px;margin-bottom:8px; }
+.comanda-btn { width:100%;background:var(--red);border:none;color:#fff;border-radius:12px;padding:14px;font-size:15px;font-weight:900;cursor:pointer;margin-bottom:10px; }
+.comanda-btn:hover { background:#e02020; }
+.comanda-cancel { width:100%;background:none;border:none;color:#555;font-size:13px;cursor:pointer;padding:8px; }
+
 /* Pedido enviado modal */
 #pedido-enviado-modal {
   position: fixed; inset: 0; z-index: 1300; display: none; align-items: flex-end;
@@ -1044,6 +1059,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             <select id="ap-cat">
               <option value="porcoes">🥩 Porções</option>
               <option value="burgers">🍔 Hambúrgueres</option>
+              <option value="xis">🥪 Xis</option>
               <option value="bebidas">🥤 Bebidas</option>
               <option value="drinks">🍹 Drinks</option>
               <option value="chopes">🍺 Chopes</option>
@@ -1146,6 +1162,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
       </button>
       <button class="nav-btn" onclick="showSection(this,'burgers')">
         <span>🍔</span> Hambúrgueres
+      </button>
+      <button class="nav-btn" onclick="showSection(this,'xis')">
+        <span>🥪</span> Xis
       </button>
       <button class="nav-btn" onclick="showSection(this,'chopes')">
         <span>🍺</span> Chopes
@@ -1288,7 +1307,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">150g</span><span class="price-tag-val">R$ 18,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">300g</span><span class="price-tag-val">R$ 34,90</span></div>
                 </div>
-                <button class="btn-add-item" data-item-key="aneis-cebola" onclick="abrirPorcao('Anéis de Cebola','Acompanha maionese caseira',18.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
+                <button class="btn-add-item" data-item-key="aneis-cebola" onclick="abrirPorcaoTamanhos('Anéis de Cebola','Acompanha maionese caseira',[{label:'150g',preco:18.90},{label:'300g',preco:34.90}])" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1305,7 +1324,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 18,00</span></div>
                   <div class="price-tag"><span class="price-tag-label">500g</span><span class="price-tag-val">R$ 29,90</span></div>
                 </div>
-                <button class="btn-add-item" data-item-key="batata-frita" onclick="abrirPorcao('Batata Frita','Acompanha maionese caseira',18.00)" style="margin-top:8px;width:100%">+ Adicionar</button>
+                <button class="btn-add-item" data-item-key="batata-frita" onclick="abrirPorcaoTamanhos('Batata Frita','Acompanha maionese caseira',[{label:'200g',preco:18.00},{label:'500g',preco:29.90}])" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1322,7 +1341,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">200g</span><span class="price-tag-val">R$ 24,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">400g</span><span class="price-tag-val">R$ 39,90</span></div>
                 </div>
-                <button class="btn-add-item" data-item-key="batata-rustica" onclick="abrirPorcao('Batata Rústica com Queijo e Bacon','Acompanha maionese caseira',24.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
+                <button class="btn-add-item" data-item-key="batata-rustica" onclick="abrirPorcaoTamanhos('Batata Rústica com Queijo e Bacon','Acompanha maionese caseira',[{label:'200g',preco:24.90},{label:'400g',preco:39.90}])" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1353,7 +1372,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="price-tag"><span class="price-tag-label">700g</span><span class="price-tag-val">R$ 54,90</span></div>
                   <div class="price-tag"><span class="price-tag-label">1,5kg</span><span class="price-tag-val">R$ 79,90</span></div>
                 </div>
-                <button class="btn-add-item" data-item-key="torre-batata" onclick="abrirPorcao('Torre de Batata','Batata, molho 4 queijos, calabresa e bacon',54.90)" style="margin-top:8px;width:100%">+ Adicionar</button>
+                <button class="btn-add-item" data-item-key="torre-batata" onclick="abrirPorcaoTamanhos('Torre de Batata','Batata, molho 4 queijos, calabresa e bacon',[{label:'700g',preco:54.90},{label:'1,5kg',preco:79.90}])" style="margin-top:8px;width:100%">+ Adicionar</button>
               </div>
             </div>
 
@@ -1551,6 +1570,47 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
           </div>
+        </div>
+      </section>
+
+      <!-- ════ XIS ════ -->
+      <section id="xis" class="section">
+        <div class="section-header">
+          <h1>🥪 Xis</h1>
+          <p>Sanduíches artesanais · Pão francês e especial · Servidos com batata frita</p>
+        </div>
+        <div class="scroll-area">
+          <div class="sub-header">🥪 Nossos Xis</div>
+          <div class="food-grid" id="xis-grid">
+
+            <!-- Card placeholder visual com SVG de sanduíche -->
+            <div class="food-card xis-placeholder-card" style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:#111;border:1.5px dashed #2a2a2a;border-radius:16px;gap:12px">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- pão de cima -->
+                <rect x="8" y="10" width="64" height="16" rx="8" fill="#d4a853" opacity=".9"/>
+                <!-- alface -->
+                <rect x="6" y="26" width="68" height="6" rx="3" fill="#3cb85a" opacity=".85"/>
+                <!-- queijo -->
+                <rect x="8" y="32" width="64" height="5" rx="2" fill="#f5c842" opacity=".9"/>
+                <!-- carne -->
+                <rect x="10" y="37" width="60" height="10" rx="4" fill="#7a3d1a" opacity=".9"/>
+                <!-- tomate -->
+                <rect x="8" y="47" width="64" height="5" rx="2" fill="#e03a2e" opacity=".85"/>
+                <!-- pão de baixo -->
+                <rect x="8" y="52" width="64" height="14" rx="7" fill="#d4a853" opacity=".9"/>
+                <!-- gergelim -->
+                <ellipse cx="24" cy="15" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
+                <ellipse cx="40" cy="13" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
+                <ellipse cx="56" cy="15" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
+              </svg>
+              <div style="text-align:center">
+                <div style="font-size:14px;font-weight:800;color:#ddd;margin-bottom:4px">Em breve!</div>
+                <div style="font-size:12px;color:#555">Adicione Xis pelo painel de configurações<br>➕ Produtos → Categoria: Xis</div>
+              </div>
+            </div>
+
+          </div>
+          <!-- Produtos extras injetados pelo Firebase aparecem aqui -->
         </div>
       </section>
 
@@ -2287,6 +2347,19 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 </div>
 <style>#pedido-lancado-modal.open { display: flex; }</style>
 
+<!-- ── MODAL COMANDA ── -->
+<div id="comanda-modal">
+  <div class="comanda-box">
+    <div class="comanda-icon">🎫</div>
+    <div class="comanda-title">Número da Comanda</div>
+    <div class="comanda-sub">Digite o número do seu cartão de consumo<br>e toque em Enviar</div>
+    <input class="comanda-input" id="comanda-input" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Ex: 042" maxlength="5" oninput="this.value=this.value.slice(0,5)">
+    <div class="comanda-erro" id="comanda-erro"></div>
+    <button class="comanda-btn" onclick="confirmarComandaEEnviar()">🛒 Enviar Pedido</button>
+    <button class="comanda-cancel" onclick="fecharComandaModal()">Cancelar</button>
+  </div>
+</div>
+
 <!-- ── MODAL PEDIDO ENVIADO ── -->
 <div id="pedido-enviado-modal">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,.75)"></div>
@@ -2294,6 +2367,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
     <div class="pe-icon">🎉</div>
     <div class="pe-title">Pedido enviado!</div>
     <div class="pe-sub">O garçom recebeu seu pedido e está a caminho da mesa <b id="pe-mesa-num">—</b>.</div>
+    <div id="pe-comanda-info" style="display:inline-block;background:#1a1a0a;border:1px solid #4a3a00;border-radius:8px;color:#d4a853;font-size:13px;font-weight:800;padding:6px 14px;margin-bottom:16px"></div>
     <div class="pe-items" id="pe-items-list"></div>
     <button class="btn-fechar-pedido" onclick="fecharPedidoEnviado()">✓ Ok, obrigado!</button>
   </div>
@@ -2516,7 +2590,7 @@ window._garcomConfirmou = function() {
 };
 
 // Push de PEDIDO completo
-window._fbPushPedido = async function(mesaNum, itens, total) {
+window._fbPushPedido = async function(mesaNum, itens, total, numComanda) {
   if (!db) return null;
   try {
     const itensSer = itens.map(i => ({
@@ -2527,6 +2601,7 @@ window._fbPushPedido = async function(mesaNum, itens, total) {
     }));
     const newRef = await push(ref(db, 'pedidos'), {
       mesa: mesaNum,
+      comanda: numComanda || '',
       hora: serverTimestamp(),
       status: 'aguardando',
       total: total,
@@ -3025,8 +3100,9 @@ function confirmarItem() {
   document.querySelectorAll('#im-extras .item-opts').forEach(grupo => {
     const sel = grupo.querySelector('.item-opt.selected');
     if (sel) {
-      // Pegar apenas o texto sem o preço entre parênteses
-      detalhes.push(sel.textContent.replace(/\s*\(.*\)/, '').trim());
+      // Pegar apenas o texto sem o preço
+      var txt = sel.textContent.replace(/\s*\(.*\)/, '').replace(/\s*—.*$/, '').trim();
+      detalhes.push(txt);
     }
   });
 
@@ -3267,24 +3343,45 @@ function confirmarPizza() {
 // ──────────────────────────────────────────
 let activePedidoUnsub = null;
 
-async function finalizarPedido() {
+function finalizarPedido() {
   if (!mesaNumero) { alert('Configure o número da mesa primeiro.'); abrirMesaModal(); return; }
   if (carrinho.length === 0) { alert('Adicione itens ao pedido primeiro.'); return; }
+  fecharCarrinho();
+  // Abre modal de comanda antes de enviar
+  var inp = document.getElementById('comanda-input');
+  var err = document.getElementById('comanda-erro');
+  if (inp) inp.value = '';
+  if (err) err.textContent = '';
+  document.getElementById('comanda-modal').classList.add('open');
+  setTimeout(function(){ if (inp) inp.focus(); }, 300);
+}
+
+function fecharComandaModal() {
+  document.getElementById('comanda-modal').classList.remove('open');
+}
+
+async function confirmarComandaEEnviar() {
+  var inp = document.getElementById('comanda-input');
+  var err = document.getElementById('comanda-erro');
+  var numComanda = inp ? inp.value.trim() : '';
+  if (!numComanda) {
+    if (err) err.textContent = '⚠️ Digite o número da comanda.';
+    if (inp) inp.focus();
+    return;
+  }
+  if (err) err.textContent = '';
+  fecharComandaModal();
 
   const itensTxt = carrinho.map(i =>
     i.qty+'x '+i.nome+(i.detalhe ? ' ('+i.detalhe+')' : '')+' — '+formatBRL(i.preco * i.qty)
   ).join('\n');
 
-  fecharCarrinho();
-
   // Enviar para Firebase e ouvir confirmação do garçom
   if (window._fbPushPedido) {
-    const pedidoKey = await window._fbPushPedido(mesaNumero, carrinho, carrinhoTotal());
+    const pedidoKey = await window._fbPushPedido(mesaNumero, carrinho, carrinhoTotal(), numComanda);
 
-    // Cancelar listener anterior se existir
     if (activePedidoUnsub) { activePedidoUnsub(); activePedidoUnsub = null; }
 
-    // Ouvir quando garçom marcar como atendido
     if (pedidoKey && window._fbOuvirPedido) {
       activePedidoUnsub = window._fbOuvirPedido(pedidoKey, function() {
         activePedidoUnsub = null;
@@ -3294,12 +3391,14 @@ async function finalizarPedido() {
     }
   }
 
-  // Mostrar modal de confirmação inicial
+  // Mostrar modal de confirmação
   document.getElementById('pe-mesa-num').textContent = mesaNumero;
   document.getElementById('pe-items-list').innerHTML = itensTxt.split('\n').map(function(l){return '<div>'+l+'</div>';}).join('');
+  // Mostrar número da comanda
+  var comandaInfo = document.getElementById('pe-comanda-info');
+  if (comandaInfo) comandaInfo.textContent = 'Comanda nº ' + numComanda;
   document.getElementById('pedido-enviado-modal').classList.add('open');
 
-  // Limpar carrinho
   carrinho = [];
   atualizarFAB();
 }
@@ -3431,7 +3530,50 @@ function abrirBebida(nome, desc, preco) {
 }
 
 function abrirPorcao(nome, desc, preco) {
+  // Tenta pegar tamanhos direto do card HTML
+  var btn = document.querySelector('[data-item-key] + div, .btn-add-item[onclick*="' + nome.replace(/'/g,"\\'").substring(0,10) + '"]');
   abrirItemModal(nome, desc, preco, []);
+}
+
+// Abre porção com seleção de tamanho (quando o card tem múltiplos tamanhos)
+function abrirPorcaoTamanhos(nome, desc, tamanhos) {
+  // tamanhos: [{label: '200g', preco: 18.00}, {label: '500g', preco: 29.90}]
+  var opcoes = tamanhos.map(function(t, i) {
+    return { txt: t.label + ' — R$ ' + parseFloat(t.preco).toFixed(2).replace('.',','), preco_extra: t.preco, _preco: t.preco };
+  });
+  _imCurrentItem = { nome: nome, desc: desc, preco: 0, extras: [], _tamanhos: tamanhos };
+  document.getElementById('im-title').textContent = nome;
+  document.getElementById('im-desc').textContent = desc || '';
+  document.getElementById('im-qty').textContent = '1';
+
+  var extrasEl = document.getElementById('im-extras');
+  extrasEl.innerHTML = '';
+  var lbl = document.createElement('div');
+  lbl.className = 'item-opts-label';
+  lbl.textContent = '📐 Escolha o tamanho';
+  extrasEl.appendChild(lbl);
+  var optsDiv = document.createElement('div');
+  optsDiv.className = 'item-opts';
+  optsDiv.dataset.grupoId = 'tamanho';
+  tamanhos.forEach(function(t, i) {
+    var btn = document.createElement('button');
+    btn.className = 'item-opt' + (i === 0 ? ' selected' : '');
+    btn.textContent = t.label + ' — R$ ' + parseFloat(t.preco).toFixed(2).replace('.',',');
+    btn.dataset.precoExtra = t.preco;
+    btn.onclick = function() {
+      optsDiv.querySelectorAll('.item-opt').forEach(function(b){ b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      _imCurrentItem.preco = 0;
+      atualizarPrecoModal();
+    };
+    optsDiv.appendChild(btn);
+  });
+  extrasEl.appendChild(optsDiv);
+
+  // Preço inicial = primeiro tamanho
+  _imCurrentItem.preco = 0;
+  atualizarPrecoModal();
+  document.getElementById('item-modal').classList.add('open');
 }
 
 function abrirChope(nome, desc, preco, tamanho) {
@@ -3785,7 +3927,7 @@ function _renderAddprodListaHTML(lista, dados) {
     lista.innerHTML = '<div style="color:#555;font-size:12px;text-align:center;padding:12px">Nenhum produto extra ainda.</div>';
     return;
   }
-  var catLabel = { porcoes:'Porções', burgers:'Hambúrgueres', bebidas:'Bebidas', drinks:'Drinks', chopes:'Chopes' };
+  var catLabel = { porcoes:'Porções', burgers:'Hambúrgueres', xis:'Xis', bebidas:'Bebidas', drinks:'Drinks', chopes:'Chopes' };
   var html = '';
   Object.keys(dados).forEach(function(k) {
     var p = dados[k];
@@ -3823,6 +3965,10 @@ function _aplicarProdutosExtras(dados) {
   // Remove injeções anteriores
   document.querySelectorAll('.extra-produto-injetado').forEach(function(el){ el.remove(); });
   if (!dados) return;
+  // Se há produtos Xis, esconde o placeholder
+  var temXis = Object.values(dados).some(function(p){ return p.cat === 'xis'; });
+  var xisPlaceholder = document.querySelector('.xis-placeholder-card');
+  if (xisPlaceholder) xisPlaceholder.style.display = temXis ? 'none' : '';
 
   Object.keys(dados).forEach(function(k) {
     var p = dados[k];
@@ -3862,6 +4008,18 @@ function _aplicarProdutosExtras(dados) {
       var bGrids = bSec ? bSec.querySelectorAll('.food-grid') : [];
       var bGrid = bGrids.length ? bGrids[bGrids.length-1] : null;
       if (bGrid) bGrid.insertAdjacentHTML('beforeend', card);
+
+    } else if (cat === 'xis') {
+      card = '<div class="food-card extra-produto-injetado" data-extra-key="' + k + '">'
+           + '<div class="food-card-photo extra-emoji-card"><span style="font-size:48px">' + (emoji || '🥪') + '</span></div>'
+           + '<div class="food-card-body">'
+           + '<div class="food-card-name">' + nome + '</div>'
+           + (desc ? '<div class="food-card-desc">' + desc + '</div>' : '')
+           + '<div class="food-card-prices"><span class="price-single">' + precoFmt + '</span></div>'
+           + '<button class="btn-add-item extra-produto-injetado" onclick="abrirBurger(\'' + nome.replace(/'/g,"\\'") + '\',\'' + desc.replace(/'/g,"\\'") + '\',' + preco + ')" style="margin-top:8px;width:100%">+ Adicionar</button>'
+           + '</div></div>';
+      var xisGrid = document.getElementById('xis-grid');
+      if (xisGrid) xisGrid.insertAdjacentHTML('beforeend', card);
 
     } else if (cat === 'bebidas' || cat === 'drinks' || cat === 'chopes') {
       // Para bebidas/drinks/chopes injetamos uma row simples no final da seção

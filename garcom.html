@@ -88,17 +88,18 @@ html, body {
 
 /* ── PEDIDO CARD ── */
 .pedido-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  margin-bottom: 10px; overflow: hidden;
+  background: #141414; border: 1px solid #2a2a2a; border-radius: 18px;
+  margin-bottom: 14px; overflow: hidden;
   animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both;
   position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
 }
 .pedido-card::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-  background: var(--green); border-radius: 4px 0 0 4px;
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  background: var(--green); border-radius: 6px 0 0 6px;
 }
 .pedido-card.atendido::before { background: #2a6a2a; }
-.pedido-card.atendido { opacity: 0.75; }
+.pedido-card.atendido { opacity: 0.65; }
 .pedido-card.chamada::before { background: var(--gold); }
 
 @keyframes cardIn {
@@ -106,79 +107,88 @@ html, body {
   to   { transform: none; opacity: 1; }
 }
 @keyframes novaPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,60,.2); }
-  50%       { box-shadow: 0 0 0 8px rgba(0,200,60,.0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,200,60,.3); }
+  50%       { box-shadow: 0 0 0 12px rgba(0,200,60,.0); }
 }
 .pedido-card.novo {
-  border-color: rgba(0,200,60,.4);
+  border-color: rgba(0,200,60,.5);
   animation: cardIn .3s cubic-bezier(.2,.8,.3,1) both, novaPulse 2s ease-in-out 3;
 }
 
 .pedido-header {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  border-bottom: 1px solid #1a1a1a;
+  display: flex; align-items: center; gap: 16px; padding: 18px 20px;
+  border-bottom: 1px solid #1e1e1e;
+  background: #111;
 }
 .pedido-mesa {
-  width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--green-dark), #007030);
+  width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg, #003d14, #00802e);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border: 2px solid rgba(0,200,60,.3);
+  border: 2px solid rgba(0,200,60,.4);
+  box-shadow: 0 0 16px rgba(0,200,60,.2);
 }
 .pedido-mesa.chamada-mesa {
-  background: linear-gradient(135deg, #3a2a00, #5a4200);
-  border-color: rgba(200,160,0,.3);
+  background: linear-gradient(135deg, #3a2a00, #6a4e00);
+  border-color: rgba(200,160,0,.4);
+  box-shadow: 0 0 16px rgba(200,160,0,.2);
 }
-.pedido-mesa-num { font-size: 20px; font-weight: 900; color: var(--green); line-height: 1; }
+.pedido-mesa-num { font-size: 26px; font-weight: 900; color: #00e050; line-height: 1; }
 .pedido-mesa.chamada-mesa .pedido-mesa-num { color: var(--gold); }
-.pedido-mesa-lbl { font-size: 8px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .5px; }
+.pedido-mesa-lbl { font-size: 9px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .8px; margin-top: 1px; }
 
-.pedido-meta { flex: 1; }
-.pedido-tipo { font-size: 13px; font-weight: 800; margin-bottom: 3px; }
-.pedido-comanda { font-size: 12px; color: #d4a853; margin-bottom: 2px; }
-.pedido-time { font-size: 12px; color: var(--muted); }
-.pedido-elapsed { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px; }
-.pedido-total { font-size: 18px; font-weight: 900; color: var(--gold); white-space: nowrap; }
+.pedido-meta { flex: 1; min-width: 0; }
+.pedido-tipo { font-size: 15px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+.pedido-comanda {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #1a1200; border: 1.5px solid #6a5200; border-radius: 8px;
+  color: #f0c040; font-size: 18px; font-weight: 900;
+  padding: 5px 14px; margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.pedido-time { font-size: 13px; color: #666; }
+.pedido-elapsed { font-size: 12px; color: #e09020; font-weight: 800; margin-top: 3px; }
+.pedido-total { font-size: 22px; font-weight: 900; color: #f0c040; white-space: nowrap; text-align: right; }
 
 .pedido-itens {
-  padding: 10px 16px; border-bottom: 1px solid #1a1a1a;
+  padding: 14px 20px; border-bottom: 1px solid #1a1a1a; background: #0e0e0e;
 }
 .pedido-item {
-  display: flex; gap: 8px; align-items: flex-start;
-  padding: 5px 0; border-bottom: 1px solid #161616; font-size: 13px;
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0; border-bottom: 1px solid #181818; font-size: 14px;
 }
 .pedido-item:last-child { border-bottom: none; }
-.pedido-item-qty { color: var(--green); font-weight: 800; min-width: 24px; flex-shrink: 0; }
+.pedido-item-qty { color: #00e050; font-weight: 900; min-width: 28px; flex-shrink: 0; font-size: 15px; }
 .pedido-item-info { flex: 1; }
-.pedido-item-nome { font-weight: 700; }
-.pedido-item-det { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.pedido-item-preco { color: var(--gold); font-weight: 700; white-space: nowrap; }
+.pedido-item-nome { font-weight: 800; font-size: 14px; color: #eee; }
+.pedido-item-det { font-size: 12px; color: #666; margin-top: 3px; }
+.pedido-item-preco { color: #f0c040; font-weight: 800; white-space: nowrap; font-size: 14px; }
 
 .pedido-actions {
-  display: flex; gap: 8px; padding: 12px 16px; flex-wrap: wrap;
+  display: flex; gap: 10px; padding: 14px 20px; flex-wrap: wrap; background: #111;
 }
 .btn-atendeu {
-  background: var(--green); border: none; color: #000; padding: 9px 16px;
-  border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer;
+  background: var(--green); border: none; color: #000; padding: 12px 20px;
+  border-radius: 10px; font-size: 14px; font-weight: 900; cursor: pointer;
   transition: all .15s; flex: 1;
 }
 .btn-atendeu:hover { background: #00e050; }
 .btn-excluir-mesa {
   background: #1a0808; border: 1px solid #3a1010; color: #e05050;
-  padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 800;
   cursor: pointer; transition: all .15s;
 }
 .btn-excluir-mesa:hover { background: #2a1010; border-color: var(--red); }
 .btn-ignorar {
-  background: #1a1a1a; border: 1px solid #2a2a2a; color: var(--muted);
-  padding: 9px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  background: #1a1a1a; border: 1px solid #2a2a2a; color: #aaa;
+  padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 800;
   cursor: pointer; transition: all .15s;
 }
 .btn-ignorar:hover { background: #252525; color: var(--text); }
 
 /* Atendido footer */
 .pedido-atendido-info {
-  padding: 10px 16px; font-size: 12px;
-  color: #5daa5d; font-weight: 600;
+  padding: 12px 20px; font-size: 13px;
+  color: #5daa5d; font-weight: 700;
   display: flex; align-items: center; gap: 6px;
 }
 

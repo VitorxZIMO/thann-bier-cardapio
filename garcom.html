@@ -134,6 +134,7 @@ html, body {
 
 .pedido-meta { flex: 1; }
 .pedido-tipo { font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+.pedido-comanda { font-size: 12px; color: #d4a853; margin-bottom: 2px; }
 .pedido-time { font-size: 12px; color: var(--muted); }
 .pedido-elapsed { font-size: 11px; color: var(--gold); font-weight: 700; margin-top: 2px; }
 .pedido-total { font-size: 18px; font-weight: 900; color: var(--gold); white-space: nowrap; }
@@ -566,6 +567,7 @@ function criarCardPedido(pedido, atendido) {
       </div>
       <div class="pedido-meta">
         <div class="pedido-tipo">🍽️ Pedido da Mesa ${escHtml(pedido.mesa)}</div>
+        ${pedido.comanda ? `<div class="pedido-comanda">🎫 Comanda nº <b>${escHtml(pedido.comanda)}</b></div>` : ''}
         <div class="pedido-time">${formatHora(pedido.horaMs)}</div>
         ${!atendido ? `<div class="pedido-elapsed" id="elapsed-ped-${pedido.key}">${formatElapsed(elapsed)} atrás</div>` : ''}
       </div>

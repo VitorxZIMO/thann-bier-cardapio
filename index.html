@@ -458,7 +458,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .chope-card:hover { transform: translateY(-2px); }
 
 .chope-img-wrap { height: 140px; overflow: hidden; background: #1a1a2e; position: relative; }
-.chope-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.chope-img-wrap img { width: 100%; height: 100%; object-fit: contain; background: #0d0d0d; display: block; }
+/* Hambúrgueres e Xis: mostrar foto inteira */
+#burgers .food-img-wrap img, #xis .food-img-wrap img { object-fit: contain; background: #0d0d0d; }
 .chope-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 50px; }
 
 .chope-body { padding: 13px 14px; }
@@ -505,8 +507,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   overflow: hidden; transition: transform .15s; }
 .drink-card:hover { transform: translateY(-2px); }
 
-.drink-img-wrap { height: 150px; overflow: hidden; position: relative; }
-.drink-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.drink-img-wrap { height: 160px; overflow: hidden; position: relative; background: #0d0d0d; }
+.drink-img-wrap img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
 .drink-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
 
 .drink-body { padding: 13px 14px; }
@@ -521,15 +523,18 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .bebida-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
 /* Brand card for Refris */
-.refri-card { border-radius: 14px; padding: 18px 14px; text-align: center; display: flex;
-  flex-direction: column; align-items: center; gap: 8px; border: 1px solid transparent; }
+.refri-card { border-radius: 14px; overflow: hidden; text-align: center; display: flex;
+  flex-direction: column; align-items: center; gap: 0; border: 1px solid transparent; }
 .refri-card.coca { background: linear-gradient(135deg, #3d0c0c, #1a0505); border-color: #5a1010; }
 .refri-card.fanta { background: linear-gradient(135deg, #3d2000, #1a0d00); border-color: #5a3000; }
 .refri-card.agua { background: linear-gradient(135deg, #0d2a3d, #051218); border-color: #0e3a5a; }
 .refri-card.suco { background: linear-gradient(135deg, #1a3a0d, #0a1a05); border-color: #2a5010; }
 .refri-card.guarana { background: linear-gradient(135deg, #0d2a10, #051008); border-color: #1a4a1a; }
 .refri-card.sprite { background: linear-gradient(135deg, #1a2a10, #0a1505); border-color: #2a4010; }
-
+.refri-img-wrap { width: 100%; height: 110px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.25); }
+.refri-img-wrap img { width: 100%; height: 100%; object-fit: contain; background: #0d0d0d; }
+.refri-img-fallback { font-size: 44px; display: none; }
+.refri-card-body { padding: 10px 12px 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
 .refri-logo { font-size: 40px; }
 .refri-name { font-size: 14px; font-weight: 800; color: var(--text); }
 .refri-variants { font-size: 10.5px; color: var(--muted2); }
@@ -539,8 +544,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .bebida-photo-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px;
   overflow: hidden; display: flex; flex-direction: column; transition: transform .15s; }
 .bebida-photo-card:hover { transform: translateY(-2px); }
-.bebida-photo-img { height: 140px; overflow: hidden; background: #1a1a2a; }
-.bebida-photo-img img { width: 100%; height: 100%; object-fit: cover; }
+.bebida-photo-img { height: 140px; overflow: hidden; background: #0d0d0d; }
+.bebida-photo-img img { width: 100%; height: 100%; object-fit: contain; background: #0d0d0d; }
 .bebida-photo-img .bebida-img-gradient { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 44px; }
 .bebida-photo-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; }
 .bebida-photo-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
@@ -1583,29 +1588,81 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <div class="sub-header">🥪 Nossos Xis</div>
           <div class="food-grid" id="xis-grid">
 
-            <!-- Card placeholder visual com SVG de sanduíche -->
-            <div class="food-card xis-placeholder-card" style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;background:#111;border:1.5px dashed #2a2a2a;border-radius:16px;gap:12px">
-              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- pão de cima -->
-                <rect x="8" y="10" width="64" height="16" rx="8" fill="#d4a853" opacity=".9"/>
-                <!-- alface -->
-                <rect x="6" y="26" width="68" height="6" rx="3" fill="#3cb85a" opacity=".85"/>
-                <!-- queijo -->
-                <rect x="8" y="32" width="64" height="5" rx="2" fill="#f5c842" opacity=".9"/>
-                <!-- carne -->
-                <rect x="10" y="37" width="60" height="10" rx="4" fill="#7a3d1a" opacity=".9"/>
-                <!-- tomate -->
-                <rect x="8" y="47" width="64" height="5" rx="2" fill="#e03a2e" opacity=".85"/>
-                <!-- pão de baixo -->
-                <rect x="8" y="52" width="64" height="14" rx="7" fill="#d4a853" opacity=".9"/>
-                <!-- gergelim -->
-                <ellipse cx="24" cy="15" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
-                <ellipse cx="40" cy="13" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
-                <ellipse cx="56" cy="15" rx="3" ry="1.5" fill="#fff" opacity=".6"/>
-              </svg>
-              <div style="text-align:center">
-                <div style="font-size:14px;font-weight:800;color:#ddd;margin-bottom:4px">Em breve!</div>
-                <div style="font-size:12px;color:#555">Adicione Xis pelo painel de configurações<br>➕ Produtos → Categoria: Xis</div>
+            <!-- Xis Salada -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.dipaes.com.br/uploads/xis-gaucho-5c82b2286a9ce.jpg" alt="Xis Salada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Salada</div>
+                <div class="food-card-desc">Hambúrguer caseiro, maionese caseira, milho, ervilha, alface, tomate, mussarela fatiada e ovo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 20,00</div></div>
+              </div>
+            </div>
+
+            <!-- Xis Calabresa -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://guiadacozinha.com.br/wp-content/uploads/2023/05/tamanho-padrao-gc-42.jpg" alt="Xis Calabresa" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Calabresa</div>
+                <div class="food-card-desc">Hambúrguer caseiro, maionese caseira, calabresa, alface, tomate, milho, ervilha, mussarela fatiada e ovo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 23,00</div></div>
+              </div>
+            </div>
+
+            <!-- Xis Bacon -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://static.tvgazeta.com.br/uploads/2022/08/x-tudo-xis-gaucho-receita-sanduiche-facil-coracao.jpg" alt="Xis Bacon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Bacon</div>
+                <div class="food-card-desc">Hambúrguer caseiro, maionese caseira, bacon em cubos, alface, tomate, milho, ervilha, mussarela fatiada e ovo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 26,00</div></div>
+              </div>
+            </div>
+
+            <!-- Xis Strogonoff de Gado -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://www.minhasreceitas.blog.br/wp-content/uploads/2022/05/X-Gau%CC%81cho.jpeg" alt="Xis Strogonoff de Gado" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Strogonoff de Gado</div>
+                <div class="food-card-desc">Strogonoff de gado, maionese caseira, alface, tomate, milho, ervilha, mussarela fatiada, batata palha e ovo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 25,00</div></div>
+              </div>
+            </div>
+
+            <!-- Xis Frango Catupiry -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://conteudo.imguol.com.br/c/entretenimento/60/2022/04/06/xis-gaucho-cozinha-por-ai-1649290676769_v2_4x3.png" alt="Xis Frango Catupiry" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Frango Catupiry</div>
+                <div class="food-card-desc">Frango desfiado, Catupiry, maionese caseira, alface, tomate, milho, ervilha, mussarela fatiada e ovo</div>
+                <div class="food-card-prices"><div class="price-single">R$ 26,00</div></div>
+              </div>
+            </div>
+
+            <!-- Xis Thänn -->
+            <div class="food-card">
+              <div class="food-img-wrap">
+                <img src="https://s2-g1.glbimg.com/OftRqOj85xmVLxffUqRH653JuoI=/0x0:1024x768/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2023/z/U/BE3E53RzKFRboZd3SD1Q/whatsapp-image-2023-06-16-at-11.11.04.jpeg" alt="Xis Thänn" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder" style="display:none">🥪</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Xis Thänn</div>
+                <div class="food-card-desc">Hambúrguer caseiro, maionese caseira, bacon, calabresa, ovo, milho, ervilha, alface, tomate e queijo mussarela</div>
+                <div class="food-card-prices"><div class="price-single">R$ 35,00</div></div>
               </div>
             </div>
 
@@ -1833,8 +1890,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Caipirinhas</div>
-                  <div class="drink-desc">Cachaça artesanal, limão, açúcar e gelo. O clássico brasileiro.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipirinha" onclick="adicionarItemDireto('Caipirinhas','Cachaça artesanal',0)">+</button></div>
+                  <div class="drink-desc">Cachaça artesanal, açúcar e gelo. Escolha o sabor: Limão ou Morango.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 18,00<button class="btn-add-item" data-item-key="caipirinha" onclick="abrirItemModal('Caipirinhas','Cachaça artesanal, açúcar e gelo',18.00,[{id:'sabor',label:'🍓 Escolha o sabor',required:true,opcoes:[{txt:'Limão',preco_extra:0},{txt:'Morango',preco_extra:0}]}])">+</button></div>
                 </div>
               </div>
 
@@ -1846,30 +1903,32 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Caipira de Chope</div>
-                  <div class="drink-desc">A tradicional caipirinha com chope gelado. Única e refrescante.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipira-chope" onclick="adicionarItemDireto('Caipira de Chope','Caipirinha com chope',0)">+</button></div>
+                  <div class="drink-desc">A tradicional caipirinha com chope gelado. Escolha Limão ou Morango.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 18,00<button class="btn-add-item" data-item-key="caipira-chope" onclick="abrirItemModal('Caipira de Chope','Caipirinha com chope gelado',18.00,[{id:'sabor',label:'🍓 Escolha o sabor',required:true,opcoes:[{txt:'Limão',preco_extra:0},{txt:'Morango',preco_extra:0}]}])">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0014,#0e000a)">🍶</div>
+                  <img src="https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=500&q=80&fit=crop" alt="Sakerinha" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0014,#0e000a)">🍶</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Sakerinha</div>
-                  <div class="drink-desc">Sake artesanal, limão siciliano, açúcar e gelo. Leve e aromática.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="sakerinha" onclick="adicionarItemDireto('Sakerinha','Sake artesanal com limão',0)">+</button></div>
+                  <div class="drink-desc">Sake artesanal, açúcar e gelo. Escolha Limão ou Morango.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 18,00<button class="btn-add-item" data-item-key="sakerinha" onclick="abrirItemModal('Sakerinha','Sake artesanal com açúcar e gelo',18.00,[{id:'sabor',label:'🍓 Escolha o sabor',required:true,opcoes:[{txt:'Limão',preco_extra:0},{txt:'Morango',preco_extra:0}]}])">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a0a,#2a0a14)">🍷🍋</div>
+                  <img src="https://images.unsplash.com/photo-1621644894301-cd6b2eaca610?w=500&q=80&fit=crop" alt="Caipirinha de Vinho" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0a0a,#2a0a14)">🍷🍋</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Caipirinha de Vinho</div>
-                  <div class="drink-desc">Vinho tinto, frutas vermelhas, limão e açúcar. Sofisticada e saborosa.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="caipirinha-vinho" onclick="adicionarItemDireto('Caipirinha de Vinho','Vinho, frutas vermelhas e limão',0)">+</button></div>
+                  <div class="drink-desc">Vinho tinto, frutas vermelhas, açúcar e gelo. Sofisticada e saborosa.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 18,00<button class="btn-add-item" data-item-key="caipirinha-vinho" onclick="abrirItemModal('Caipirinha de Vinho','Vinho tinto, frutas vermelhas e gelo',18.00,[{id:'sabor',label:'🍓 Escolha o sabor',required:true,opcoes:[{txt:'Limão',preco_extra:0},{txt:'Morango',preco_extra:0}]}])">+</button></div>
                 </div>
               </div>
 
@@ -1882,67 +1941,73 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a00,#280e00)">🍊</div>
+                  <img src="https://images.unsplash.com/photo-1750665645097-765c958d2332?w=500&q=80&fit=crop" alt="Aperol Spritz" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0a00,#280e00)">🍊</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Aperol Spritz</div>
                   <div class="drink-desc">Aperol, prosecco, água com gás e laranja. O favorito italiano.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="aperol-spritz" onclick="adicionarItemDireto('Aperol Spritz','Aperol, prosecco e laranja',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 21,90<button class="btn-add-item" data-item-key="aperol-spritz" onclick="adicionarItemDireto('Aperol Spritz','Aperol, prosecco e laranja',21.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0e1a0e,#0a140a)">🌿</div>
+                  <img src="https://images.unsplash.com/photo-1597960194480-fc6b5e3181fd?w=500&q=80&fit=crop" alt="Gin Tônica" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#0e1a0e,#0a140a)">🌿</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Gin Tônica</div>
                   <div class="drink-desc">Gin premium, água tônica e especiarias. Elegante e refrescante.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="gin-tonica" onclick="adicionarItemDireto('Gin Tônica','Gin premium e tônica',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 19,90<button class="btn-add-item" data-item-key="gin-tonica" onclick="adicionarItemDireto('Gin Tônica','Gin premium e tônica',19.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a1a00,#0e1e00)">🌿🍋</div>
+                  <img src="https://images.unsplash.com/photo-1753263453239-fef8e92b5040?w=500&q=80&fit=crop" alt="Mojito Cubano" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1a00,#0e1e00)">🌿🍋</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Mojito Cubano</div>
                   <div class="drink-desc">Rum branco, hortelã, limão, açúcar e água com gás.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="mojito-cubano" onclick="adicionarItemDireto('Mojito Cubano','Rum, hortelã e limão',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 23,90<button class="btn-add-item" data-item-key="mojito-cubano" onclick="adicionarItemDireto('Mojito Cubano','Rum, hortelã e limão',23.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a140e,#0e1a10)">🌱</div>
+                  <img src="https://images.unsplash.com/photo-1675370734208-120b43d3c7ac?w=500&q=80&fit=crop" alt="Mojito Inglês" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#0a140e,#0e1a10)">🌱</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Mojito Inglês</div>
-<div class="drink-desc">Versão inglesa com gin no lugar do rum. Aromático e refrescante.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="mojito-ingles" onclick="adicionarItemDireto('Mojito Inglês','Gin, hortelã e limão',0)">+</button></div>
+                  <div class="drink-desc">Versão inglesa com gin no lugar do rum. Aromático e refrescante.</div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 23,90<button class="btn-add-item" data-item-key="mojito-ingles" onclick="adicionarItemDireto('Mojito Inglês','Gin, hortelã e limão',23.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a00,#2a1000)">🍍🥥</div>
+                  <img src="https://images.unsplash.com/photo-1767065703431-704a051e4c83?w=500&q=80&fit=crop" alt="Piña Colada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0a00,#2a1000)">🍍🥥</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Piña Colada</div>
                   <div class="drink-desc">Rum branco, creme de coco e suco de abacaxi. Tropical.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="pina-colada" onclick="adicionarItemDireto('Piña Colada','Rum, coco e abacaxi',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 21,90<button class="btn-add-item" data-item-key="pina-colada" onclick="adicionarItemDireto('Piña Colada','Rum, coco e abacaxi',21.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0a0a,#200e0e)">🍑</div>
+                  <img src="https://images.unsplash.com/photo-1719262883659-2dd4088b5977?w=500&q=80&fit=crop" alt="Sex on the Beach" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0a0a,#200e0e)">🍑</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Sex on the Beach</div>
                   <div class="drink-desc">Vodka, pêssego, suco de laranja e cranberry. Frutado e refrescante.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="sex-on-beach" onclick="adicionarItemDireto('Sex on the Beach','Vodka, pêssego e laranja',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 21,90<button class="btn-add-item" data-item-key="sex-on-beach" onclick="adicionarItemDireto('Sex on the Beach','Vodka, pêssego e laranja',21.90)">+</button></div>
                 </div>
               </div>
 
@@ -1955,7 +2020,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#000a1a,#00081e)">🌊</div>
+                  <img src="https://images.unsplash.com/photo-1564689354603-f1b96f4e288b?w=500&q=80&fit=crop" alt="Blue Hawaii" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#000a1a,#00081e)">🌊</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Blue Hawaii</div>
@@ -1966,7 +2032,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#001020,#00081a)">❄️</div>
+                  <img src="https://images.unsplash.com/photo-1632739186171-b2a442047bcd?w=500&q=80&fit=crop" alt="Blue Ice" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#001020,#00081a)">❄️</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Blue Ice</div>
@@ -1984,23 +2051,25 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#1a0e00,#201200)">🍍🥥</div>
+                  <img src="https://images.unsplash.com/photo-1613510506223-55083f3b68a0?w=500&q=80&fit=crop" alt="Piña Descolada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0e00,#201200)">🍍🥥</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Piña Descolada</div>
                   <div class="drink-desc">Versão sem álcool da Piña Colada. Abacaxi, coco e gelo. Tropical!</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="pina-descolada" onclick="adicionarItemDireto('Piña Descolada','Sem álcool · Abacaxi e coco',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 19,90<button class="btn-add-item" data-item-key="pina-descolada" onclick="adicionarItemDireto('Piña Descolada','Sem álcool · Abacaxi e coco',19.90)">+</button></div>
                 </div>
               </div>
 
               <div class="drink-card">
                 <div class="drink-img-wrap">
-                  <div class="drink-img-gradient" style="background:linear-gradient(135deg,#0a1a00,#0e2000)">🍏</div>
+                  <img src="imgs/drink-maca-verde.png" alt="Drink Maçã Verde" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="drink-img-gradient" style="display:none;background:linear-gradient(135deg,#0a1a00,#0e2000)">🍏</div>
                 </div>
                 <div class="drink-body">
                   <div class="drink-name">Drink Maçã Verde</div>
                   <div class="drink-desc">Soda italiana, maçã verde e limão. Refrescante e sem álcool.</div>
-                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="drink-maca-verde" onclick="adicionarItemDireto('Drink Maçã Verde','Sem álcool · Soda italiana',0)">+</button></div>
+                  <div class="drink-price" style="display:flex;align-items:center;justify-content:space-between">R$ 19,90<button class="btn-add-item" data-item-key="drink-maca-verde" onclick="adicionarItemDireto('Drink Maçã Verde','Sem álcool · Soda italiana',19.90)">+</button></div>
                 </div>
               </div>
 
@@ -2023,52 +2092,82 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             <div class="sub-header">🥤 Refrigerantes</div>
             <div class="bebida-grid-4">
               <div class="refri-card coca">
-                <div class="refri-logo">🥤</div>
-                <div class="refri-name">Coca-Cola</div>
-                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml &nbsp;·&nbsp; 2L</div>
-                <div class="refri-price">A partir de R$ 6,00
-                <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirBebida('Coca-Cola','Lata 350ml · 600ml · 2L',6.0)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1554866585-cd94860890b7?w=500&q=80&fit=crop" alt="Coca-Cola" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">🥤</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Coca-Cola</div>
+                  <div class="refri-variants">Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa</div>
+                  <div class="refri-price">A partir de R$ 6,00
+                  <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirItemModal('Coca-Cola','Lata 350ml · 600ml · 2L',6.00,[{id:'tipo',label:'🥤 Escolha o tipo',required:true,opcoes:[{txt:'Normal',preco_extra:0},{txt:'Coca Zero',preco_extra:0}]}])">+</button>
+                  </div>
+                </div>
               </div>
               <div class="refri-card fanta">
-                <div class="refri-logo">🍊</div>
-                <div class="refri-name">Fanta</div>
-                <div class="refri-variants">Laranja &nbsp;·&nbsp; Uva &nbsp;·&nbsp; Lata e Garrafa</div>
-                <div class="refri-price">A partir de R$ 6,00
-                <button class="btn-add-item" data-item-key="fanta" onclick="abrirBebida('Fanta','Laranja · Uva · Lata e Garrafa',6.0)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1624552184280-9e3f5de9d35a?w=500&q=80&fit=crop" alt="Fanta" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">🍊</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Fanta</div>
+                  <div class="refri-variants">Laranja &nbsp;·&nbsp; Uva &nbsp;·&nbsp; Lata e Garrafa</div>
+                  <div class="refri-price">A partir de R$ 6,00
+                  <button class="btn-add-item" data-item-key="fanta" onclick="abrirItemModal('Fanta','Lata 350ml · Garrafa',6.00,[{id:'sabor',label:'🍊 Escolha o sabor',required:true,opcoes:[{txt:'Laranja',preco_extra:0},{txt:'Uva',preco_extra:0}]}])">+</button>
+                  </div>
+                </div>
               </div>
               <div class="refri-card guarana">
-                <div class="refri-logo">🌿</div>
-                <div class="refri-name">Guaraná Antarctica</div>
-                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
-                <div class="refri-price">A partir de R$ 6,00
-                <button class="btn-add-item" data-item-key="guarana" onclick="abrirBebida('Guaraná Antarctica','Lata 350ml · 600ml',6.0)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="imgs/guarana-antarctica.png" alt="Guaraná Antarctica" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">🌿</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Guaraná Antarctica</div>
+                  <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
+                  <div class="refri-price">A partir de R$ 6,00
+                  <button class="btn-add-item" data-item-key="guarana" onclick="abrirBebida('Guaraná Antarctica','Lata 350ml · 600ml',6.0)">+</button>
+                  </div>
+                </div>
               </div>
               <div class="refri-card sprite">
-                <div class="refri-logo">💚</div>
-                <div class="refri-name">Sprite</div>
-                <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
-                <div class="refri-price">A partir de R$ 6,00
-                <button class="btn-add-item" data-item-key="sprite" onclick="abrirBebida('Sprite','Lata 350ml',6.0)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1690988109041-458628590a9e?w=500&q=80&fit=crop" alt="Sprite" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">💚</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Sprite</div>
+                  <div class="refri-variants">Lata 350ml &nbsp;·&nbsp; 600ml</div>
+                  <div class="refri-price">A partir de R$ 6,00
+                  <button class="btn-add-item" data-item-key="sprite" onclick="abrirBebida('Sprite','Lata 350ml',6.0)">+</button>
+                  </div>
+                </div>
               </div>
               <div class="refri-card agua">
-                <div class="refri-logo">💧</div>
-                <div class="refri-name">Água Mineral</div>
-                <div class="refri-variants">Com gás &nbsp;·&nbsp; Sem gás</div>
-                <div class="refri-price">A partir de R$ 5,00
-                <button class="btn-add-item" data-item-key="agua" onclick="abrirBebida('Água','Sem gás · Com gás',5.0)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1639256150782-ecdb00b01e84?w=500&q=80&fit=crop" alt="Água Mineral" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">💧</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Água Mineral</div>
+                  <div class="refri-variants">Com gás &nbsp;·&nbsp; Sem gás</div>
+                  <div class="refri-price">A partir de R$ 5,00
+                  <button class="btn-add-item" data-item-key="agua" onclick="abrirItemModal('Água Mineral','Garrafa 500ml',5.00,[{id:'gas',label:'💧 Escolha o tipo',required:true,opcoes:[{txt:'Sem gás',preco_extra:0},{txt:'Com gás',preco_extra:0}]}])">+</button>
+                  </div>
+                </div>
               </div>
               <div class="refri-card suco">
-                <div class="refri-logo">🥤</div>
-                <div class="refri-name">Suco Del Valle</div>
-                <div class="refri-variants">Uva &nbsp;·&nbsp; Pêssego &nbsp;·&nbsp; Laranja</div>
-                <div class="refri-price">A partir de R$ 7,00
-                <button class="btn-add-item" data-item-key="suco-natural" onclick="abrirBebida('Suco Natural','Laranja ou limão',10.9)">+</button>
-              </div>
+                <div class="refri-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1647776145663-84951b6c6c9f?w=500&q=80&fit=crop" alt="Suco Del Valle" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                  <div class="refri-img-fallback">🧃</div>
+                </div>
+                <div class="refri-card-body">
+                  <div class="refri-name">Suco Del Valle</div>
+                  <div class="refri-variants">Pêssego &nbsp;·&nbsp; Maracujá &nbsp;·&nbsp; Uva</div>
+                  <div class="refri-price">A partir de R$ 7,00
+                  <button class="btn-add-item" data-item-key="suco-natural" onclick="abrirItemModal('Suco Del Valle','Caixinha',7.00,[{id:'sabor',label:'🧃 Escolha o sabor',required:true,opcoes:[{txt:'Pêssego',preco_extra:0},{txt:'Maracujá',preco_extra:0},{txt:'Uva',preco_extra:0}]}])">+</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2085,8 +2184,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Soda Italiana</div>
-                  <div class="bebida-photo-desc">Bebida artesanal gaseificada com sabores exclusivos. Sem álcool.</div>
-                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="soda-italiana" onclick="adicionarItemDireto('Soda Italiana','Bebida artesanal gaseificada',0)">+</button></div>
+                  <div class="bebida-photo-desc">Bebida artesanal gaseificada · 8 sabores exclusivos · Sem álcool.</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">R$ 12,50<button class="btn-add-item" data-item-key="soda-italiana" onclick="abrirItemModal('Soda Italiana','Bebida artesanal gaseificada · Sem álcool',12.50,[{id:'sabor',label:'🫧 Escolha o sabor',required:true,opcoes:[{txt:'Morango',preco_extra:0},{txt:'Abacaxi c/ Hortelã',preco_extra:0},{txt:'Maracujá',preco_extra:0},{txt:'BLUE Ice',preco_extra:0},{txt:'Maçã Verde',preco_extra:0},{txt:'Pink Limonade',preco_extra:0},{txt:'Pêssego',preco_extra:0},{txt:'Melancia',preco_extra:0}]}])">+</button></div>
                 </div>
               </div>
             </div>
@@ -2105,7 +2204,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Heineken 0%</div>
                   <div class="bebida-photo-desc">A Heineken sem álcool. Todo o sabor, sem o álcool.</div>
-                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="heineken-0" onclick="adicionarItemDireto('Heineken 0%','A Heineken sem álcool',0)">+</button></div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">R$ 13,00<button class="btn-add-item" data-item-key="heineken-0" onclick="adicionarItemDireto('Heineken 0%','A Heineken sem álcool',13.00)">+</button></div>
                 </div>
               </div>
             </div>
@@ -2117,17 +2216,19 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             <div class="bebida-grid-3">
               <div class="bebida-photo-card">
                 <div class="bebida-photo-img">
-                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a1400,#221c00)">🥂</div>
+                  <img src="https://images.unsplash.com/photo-1514242879996-d7b3bb2dd531?w=500&q=80&fit=crop" alt="Espumante Torres" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#1a1400,#221c00)">🥂</div>
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Torres</div>
-                  <div class="bebida-photo-desc">Espumante espanhol. Elegante e frutado.</div>
-                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">Consulte<button class="btn-add-item" data-item-key="espumante-torres" onclick="adicionarItemDireto('Espumante Torres','Espumante espanhol',0)">+</button></div>
+                  <div class="bebida-photo-desc">Espumante espanhol. Elegante e frutado. Torre para a mesa.</div>
+                  <div class="bebida-photo-price" style="display:flex;align-items:center;justify-content:space-between">R$ 45,90<button class="btn-add-item" data-item-key="espumante-torres" onclick="adicionarItemDireto('Espumante Torres','Torre de espumante espanhol',45.90)">+</button></div>
                 </div>
               </div>
               <div class="bebida-photo-card">
                 <div class="bebida-photo-img">
-                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#0e140a,#141c0e)">✨</div>
+                  <img src="https://images.unsplash.com/photo-1453824979084-c8fd42932378?w=500&q=80&fit=crop" alt="Espumante da Casa" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#0e140a,#141c0e)">✨</div>
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Espumante da Casa</div>
@@ -2144,7 +2245,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             <div class="bebida-grid-3">
               <div class="bebida-photo-card">
                 <div class="bebida-photo-img">
-                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a0014,#100010)">🍷</div>
+                  <img src="https://images.unsplash.com/photo-1621644894301-cd6b2eaca610?w=500&q=80&fit=crop" alt="Taça Colonial" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0014,#100010)">🍷</div>
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Taça Colonial</div>
@@ -2154,7 +2256,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               </div>
               <div class="bebida-photo-card">
                 <div class="bebida-photo-img">
-                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#160010,#0e000c)">🌹</div>
+                  <img src="imgs/latitud-33.png" alt="Latitud 33°" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#160010,#0e000c)">🌹</div>
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Latitud 33°</div>
@@ -2164,7 +2267,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               </div>
               <div class="bebida-photo-card">
                 <div class="bebida-photo-img">
-                  <div class="bebida-img-gradient" style="background:linear-gradient(135deg,#1a0808,#120404)">🏆</div>
+                  <img src="imgs/luiz-argenta.png" alt="Luiz Argenta" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                  <div class="bebida-img-gradient" style="display:none;background:linear-gradient(135deg,#1a0808,#120404)">🏆</div>
                 </div>
                 <div class="bebida-photo-body">
                   <div class="bebida-photo-name">Luiz Argenta</div>
@@ -3645,20 +3749,20 @@ var _CATALOGO = {
     { id:'suco-natural',     nome:'Suco Natural',                    sub:'Laranja ou limão',                   campos:[{l:'Un.',v:10.90}] },
   ],
   drinks: [
-    { id:'caipirinha',       nome:'Caipirinhas',                     sub:'Cachaça artesanal',                  campos:[{l:'Un.',v:0}] },
-    { id:'caipira-chope',    nome:'Caipira de Chope',                sub:'Caipirinha com chope',               campos:[{l:'Un.',v:0}] },
-    { id:'sakerinha',        nome:'Sakerinha',                       sub:'Sake artesanal com limão',           campos:[{l:'Un.',v:0}] },
-    { id:'caipirinha-vinho', nome:'Caipirinha de Vinho',             sub:'Vinho, frutas vermelhas e limão',    campos:[{l:'Un.',v:0}] },
-    { id:'aperol-spritz',    nome:'Aperol Spritz',                   sub:'Aperol, prosecco e laranja',         campos:[{l:'Un.',v:0}] },
-    { id:'gin-tonica',       nome:'Gin Tônica',                      sub:'Gin premium e tônica',               campos:[{l:'Un.',v:0}] },
-    { id:'mojito-cubano',    nome:'Mojito Cubano',                   sub:'Rum, hortelã e limão',               campos:[{l:'Un.',v:0}] },
-    { id:'mojito-ingles',    nome:'Mojito Inglês',                   sub:'Gin, hortelã e limão',               campos:[{l:'Un.',v:0}] },
-    { id:'pina-colada',      nome:'Piña Colada',                     sub:'Rum, coco e abacaxi',                campos:[{l:'Un.',v:0}] },
-    { id:'sex-on-beach',     nome:'Sex on the Beach',                sub:'Vodka, pêssego e laranja',           campos:[{l:'Un.',v:0}] },
+    { id:'caipirinha',       nome:'Caipirinhas',                     sub:'Cachaça artesanal, limão ou morango', campos:[{l:'Un.',v:18.00}] },
+    { id:'caipira-chope',    nome:'Caipira de Chope',                sub:'Caipirinha com chope gelado',        campos:[{l:'Un.',v:18.00}] },
+    { id:'sakerinha',        nome:'Sakerinha',                       sub:'Sake artesanal com limão ou morango',campos:[{l:'Un.',v:18.00}] },
+    { id:'caipirinha-vinho', nome:'Caipirinha de Vinho',             sub:'Vinho, frutas vermelhas e limão',    campos:[{l:'Un.',v:18.00}] },
+    { id:'aperol-spritz',    nome:'Aperol Spritz',                   sub:'Aperol, prosecco e laranja',         campos:[{l:'Un.',v:21.90}] },
+    { id:'gin-tonica',       nome:'Gin Tônica',                      sub:'Gin premium e tônica',               campos:[{l:'Un.',v:19.90}] },
+    { id:'mojito-cubano',    nome:'Mojito Cubano',                   sub:'Rum, hortelã e limão',               campos:[{l:'Un.',v:23.90}] },
+    { id:'mojito-ingles',    nome:'Mojito Inglês',                   sub:'Gin, hortelã e limão',               campos:[{l:'Un.',v:23.90}] },
+    { id:'pina-colada',      nome:'Piña Colada',                     sub:'Rum, coco e abacaxi',                campos:[{l:'Un.',v:21.90}] },
+    { id:'sex-on-beach',     nome:'Sex on the Beach',                sub:'Vodka, pêssego e laranja',           campos:[{l:'Un.',v:21.90}] },
     { id:'blue-hawaii',      nome:'Blue Hawaii',                     sub:'Drink autoral exclusivo',            campos:[{l:'Un.',v:0}] },
     { id:'blue-ice',         nome:'Blue Ice',                        sub:'Drink autoral exclusivo',            campos:[{l:'Un.',v:0}] },
-    { id:'pina-descolada',   nome:'Piña Descolada',                  sub:'Sem álcool · Abacaxi e coco',        campos:[{l:'Un.',v:0}] },
-    { id:'drink-maca-verde', nome:'Drink Maçã Verde',                sub:'Sem álcool · Soda italiana',         campos:[{l:'Un.',v:0}] },
+    { id:'pina-descolada',   nome:'Piña Descolada',                  sub:'Sem álcool · Abacaxi e coco',        campos:[{l:'Un.',v:19.90}] },
+    { id:'drink-maca-verde', nome:'Drink Maçã Verde',                sub:'Sem álcool · Soda italiana',         campos:[{l:'Un.',v:19.90}] },
   ],
   chopes: [
     { id:'pilsen',       nome:'Pilsen Lager Premium',  sub:'O clássico. Suave e refrescante.',          campos:[{l:'Half Pint',v:10.50},{l:'Pint',v:11.50},{l:'Caneca',v:13.50},{l:'Torre 1,5L',v:26.00},{l:'Torre 2,5L',v:38.50}] },

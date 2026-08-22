@@ -238,9 +238,27 @@ html, body {
 /* Tab panels */
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
+
+/* ── FLASH DE ALERTA ── */
+#alert-flash {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: rgba(0, 200, 60, 0.25);
+  opacity: 0;
+}
+#alert-flash.chamada-flash { background: rgba(212, 168, 83, 0.3); }
+@keyframes flashIn {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+.flashing {
+  animation: flashIn 0.6s ease-out forwards;
+}
 </style>
 </head>
 <body>
+
+<!-- ── FLASH DE ALERTA ── -->
+<div id="alert-flash"></div>
 
 <!-- ── HEADER ── -->
 <div class="header">
@@ -249,7 +267,7 @@ html, body {
     <div class="header-badge">Painel Garçom</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">🔔</button>
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()" title="Som ativado — clique para silenciar">🔔</button>
     <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
       <div class="ping-dot" id="ping-dot"></div>
       <span id="ping-label">ao vivo</span>
@@ -671,29 +689,80 @@ function limparAtendidos() {
 }
 
 // ═══════════════════════════════════════════
-//  SOM
+//  SOM — PLIM ALTO tipo campainha
 // ═══════════════════════════════════════════
+let audioCtx = null;
+
+function getAudioCtx() {
+  if (!audioCtx || audioCtx.state === 'closed') {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Desbloqueio automático no primeiro toque/clique do usuário
+document.addEventListener('click', () => { try { getAudioCtx(); } catch(e){} }, { once: true });
+document.addEventListener('touchstart', () => { try { getAudioCtx(); } catch(e){} }, { once: true });
+
+function plimBell(ctx, t, vol) {
+  // Campainha real: fundamental + harmônicos = som "plim" rico
+  const harmonics = [
+    { freq: 1047, v: vol },          // C6 — fundamental
+    { freq: 2093, v: vol * 0.55 },   // C7 — 2ª harmônica
+    { freq: 3136, v: vol * 0.3 },    // G7 — 3ª harmônica
+    { freq: 4186, v: vol * 0.15 },   // C8 — brilho
+  ];
+  harmonics.forEach(({ freq, v }) => {
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(v, t + 0.004);   // ataque muito rápido
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 1.2); // decay longo tipo sino
+    osc.start(t);
+    osc.stop(t + 1.2);
+  });
+}
+
+function flashTela(pedido) {
+  const el = document.getElementById('alert-flash');
+  if (!el) return;
+  el.className = pedido ? '' : 'chamada-flash';
+  // remove e re-adiciona a classe para reiniciar a animação
+  el.classList.remove('flashing');
+  void el.offsetWidth; // reflow
+  el.classList.add('flashing');
+}
+
 function tocarSom(pedido) {
+  flashTela(pedido);
   if (!soundEnabled) return;
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const freqs = pedido ? [660, 880, 1100, 880] : [880, 1100, 880];
-    freqs.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + i * 0.15);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.12);
-      osc.start(ctx.currentTime + i * 0.15);
-      osc.stop(ctx.currentTime + i * 0.15 + 0.12);
-    });
-  } catch(e) {}
+    const ctx = getAudioCtx();
+    const now = ctx.currentTime;
+    const vol = 0.9; // BEM alto
+    if (pedido) {
+      // Pedido: 3 plims seguidos
+      plimBell(ctx, now,        vol);
+      plimBell(ctx, now + 0.5,  vol);
+      plimBell(ctx, now + 1.0,  vol);
+    } else {
+      // Chamada do garçom: 2 plims
+      plimBell(ctx, now,        vol);
+      plimBell(ctx, now + 0.5,  vol);
+    }
+  } catch(e) { console.warn('Som error:', e); }
 }
+
 function toggleSound() {
   soundEnabled = !soundEnabled;
-  document.getElementById('sound-btn').textContent = soundEnabled ? '🔔' : '🔕';
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = soundEnabled ? '🔔' : '🔕';
+  btn.title = soundEnabled ? 'Som ativado — clique para silenciar' : 'Som desativado — clique para ativar';
+  if (soundEnabled) tocarSom(true); // testa o som ao reativar
 }
 
 // ═══════════════════════════════════════════

@@ -267,6 +267,7 @@ html, body {
     <div class="header-badge">Painel Garçom</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
+    <button class="sound-btn" id="test-sound-btn" onclick="tocarSom(true)" title="Testar som" style="font-size:11px;padding:5px 10px;">▶ Som</button>
     <button class="sound-btn" id="sound-btn" onclick="toggleSound()" title="Som ativado — clique para silenciar">🔔</button>
     <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
       <div class="ping-dot" id="ping-dot"></div>
@@ -446,6 +447,7 @@ let soundEnabled = true;
 let lastPedidoKeys = new Set();
 let lastChamadaKeys = new Set();
 let tabAtiva = 'pedidos';
+let hadFirstLoad = false; // controla se já recebeu o snapshot inicial do Firebase
 
 // ═══════════════════════════════════════════
 //  TABS
@@ -481,14 +483,16 @@ window._renderTudo = function() {
   const chamadasAguard = todasChamadas.filter(c => c.status === 'aguardando');
   const chamadasAtend  = todasChamadas.filter(c => c.status !== 'aguardando');
 
-  // Sons para novos
+  // Sons para novos — só dispara após o primeiro snapshot (evita som ao abrir a página)
   const newPedKeys = new Set(pedidosAguard.map(p => p.key));
-  if ([...newPedKeys].some(k => !lastPedidoKeys.has(k)) && lastPedidoKeys.size > 0) tocarSom(true);
+  if (hadFirstLoad && [...newPedKeys].some(k => !lastPedidoKeys.has(k))) tocarSom(true);
   lastPedidoKeys = newPedKeys;
 
   const newChamKeys = new Set(chamadasAguard.map(c => c.key));
-  if ([...newChamKeys].some(k => !lastChamadaKeys.has(k)) && lastChamadaKeys.size > 0) tocarSom(false);
+  if (hadFirstLoad && [...newChamKeys].some(k => !lastChamadaKeys.has(k))) tocarSom(false);
   lastChamadaKeys = newChamKeys;
+
+  hadFirstLoad = true;
 
   // Stats
   document.getElementById('stat-pedidos').textContent = pedidosAguard.length;
@@ -762,7 +766,7 @@ function toggleSound() {
   const btn = document.getElementById('sound-btn');
   btn.textContent = soundEnabled ? '🔔' : '🔕';
   btn.title = soundEnabled ? 'Som ativado — clique para silenciar' : 'Som desativado — clique para ativar';
-  if (soundEnabled) tocarSom(true); // testa o som ao reativar
+  // não toca som aqui — use o botão "▶ Som" para testar
 }
 
 // ═══════════════════════════════════════════

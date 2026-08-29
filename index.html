@@ -928,6 +928,16 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   <div style="font-size:22px;font-weight:900;color:#c41a0a;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">Assinatura de banco de dados pendente</div>
   <div style="font-size:18px;color:#fff;font-weight:700;margin-bottom:8px">Valor de R$ 212,33 pendente no sistema</div>
   <div style="font-size:14px;color:#aaa;margin-top:10px">Acione o operador e reative imediatamente</div>
+  <div style="margin-top:32px;display:flex;gap:8px;align-items:center;justify-content:center">
+    <input id="blk-senha-input" type="password" placeholder="Senha do operador" maxlength="20"
+      style="background:#1a1a1a;border:1px solid #333;color:#fff;padding:10px 14px;border-radius:8px;font-size:14px;outline:none;width:180px"
+      onkeydown="if(event.key==='Enter') verificarSenhaBLK()">
+    <button onclick="verificarSenhaBLK()"
+      style="background:#c41a0a;color:#fff;border:none;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">
+      Reativar
+    </button>
+  </div>
+  <div id="blk-senha-erro" style="color:#c44;font-size:12px;margin-top:8px;min-height:16px"></div>
 </div>
 
 
@@ -2883,6 +2893,29 @@ function mostrarPainel(user) {
   // Mostrar BLK só para vitor
   const blkSection = document.getElementById('blk-section');
   if (blkSection) blkSection.style.display = user === 'vitor' ? '' : 'none';
+}
+
+function verificarSenhaBLK() {
+  const inp = document.getElementById('blk-senha-input');
+  const erro = document.getElementById('blk-senha-erro');
+  if (!inp) return;
+  const senha = inp.value.trim();
+  // Verifica contra as senhas dos usuários cadastrados
+  const senhasValidas = Object.values(USUARIOS);
+  if (senhasValidas.includes(senha)) {
+    inp.value = '';
+    if (erro) erro.textContent = '';
+    if (window._fbSetBloqueioSistema) window._fbSetBloqueioSistema(false);
+    _blkAtivo = false;
+    const btn = document.getElementById('blk-btn');
+    const status = document.getElementById('blk-status');
+    if (btn) { btn.textContent = 'BLK'; btn.style.background = '#c41a0a'; }
+    if (status) status.textContent = '';
+  } else {
+    if (erro) { erro.textContent = 'Senha incorreta'; setTimeout(() => { erro.textContent = ''; }, 2000); }
+    inp.value = '';
+    inp.focus();
+  }
 }
 
 let _blkAtivo = false;

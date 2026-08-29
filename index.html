@@ -921,6 +921,16 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 </head>
 <body>
 
+<input type="file" id="foto-upload-input" accept="image/*" style="display:none" onchange="processarUploadFoto(this)">
+<!-- BLK Overlay -->
+<div id="blk-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0a0a0a;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px">
+  <div style="font-size:60px;margin-bottom:20px">⛔</div>
+  <div style="font-size:22px;font-weight:900;color:#c41a0a;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">Assinatura de banco de dados pendente</div>
+  <div style="font-size:18px;color:#fff;font-weight:700;margin-bottom:8px">Valor de R$ 212,33 pendente no sistema</div>
+  <div style="font-size:14px;color:#aaa;margin-top:10px">Acione o operador e reative imediatamente</div>
+</div>
+
+
 <!-- ── GASTRO BG ── -->
 <div class="gastro-bg" id="gastro-bg"></div>
 
@@ -1016,6 +1026,18 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               <span class="estoque-toggle-slider"></span>
             </label>
           </div>
+        </div>
+        <!-- BLK — apenas para vitor -->
+        <div class="config-section" id="blk-section" style="display:none">
+          <div class="config-section-title" style="color:#c41a0a">⛔ BLK Sistema</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label">Bloquear Todos os Tablets</div>
+              <div class="config-row-sub">Exibe aviso de assinatura pendente em todos os tablets</div>
+            </div>
+            <button id="blk-btn" onclick="toggleBLK()" style="background:#c41a0a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:800;font-size:14px;cursor:pointer;letter-spacing:1px">BLK</button>
+          </div>
+          <div id="blk-status" style="font-size:11px;color:#888;margin-top:6px;text-align:center"></div>
         </div>
       </div>
 
@@ -1681,7 +1703,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <div class="chope-grid">
 
             <!-- Pilsen Lager Premium -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="pilsen-lager">
               <div class="chope-img-wrap">
                 <div class="chope-img-gradient" style="background:linear-gradient(135deg,#1a1400,#2a2000)">🍺</div>
               </div>
@@ -1696,7 +1718,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Pilsen Duplo Malte -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="pilsen-duplo">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6886105/picture/large/260712211253"
                      alt="Pilsen Duplo Malte" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1711,7 +1733,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- IPA -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="ipa">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6886137/picture/large/260414214624"
                      alt="IPA" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1726,7 +1748,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Session IPA -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="session-ipa">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6894072/picture/large/251230221611"
                      alt="Session IPA" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1741,7 +1763,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Weiss -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="weiss">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6886149/picture/large/260405234831"
                      alt="Weiss" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1756,7 +1778,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Vienna -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="vienna">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6886152/picture/large/260314215333"
                      alt="Vienna" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1771,7 +1793,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Malzbier -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="malzbier">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/7162912/picture/large/260216221752"
                      alt="Malzbier" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1786,7 +1808,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Dunkel -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="dunkel">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/8899420/picture/large/260323002810"
                      alt="Chopp Dunkel" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1801,7 +1823,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Chope Vinho -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="vinho-rose">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/6886158/picture/large/260519223732"
                      alt="Chope Vinho" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1816,7 +1838,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Chope Vinho Branco -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="vinho-branco">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/10623492/picture/large/260414214404"
                      alt="Chope Vinho Branco" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1831,7 +1853,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Chope Maçã Verde -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="maca-verde">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/12130747/picture/large/260508224218"
                      alt="Chope Maçã Verde" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -1846,7 +1868,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Chopp de Abacaxi -->
-            <div class="chope-card">
+            <div class="chope-card" data-item-key="abacaxi">
               <div class="chope-img-wrap">
                 <img src="https://www.goomer.app/webmenu/thann-bier/product/7754843/picture/large/260526233309"
                      alt="Chopp de Abacaxi" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
@@ -2100,7 +2122,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="refri-name">Coca-Cola</div>
                   <div class="refri-variants">Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa</div>
                   <div class="refri-price">A partir de R$ 6,00
-                  <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirItemModal('Coca-Cola','Lata 350ml · 600ml · 2L',6.00,[{id:'tipo',label:'🥤 Escolha o tipo',required:true,opcoes:[{txt:'Normal',preco_extra:0},{txt:'Coca Zero',preco_extra:0}]}])">+</button>
+                  <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirItemModal('Coca-Cola','Lata 350ml · 600ml · 2L',6.00,[{id:'tipo',label:'🥤 Escolha o tipo',required:true,opcoes:[{txt:'Normal',preco_extra:0},{txt:'Coca Zero',preco_extra:0}]},{id:'extras',label:'🍋 Extras',required:false,opcoes:[{txt:'Com limão e gelo',preco_extra:0},{txt:'Sem',preco_extra:0}]}])">+</button>
                   </div>
                 </div>
               </div>
@@ -2152,7 +2174,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="refri-name">Água Mineral</div>
                   <div class="refri-variants">Com gás &nbsp;·&nbsp; Sem gás</div>
                   <div class="refri-price">A partir de R$ 5,00
-                  <button class="btn-add-item" data-item-key="agua" onclick="abrirItemModal('Água Mineral','Garrafa 500ml',5.00,[{id:'gas',label:'💧 Escolha o tipo',required:true,opcoes:[{txt:'Sem gás',preco_extra:0},{txt:'Com gás',preco_extra:0}]}])">+</button>
+                  <button class="btn-add-item" data-item-key="agua" onclick="abrirItemModal('Água Mineral','Garrafa 500ml',5.00,[{id:'gas',label:'💧 Com gás ou sem?',required:true,opcoes:[{txt:'Sem gás',preco_extra:0},{txt:'Com gás',preco_extra:0}]},{id:'extras',label:'🍋 Extras',required:false,opcoes:[{txt:'Com limão e gelo',preco_extra:0},{txt:'Sem',preco_extra:0}]}])">+</button>
                   </div>
                 </div>
               </div>
@@ -2634,8 +2656,19 @@ window._fbSetEstoque = async function(itemKey, esgotado) {
   } catch(e) { console.warn('Estoque error:', e); }
 };
 if (typeof db !== 'undefined' && db) {
-  onValue(ref(db, 'estoque'), (snap) => {
+  let _estoqueInicializado = false;
+  onValue(ref(db, 'estoque'), async (snap) => {
     window._dadosEstoque = snap.val() || {};
+    if (!_estoqueInicializado) {
+      _estoqueInicializado = true;
+      // Pré-definir maca-verde e vienna como esgotado se ainda não estiverem no banco
+      if (!window._dadosEstoque['maca-verde']) {
+        try { await set(ref(db, 'estoque/maca-verde'), { esgotado: true }); } catch(e){}
+      }
+      if (!window._dadosEstoque['vienna']) {
+        try { await set(ref(db, 'estoque/vienna'), { esgotado: true }); } catch(e){}
+      }
+    }
     if (typeof window._renderEstoque === 'function') window._renderEstoque();
     if (typeof window._aplicarEsgotado === 'function') window._aplicarEsgotado();
   });
@@ -2658,6 +2691,39 @@ if (typeof db !== 'undefined' && db) {
     if (typeof window._renderProdutosNoCardapio === 'function') window._renderProdutosNoCardapio();
   });
 }
+
+// ── Fotos personalizadas ──
+window._dadosFotos = {};
+window._fbSetFoto = async function(key, dataUrl) {
+  if (!db) return;
+  try {
+    if (dataUrl) {
+      await set(ref(db, 'fotos/' + key), dataUrl);
+    } else {
+      await remove(ref(db, 'fotos/' + key));
+    }
+  } catch(e) { console.warn('Foto error:', e); }
+};
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'fotos'), (snap) => {
+    window._dadosFotos = snap.val() || {};
+    if (typeof window._aplicarFotos === 'function') window._aplicarFotos();
+  });
+}
+
+// ── BLK Sistema ──
+window._fbSetBloqueioSistema = async function(ativo) {
+  if (!db) return;
+  try { await set(ref(db, 'sistema/bloqueio_sistema'), ativo); } catch(e) { console.warn('BLK error:', e); }
+};
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'sistema/bloqueio_sistema'), (snap) => {
+    const ativo = !!snap.val();
+    const overlay = document.getElementById('blk-overlay');
+    if (overlay) overlay.style.display = ativo ? 'flex' : 'none';
+  });
+}
+
 
 window._fbPush = async function(mesaNum) {
   if (!db) return;
@@ -2814,6 +2880,22 @@ function mostrarPainel(user) {
   document.getElementById('cfg-avatar').textContent = nome.charAt(0);
   // Preencher mesa atual
   document.getElementById('cfg-mesa-val').value = mesaNumero || '';
+  // Mostrar BLK só para vitor
+  const blkSection = document.getElementById('blk-section');
+  if (blkSection) blkSection.style.display = user === 'vitor' ? '' : 'none';
+}
+
+let _blkAtivo = false;
+function toggleBLK() {
+  _blkAtivo = !_blkAtivo;
+  if (window._fbSetBloqueioSistema) window._fbSetBloqueioSistema(_blkAtivo);
+  const btn = document.getElementById('blk-btn');
+  const status = document.getElementById('blk-status');
+  if (btn) {
+    btn.textContent = _blkAtivo ? '✔ ATIVO — Clique para desativar' : 'BLK';
+    btn.style.background = _blkAtivo ? '#6a0000' : '#c41a0a';
+  }
+  if (status) status.textContent = _blkAtivo ? 'Bloqueio ativo em todos os tablets' : '';
 }
 
 function salvarMesaConfig() {
@@ -4330,6 +4412,19 @@ const TODOS_ITENS = [
   { key: 'sprite', nome: 'Sprite', cat: 'Bebidas' },
   { key: 'agua', nome: 'Água', cat: 'Bebidas' },
   { key: 'suco-natural', nome: 'Suco Natural', cat: 'Bebidas' },
+  // Chopes
+  { key: 'pilsen-lager', nome: 'Pilsen Lager Premium', cat: 'Chopes' },
+  { key: 'pilsen-duplo', nome: 'Pilsen Duplo Malte', cat: 'Chopes' },
+  { key: 'ipa', nome: 'IPA', cat: 'Chopes' },
+  { key: 'session-ipa', nome: 'Session IPA', cat: 'Chopes' },
+  { key: 'weiss', nome: 'Weiss', cat: 'Chopes' },
+  { key: 'vienna', nome: 'Vienna', cat: 'Chopes' },
+  { key: 'malzbier', nome: 'Malzbier', cat: 'Chopes' },
+  { key: 'dunkel', nome: 'Chopp Dunkel', cat: 'Chopes' },
+  { key: 'vinho-rose', nome: 'Chope Vinho Rosé', cat: 'Chopes' },
+  { key: 'vinho-branco', nome: 'Chope Vinho Branco', cat: 'Chopes' },
+  { key: 'maca-verde', nome: 'Chope Maçã Verde', cat: 'Chopes' },
+  { key: 'abacaxi', nome: 'Chopp de Abacaxi', cat: 'Chopes' },
 ];
 
 window._renderEstoque = function() {
@@ -4357,7 +4452,16 @@ window._renderEstoque = function() {
     html += '<div style="font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a">'+cat+'</div>';
     itens.forEach(item => {
       const esg = !!(dados[item.key] && dados[item.key].esgotado);
-      html += '<div class="estoque-item"><div><div class="estoque-item-nome">'+item.nome+'</div></div><span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span><label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label></div>';
+      const temFoto = !!(window._dadosFotos && window._dadosFotos[item.key]);
+      html += '<div class="estoque-item">'
+        + '<div style="display:flex;align-items:center;gap:5px;min-width:0;flex:1">'
+        + '<button onclick="abrirUploadFoto(\''+item.key+'\')" title="Alterar foto" style="flex-shrink:0;background:none;border:1px solid '+(temFoto?'#4caf50':'#444')+';border-radius:6px;color:'+(temFoto?'#4caf50':'#888')+';font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">'+(temFoto?'🖼️':'📷')+'</button>'
+        + (temFoto ? '<button onclick="removerFoto(\''+item.key+'\')" title="Remover foto" style="flex-shrink:0;background:none;border:1px solid #5a2020;border-radius:6px;color:#c44;font-size:11px;padding:2px 5px;cursor:pointer;line-height:1.4">✕</button>' : '')
+        + '<div class="estoque-item-nome">'+item.nome+'</div>'
+        + '</div>'
+        + '<span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span>'
+        + '<label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label>'
+        + '</div>';
     });
   });
   list.innerHTML = html;
@@ -4391,9 +4495,76 @@ window._aplicarEsgotado = function() {
       } else if (!esg && badge) badge.remove();
       const btn = card.querySelector('.btn-add-item');
       if (btn) btn.disabled = esg;
+      const chopeBtn = card.querySelector('.chope-ver-btn');
+      if (chopeBtn) chopeBtn.disabled = esg;
     }
   });
 };
+
+// ── Aplicar fotos personalizadas ──
+window._aplicarFotos = function() {
+  const fotos = window._dadosFotos || {};
+  Object.entries(fotos).forEach(([key, url]) => {
+    if (!url) return;
+    document.querySelectorAll('[data-item-key="' + key + '"]').forEach(el => {
+      const isCard = ['chope-card','food-card','bebida-photo-card','refri-card','drink-card']
+        .some(c => el.classList.contains(c));
+      const card = isCard ? el : el.closest('.food-card,.bebida-photo-card,.refri-card,.chope-card,.drink-card');
+      if (!card) return;
+      let img = card.querySelector('img');
+      if (!img) {
+        const wrap = card.querySelector('.chope-img-wrap,.food-img-wrap,.refri-img-wrap,.drink-img-wrap,.bebida-photo-img');
+        if (wrap) { img = document.createElement('img'); img.style.cssText='width:100%;height:100%;object-fit:cover'; wrap.prepend(img); }
+      }
+      if (img) {
+        img.src = url;
+        img.style.display = '';
+        const fallback = card.querySelector('.chope-img-gradient,.refri-img-fallback');
+        if (fallback) fallback.style.display = 'none';
+      }
+    });
+  });
+};
+
+let _fotoUploadKey = null;
+function abrirUploadFoto(key) {
+  _fotoUploadKey = key;
+  const inp = document.getElementById('foto-upload-input');
+  if (inp) { inp.value = ''; inp.click(); }
+}
+function removerFoto(key) {
+  if (!confirm('Remover foto personalizada de "' + key + '"?')) return;
+  if (window._fbSetFoto) window._fbSetFoto(key, null);
+  if (window._dadosFotos) delete window._dadosFotos[key];
+  // Reload page so native img src is restored
+  location.reload();
+}
+function processarUploadFoto(input) {
+  if (!input.files || !input.files[0] || !_fotoUploadKey) return;
+  const key = _fotoUploadKey;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 720;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+      else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
+      if (window._fbSetFoto) window._fbSetFoto(key, dataUrl);
+      window._dadosFotos = window._dadosFotos || {};
+      window._dadosFotos[key] = dataUrl;
+      if (window._aplicarFotos) window._aplicarFotos();
+      if (typeof window._renderEstoque === 'function') window._renderEstoque();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 
 // ══════════════════════════════════════════════
 //  PRODUTOS ADICIONADOS

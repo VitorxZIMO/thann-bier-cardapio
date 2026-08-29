@@ -1029,7 +1029,6 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <div class="config-row">
             <div>
               <div class="config-row-label" id="pedido-mesa-label">Pedidos bloqueados</div>
-              <div class="config-row-sub">Quando ativo, o cliente não pode fazer pedidos</div>
             </div>
             <label class="estoque-toggle" style="width:48px;height:26px">
               <input type="checkbox" id="toggle-bloquear-pedido" onchange="toggleBloquearPedido(this.checked)">
@@ -1043,7 +1042,6 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <div class="config-row">
             <div>
               <div class="config-row-label">Bloquear Todos os Tablets</div>
-              <div class="config-row-sub">Exibe aviso de assinatura pendente em todos os tablets</div>
             </div>
             <button id="blk-btn" onclick="toggleBLK()" style="background:#c41a0a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:800;font-size:14px;cursor:pointer;letter-spacing:1px">BLK</button>
           </div>
@@ -1585,10 +1583,10 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-img-placeholder" style="display:none">🥓</div>
               </div>
               <div class="food-card-body">
-                <div class="food-card-name">Bacon</div>
+                <div class="food-card-name">Burguer de Bacon</div>
                 <div class="food-card-desc">Pão, hambúrguer 180g, cheddar, bacon em tiras, creme cheddar e alface</div>
                 <div class="food-card-prices"><div class="price-single">R$ 37,90</div></div>
-                <button class="btn-add-item" data-item-key="bacon" onclick="abrirBurger('Bacon','Pão, hambúrguer 180g, cheddar, bacon em tiras, creme cheddar e alface',37.9)">+</button>
+                <button class="btn-add-item" data-item-key="bacon" onclick="abrirBurger('Burguer de Bacon','Pão, hambúrguer 180g, cheddar, bacon em tiras, creme cheddar e alface',37.9)">+</button>
               </div>
             </div>
 
@@ -2699,6 +2697,23 @@ if (typeof db !== 'undefined' && db) {
     window._dadosProdutos = snap.val() || {};
     if (typeof window._renderProdutosAdicionados === 'function') window._renderProdutosAdicionados();
     if (typeof window._renderProdutosNoCardapio === 'function') window._renderProdutosNoCardapio();
+  });
+}
+
+// ── Nomes personalizados ──
+window._dadosNomes = {};
+window._fbSetNome = async function(key, nome) {
+  if (!db) return;
+  try {
+    if (nome) { await set(ref(db, 'nomes/' + key), nome); }
+    else { await remove(ref(db, 'nomes/' + key)); }
+  } catch(e) { console.warn('Nome error:', e); }
+};
+if (typeof db !== 'undefined' && db) {
+  onValue(ref(db, 'nomes'), (snap) => {
+    window._dadosNomes = snap.val() || {};
+    if (typeof window._aplicarNomes === 'function') window._aplicarNomes();
+    if (typeof window._renderEstoque === 'function') window._renderEstoque();
   });
 }
 
@@ -4432,7 +4447,7 @@ const TODOS_ITENS = [
   { key: 'maracuja', nome: 'Maracujá', cat: 'Hambúrgueres' },
   { key: 'abacaxi-lombo', nome: 'Abacaxi & Lombo Canadense', cat: 'Hambúrgueres' },
   { key: 'figo-copa', nome: 'Figo & Copa Lombo', cat: 'Hambúrgueres' },
-  { key: 'bacon', nome: 'Bacon', cat: 'Hambúrgueres' },
+  { key: 'bacon', nome: 'Burguer de Bacon', cat: 'Hambúrgueres' },
   { key: 'cebola-empanada', nome: 'Cebola Empanada', cat: 'Hambúrgueres' },
   // Porções
   { key: 'batata-frita', nome: 'Batata Frita', cat: 'Porções' },
@@ -4489,8 +4504,9 @@ window._renderEstoque = function() {
       html += '<div class="estoque-item">'
         + '<div style="display:flex;align-items:center;gap:5px;min-width:0;flex:1">'
         + '<button onclick="abrirUploadFoto(\''+item.key+'\')" title="Alterar foto" style="flex-shrink:0;background:none;border:1px solid '+(temFoto?'#4caf50':'#444')+';border-radius:6px;color:'+(temFoto?'#4caf50':'#888')+';font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">'+(temFoto?'🖼️':'📷')+'</button>'
+        + '<button onclick="abrirRenomear(\''+item.key+'\',\')'+(window._dadosNomes&&window._dadosNomes[item.key]?window._dadosNomes[item.key]:item.nome).replace(/\'/g,\'\\\'\')+'\')" title="Renomear" style="flex-shrink:0;background:none;border:1px solid #445;border-radius:6px;color:#99aacc;font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">✏️</button>'
         + (temFoto ? '<button onclick="removerFoto(\''+item.key+'\')" title="Remover foto" style="flex-shrink:0;background:none;border:1px solid #5a2020;border-radius:6px;color:#c44;font-size:11px;padding:2px 5px;cursor:pointer;line-height:1.4">✕</button>' : '')
-        + '<div class="estoque-item-nome">'+item.nome+'</div>'
+        + '<div class="estoque-item-nome">'+(window._dadosNomes&&window._dadosNomes[item.key]?window._dadosNomes[item.key]:item.nome)+'</div>'
         + '</div>'
         + '<span class="estoque-status '+(esg?'':'ok')+'">'+(esg?'ESGOTADO':'Disponível')+'</span>'
         + '<label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label>'
@@ -4535,6 +4551,21 @@ window._aplicarEsgotado = function() {
 };
 
 // ── Aplicar fotos personalizadas ──
+window._aplicarNomes = function() {
+  const nomes = window._dadosNomes || {};
+  Object.entries(nomes).forEach(([key, nome]) => {
+    if (!nome) return;
+    document.querySelectorAll('[data-item-key="' + key + '"]').forEach(el => {
+      const isCard = ['chope-card','food-card','bebida-photo-card','refri-card','drink-card']
+        .some(c => el.classList.contains(c));
+      const card = isCard ? el : el.closest('.food-card,.bebida-photo-card,.refri-card,.chope-card,.drink-card');
+      if (!card) return;
+      const nameEl = card.querySelector('.food-card-name,.chope-name,.refri-name,.drink-name,.bebida-photo-name');
+      if (nameEl) nameEl.textContent = nome;
+    });
+  });
+};
+
 window._aplicarFotos = function() {
   const fotos = window._dadosFotos || {};
   Object.entries(fotos).forEach(([key, url]) => {
@@ -4565,6 +4596,23 @@ function abrirUploadFoto(key) {
   const inp = document.getElementById('foto-upload-input');
   if (inp) { inp.value = ''; inp.click(); }
 }
+function abrirRenomear(key, nomeAtual) {
+  const novo = prompt('Novo nome para o produto:', nomeAtual);
+  if (novo === null) return; // cancelou
+  const nomeFinal = novo.trim();
+  if (!nomeFinal) {
+    // Restaurar nome original
+    if (window._fbSetNome) window._fbSetNome(key, null);
+    if (window._dadosNomes) delete window._dadosNomes[key];
+  } else {
+    if (window._fbSetNome) window._fbSetNome(key, nomeFinal);
+    window._dadosNomes = window._dadosNomes || {};
+    window._dadosNomes[key] = nomeFinal;
+  }
+  if (window._aplicarNomes) window._aplicarNomes();
+  if (typeof window._renderEstoque === 'function') window._renderEstoque();
+}
+
 function removerFoto(key) {
   if (!confirm('Remover foto personalizada de "' + key + '"?')) return;
   if (window._fbSetFoto) window._fbSetFoto(key, null);

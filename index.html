@@ -4504,7 +4504,7 @@ window._renderEstoque = function() {
       html += '<div class="estoque-item">'
         + '<div style="display:flex;align-items:center;gap:5px;min-width:0;flex:1">'
         + '<button onclick="abrirUploadFoto(\''+item.key+'\')" title="Alterar foto" style="flex-shrink:0;background:none;border:1px solid '+(temFoto?'#4caf50':'#444')+';border-radius:6px;color:'+(temFoto?'#4caf50':'#888')+';font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">'+(temFoto?'🖼️':'📷')+'</button>'
-        + '<button onclick="abrirRenomear(\''+item.key+'\',\')'+(window._dadosNomes&&window._dadosNomes[item.key]?window._dadosNomes[item.key]:item.nome).replace(/\'/g,\'\\\'\')+'\')" title="Renomear" style="flex-shrink:0;background:none;border:1px solid #445;border-radius:6px;color:#99aacc;font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">✏️</button>'
+        + '<button onclick="abrirRenomear(\''+item.key+'\')" title="Renomear" style="flex-shrink:0;background:none;border:1px solid #445;border-radius:6px;color:#99aacc;font-size:12px;padding:2px 5px;cursor:pointer;line-height:1.4">✏️</button>'
         + (temFoto ? '<button onclick="removerFoto(\''+item.key+'\')" title="Remover foto" style="flex-shrink:0;background:none;border:1px solid #5a2020;border-radius:6px;color:#c44;font-size:11px;padding:2px 5px;cursor:pointer;line-height:1.4">✕</button>' : '')
         + '<div class="estoque-item-nome">'+(window._dadosNomes&&window._dadosNomes[item.key]?window._dadosNomes[item.key]:item.nome)+'</div>'
         + '</div>'
@@ -4596,7 +4596,9 @@ function abrirUploadFoto(key) {
   const inp = document.getElementById('foto-upload-input');
   if (inp) { inp.value = ''; inp.click(); }
 }
-function abrirRenomear(key, nomeAtual) {
+function abrirRenomear(key) {
+  const nomeAtual = (window._dadosNomes && window._dadosNomes[key])
+    || (TODOS_ITENS.find(i => i.key === key) || {}).nome || key;
   const novo = prompt('Novo nome para o produto:', nomeAtual);
   if (novo === null) return; // cancelou
   const nomeFinal = novo.trim();

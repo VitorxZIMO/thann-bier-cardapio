@@ -1070,6 +1070,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <button class="preco-cat" onclick="mudarPrecoCat('drinks',this)">🍹 Drinks</button>
           <button class="preco-cat" onclick="mudarPrecoCat('chopes',this)">🍺 Chopes</button>
           <button class="preco-cat" onclick="mudarPrecoCat('bordas',this)">🍕 Bordas</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('pizzas',this)">🍕 Pizzas</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('xis',this)">🥪 Xis</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('especiais',this)">🍷 Especiais</button>
         </div>
         <div id="preco-editor-body" style="flex:1;overflow-y:auto;padding-bottom:8px">
           <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando...</div>
@@ -1611,7 +1614,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <div class="food-grid" id="xis-grid">
 
             <!-- Xis Salada -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-salada">
               <div class="food-img-wrap">
                 <img src="https://www.dipaes.com.br/uploads/xis-gaucho-5c82b2286a9ce.jpg" alt="Xis Salada" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -1624,7 +1627,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Xis Calabresa -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-calabresa">
               <div class="food-img-wrap">
                 <img src="https://guiadacozinha.com.br/wp-content/uploads/2023/05/tamanho-padrao-gc-42.jpg" alt="Xis Calabresa" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -1637,7 +1640,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Xis Bacon -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-bacon">
               <div class="food-img-wrap">
                 <img src="https://static.tvgazeta.com.br/uploads/2022/08/x-tudo-xis-gaucho-receita-sanduiche-facil-coracao.jpg" alt="Xis Bacon" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -1650,7 +1653,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Xis Strogonoff de Gado -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-strogonoff">
               <div class="food-img-wrap">
                 <img src="https://www.minhasreceitas.blog.br/wp-content/uploads/2022/05/X-Gau%CC%81cho.jpeg" alt="Xis Strogonoff de Gado" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -1663,7 +1666,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Xis Frango Catupiry -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-frango">
               <div class="food-img-wrap">
                 <img src="https://conteudo.imguol.com.br/c/entretenimento/60/2022/04/06/xis-gaucho-cozinha-por-ai-1649290676769_v2_4x3.png" alt="Xis Frango Catupiry" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -1676,7 +1679,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
             </div>
 
             <!-- Xis Thänn -->
-            <div class="food-card">
+            <div class="food-card" data-item-key="xis-thann">
               <div class="food-img-wrap">
                 <img src="https://s2-g1.glbimg.com/OftRqOj85xmVLxffUqRH653JuoI=/0x0:1024x768/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2023/z/U/BE3E53RzKFRboZd3SD1Q/whatsapp-image-2023-06-16-at-11.11.04.jpeg" alt="Xis Thänn" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
                 <div class="food-img-placeholder" style="display:none">🥪</div>
@@ -3882,6 +3885,35 @@ var _CATALOGO = {
     { id:'pina-descolada',   nome:'Piña Descolada',                  sub:'Sem álcool · Abacaxi e coco',        campos:[{l:'Un.',v:19.90}] },
     { id:'drink-maca-verde', nome:'Drink Maçã Verde',                sub:'Sem álcool · Soda italiana',         campos:[{l:'Un.',v:19.90}] },
   ],
+  xis: [
+    { id:'xis-salada',    nome:'Xis Salada',           sub:'Hambúrguer, milho, ervilha, alface, tomate, mussarela e ovo',  campos:[{l:'Preço',v:20.00}] },
+    { id:'xis-calabresa', nome:'Xis Calabresa',         sub:'Hambúrguer, calabresa, milho, ervilha, alface, tomate e mussarela', campos:[{l:'Preço',v:23.00}] },
+    { id:'xis-bacon',     nome:'Xis Bacon',             sub:'Hambúrguer, bacon em cubos, milho, ervilha, alface e tomate', campos:[{l:'Preço',v:26.00}] },
+    { id:'xis-strogonoff',nome:'Xis Strogonoff de Gado',sub:'Strogonoff de gado, milho, ervilha, alface e batata palha',   campos:[{l:'Preço',v:25.00}] },
+    { id:'xis-frango',    nome:'Xis Frango Catupiry',   sub:'Frango desfiado, catupiry, milho, ervilha e alface',           campos:[{l:'Preço',v:26.00}] },
+    { id:'xis-thann',     nome:'Xis Thänn',             sub:'Hambúrguer, bacon, calabresa, ovo, milho, ervilha e mussarela',campos:[{l:'Preço',v:35.00}] },
+  ],
+  pizzas: [
+    { id:'pizza-media',                nome:'Pizza Média (base)',        sub:'8 fatias · até 2 sabores',          campos:[{l:'Preço',v:64.90}] },
+    { id:'pizza-grande-1',             nome:'Pizza Grande — 1 sabor',    sub:'12 fatias',                         campos:[{l:'Preço',v:69.90}] },
+    { id:'pizza-grande-multi',         nome:'Pizza Grande — 2-3 sabores',sub:'12 fatias',                         campos:[{l:'Preço',v:75.90}] },
+    { id:'pizza-extra-camarao',        nome:'Extra: Pizza Camarão',      sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:12}] },
+    { id:'pizza-extra-costela-prem',   nome:'Extra: Costela Premium',    sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:5}] },
+    { id:'pizza-extra-ouro-branco',    nome:'Extra: Ouro Branco',        sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:5}] },
+    { id:'pizza-extra-urbana',         nome:'Extra: Urbana',             sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:5}] },
+    { id:'pizza-extra-guirlanda',      nome:'Extra: Guirlanda Pringles', sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:40}] },
+    { id:'pizza-extra-sonho-meu',      nome:'Extra: Sonho Meu',          sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:50}] },
+  ],
+  especiais: [
+    { id:'soda-italiana',    nome:'Soda Italiana',      sub:'Artesanal gaseificada · Sem álcool',   campos:[{l:'Un.',v:12.50}] },
+    { id:'heineken-0',       nome:'Heineken 0%',         sub:'Sem álcool',                           campos:[{l:'Un.',v:13.00}] },
+    { id:'espumante-torres', nome:'Espumante Torres',    sub:'Torre espumante espanhol',             campos:[{l:'Un.',v:45.90}] },
+    { id:'espumante-casa',   nome:'Espumante da Casa',   sub:'Seleção especial Thänn Bier',          campos:[{l:'Un.',v:0}] },
+    { id:'vinho-colonial',   nome:'Taça Colonial',       sub:'Vinho tinto encorpado',                campos:[{l:'Un.',v:0}] },
+    { id:'vinho-latitud',    nome:'Latitud 33°',          sub:'Vinho argentino',                      campos:[{l:'Un.',v:0}] },
+    { id:'vinho-luiz-argenta',nome:'Luiz Argenta',       sub:'Vinho gaúcho premiado',                campos:[{l:'Un.',v:0}] },
+    { id:'jagermeister',     nome:'Jägermeister',        sub:'Dose 50ml',                            campos:[{l:'Un.',v:0}] },
+  ],
   bordas: [
     { id:'borda-catupiry',      nome:'Catupiry',                 sub:'Borda recheada',  campos:[{l:'Preço',v:12}] },
     { id:'borda-cheddar',       nome:'Cheddar',                  sub:'Borda recheada',  campos:[{l:'Preço',v:12}] },
@@ -3953,7 +3985,7 @@ function _renderPrecoEditor() {
 }
 
 function _catLabel(cat) {
-  return {porcoes:'Porções',burgers:'Hambúrgueres',bebidas:'Bebidas',drinks:'Drinks',chopes:'Chopes',bordas:'Bordas'}[cat]||cat;
+  return {porcoes:'Porções',burgers:'Hambúrgueres',bebidas:'Bebidas',drinks:'Drinks',chopes:'Chopes',bordas:'Bordas',xis:'Xis',pizzas:'Pizzas',especiais:'Especiais'}[cat]||cat;
 }
 
 function _renderBordaChips() {
@@ -4066,6 +4098,77 @@ function _aplicarPrecosNoCardapio(cat, dados) {
         if (priceDiv && preco3 > 0) {
           var txtNode = priceDiv.childNodes[0];
           if (txtNode && txtNode.nodeType === 3) txtNode.textContent = 'R$ ' + parseFloat(preco3).toFixed(2).replace('.',',');
+        }
+      }
+    } else if (cat === 'xis') {
+      // Atualiza preço exibido nos cards de Xis
+      var vals_xis = dados[item.id] || {};
+      var preco_xis = vals_xis[0] !== undefined ? parseFloat(vals_xis[0]) : item.campos[0].v;
+      document.querySelectorAll('[data-item-key="' + item.id + '"]').forEach(function(card) {
+        var ps = card.querySelector('.price-single');
+        if (ps && preco_xis > 0) ps.textContent = 'R$ ' + preco_xis.toFixed(2).replace('.',',');
+      });
+    } else if (cat === 'pizzas') {
+      var vals_p = dados[item.id] || {};
+      if (item.id === 'pizza-media') {
+        var pm = vals_p[0] !== undefined ? parseFloat(vals_p[0]) : 64.90;
+        PIZZA_BASE.media.base = pm;
+        var mediaBtns = document.querySelectorAll('.pizza-size-btn');
+        if (mediaBtns[0]) {
+          mediaBtns[0].querySelectorAll('.size-price-row b').forEach(function(b) {
+            b.textContent = 'R$ ' + pm.toFixed(2).replace('.',',');
+          });
+        }
+      } else if (item.id === 'pizza-grande-1') {
+        var pg1 = vals_p[0] !== undefined ? parseFloat(vals_p[0]) : 69.90;
+        var mediaBtnsG = document.querySelectorAll('.pizza-size-btn');
+        if (mediaBtnsG[1]) {
+          var bG = mediaBtnsG[1].querySelectorAll('.size-price-row b');
+          if (bG[0]) bG[0].textContent = 'R$ ' + pg1.toFixed(2).replace('.',',');
+        }
+      } else if (item.id === 'pizza-grande-multi') {
+        var pgm = vals_p[0] !== undefined ? parseFloat(vals_p[0]) : 75.90;
+        PIZZA_BASE.grande.base = pgm;
+        var mediaBtnsGM = document.querySelectorAll('.pizza-size-btn');
+        if (mediaBtnsGM[1]) {
+          var bGM = mediaBtnsGM[1].querySelectorAll('.size-price-row b');
+          if (bGM[1]) bGM[1].textContent = 'R$ ' + pgm.toFixed(2).replace('.',',');
+          if (bGM[2]) bGM[2].textContent = 'R$ ' + pgm.toFixed(2).replace('.',',');
+        }
+      } else if (item.id.indexOf('pizza-extra-') === 0) {
+        var extraVal = vals_p[0] !== undefined ? parseFloat(vals_p[0]) || 0 : 0;
+        var extraNomeMap = {
+          'pizza-extra-camarao':'Pizza Camarão','pizza-extra-costela-prem':'Costela Premium',
+          'pizza-extra-ouro-branco':'Ouro Branco','pizza-extra-urbana':'Urbana',
+          'pizza-extra-guirlanda':'Guirlanda Pringles','pizza-extra-sonho-meu':'Sonho Meu'
+        };
+        var sNome = extraNomeMap[item.id];
+        if (sNome) {
+          SABORES_SALGADOS.concat(SABORES_DOCES).forEach(function(s) {
+            if (s.nome === sNome || s.nome.replace(/^[⭐👨‍🍳\s]*/,'').trim() === sNome) s.extra = extraVal;
+          });
+        }
+      }
+    } else if (cat === 'especiais') {
+      // Atualiza botão de bebidas especiais
+      var vals_e = dados[item.id] || {};
+      var preco_e = vals_e[0] !== undefined ? parseFloat(vals_e[0]) : item.campos[0].v;
+      var btnE = document.querySelector('[data-item-key="' + item.id + '"]');
+      if (btnE) {
+        var oc = btnE.getAttribute('onclick') || '';
+        if (oc.indexOf('adicionarItemDireto') > -1) {
+          btnE.setAttribute('onclick', "adicionarItemDireto('" + item.nome.replace(/'/g,"\'") + "','" + item.sub.replace(/'/g,"\'") + "'," + preco_e + ")");
+        } else if (oc.indexOf('abrirItemModal') > -1) {
+          // Preserve extras, just update price — reparse onclick
+          var m = oc.match(/abrirItemModal\('[^']+','[^']+',([\d.]+),(\[.*\])\)/s);
+          if (m) btnE.setAttribute('onclick', "abrirItemModal('" + item.nome.replace(/'/g,"\'") + "','" + item.sub.replace(/'/g,"\'") + "'," + preco_e + "," + m[2] + ")");
+        }
+        // Update displayed price
+        var priceContainer = btnE.closest('.bebida-photo-price, .refri-price');
+        if (priceContainer) {
+          var txt = priceContainer.childNodes[0];
+          var label = preco_e > 0 ? 'R$ ' + preco_e.toFixed(2).replace('.',',') : 'Consulte';
+          if (txt && txt.nodeType === 3) txt.textContent = label;
         }
       }
     } else if (cat === 'bordas') {

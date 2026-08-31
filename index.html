@@ -1069,6 +1069,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <button class="preco-cat" onclick="mudarPrecoCat('bebidas',this)">🥤 Bebidas</button>
           <button class="preco-cat" onclick="mudarPrecoCat('drinks',this)">🍹 Drinks</button>
           <button class="preco-cat" onclick="mudarPrecoCat('chopes',this)">🍺 Chopes</button>
+          <button class="preco-cat" onclick="mudarPrecoCat('bordas',this)">🍕 Bordas</button>
         </div>
         <div id="preco-editor-body" style="flex:1;overflow-y:auto;padding-bottom:8px">
           <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando...</div>
@@ -1303,16 +1304,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           <!-- Bordas -->
           <div class="borda-section">
             <h3>🍕 Bordas Recheadas — opcional</h3>
-            <div class="borda-chips">
-              <div class="borda-chip">Catupiry <span class="chip-price">+R$ 12,00</span></div>
-              <div class="borda-chip">Cheddar <span class="chip-price">+R$ 12,00</span></div>
-              <div class="borda-chip">Vulcão Cheddar &amp; Catupiry <span class="chip-price">+R$ 16,00</span></div>
-              <div class="borda-chip">Bacon com Cheddar <span class="chip-price">+R$ 15,00</span></div>
-              <div class="borda-chip">Calabresa com Catupiry <span class="chip-price">+R$ 15,00</span></div>
-              <div class="borda-chip">Calabresa com Cheddar <span class="chip-price">+R$ 15,00</span></div>
-              <div class="borda-chip">Chocolate Branco <span class="chip-price">+R$ 15,00</span></div>
-              <div class="borda-chip">Chocolate Preto <span class="chip-price">+R$ 15,00</span></div>
-            </div>
+            <div class="borda-chips borda-chips-dynamic"></div>
           </div>
 
         </div>
@@ -2586,16 +2578,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
     <div style="margin-top:24px">
       <div class="borda-section">
         <h3>🍕 Bordas Recheadas — opcional</h3>
-        <div class="borda-chips">
-          <div class="borda-chip">Catupiry <span class="chip-price">+R$ 12,00</span></div>
-          <div class="borda-chip">Cheddar <span class="chip-price">+R$ 12,00</span></div>
-          <div class="borda-chip">Vulcão Cheddar &amp; Catupiry <span class="chip-price">+R$ 16,00</span></div>
-          <div class="borda-chip">Bacon com Cheddar <span class="chip-price">+R$ 15,00</span></div>
-          <div class="borda-chip">Calabresa com Catupiry <span class="chip-price">+R$ 15,00</span></div>
-          <div class="borda-chip">Calabresa com Cheddar <span class="chip-price">+R$ 15,00</span></div>
-          <div class="borda-chip">Chocolate Branco <span class="chip-price">+R$ 15,00</span></div>
-          <div class="borda-chip">Chocolate Preto <span class="chip-price">+R$ 15,00</span></div>
-        </div>
+        <div class="borda-chips borda-chips-dynamic"></div>
       </div>
     </div>
 
@@ -3189,6 +3172,11 @@ const BORDAS = [
   { nome: 'Chocolate Branco',       preco: 15 },
   { nome: 'Chocolate Preto',        preco: 15 },
 ];
+
+// Renderiza chips de borda assim que a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof _renderBordaChips === 'function') _renderBordaChips();
+});
 
 // ──────────────────────────────────────────
 //  CARRINHO — helpers
@@ -3894,6 +3882,16 @@ var _CATALOGO = {
     { id:'pina-descolada',   nome:'Piña Descolada',                  sub:'Sem álcool · Abacaxi e coco',        campos:[{l:'Un.',v:19.90}] },
     { id:'drink-maca-verde', nome:'Drink Maçã Verde',                sub:'Sem álcool · Soda italiana',         campos:[{l:'Un.',v:19.90}] },
   ],
+  bordas: [
+    { id:'borda-catupiry',      nome:'Catupiry',                 sub:'Borda recheada',  campos:[{l:'Preço',v:12}] },
+    { id:'borda-cheddar',       nome:'Cheddar',                  sub:'Borda recheada',  campos:[{l:'Preço',v:12}] },
+    { id:'borda-vulcao',        nome:'Vulcão Cheddar & Catupiry',sub:'Borda recheada',  campos:[{l:'Preço',v:16}] },
+    { id:'borda-bacon-cheddar', nome:'Bacon com Cheddar',        sub:'Borda recheada',  campos:[{l:'Preço',v:15}] },
+    { id:'borda-cal-catupiry',  nome:'Calabresa com Catupiry',   sub:'Borda recheada',  campos:[{l:'Preço',v:15}] },
+    { id:'borda-cal-cheddar',   nome:'Calabresa com Cheddar',    sub:'Borda recheada',  campos:[{l:'Preço',v:15}] },
+    { id:'borda-choc-branco',   nome:'Chocolate Branco',         sub:'Borda recheada',  campos:[{l:'Preço',v:15}] },
+    { id:'borda-choc-preto',    nome:'Chocolate Preto',          sub:'Borda recheada',  campos:[{l:'Preço',v:15}] },
+  ],
   chopes: [
     { id:'pilsen',       nome:'Pilsen Lager Premium',  sub:'O clássico. Suave e refrescante.',          campos:[{l:'Half Pint',v:10.50},{l:'Pint',v:11.50},{l:'Caneca',v:13.50},{l:'Torre 1,5L',v:26.00},{l:'Torre 2,5L',v:38.50}] },
     { id:'duplo-malte',  nome:'Pilsen Duplo Malte',    sub:'Encorpado e maltado.',                      campos:[{l:'Half Pint',v:9.50},{l:'Pint',v:11.50},{l:'Caneca',v:14.00},{l:'Torre 1,5L',v:25.50},{l:'Torre 2,5L',v:37.50}] },
@@ -3955,7 +3953,18 @@ function _renderPrecoEditor() {
 }
 
 function _catLabel(cat) {
-  return {porcoes:'Porções',burgers:'Hambúrgueres',bebidas:'Bebidas',drinks:'Drinks',chopes:'Chopes'}[cat]||cat;
+  return {porcoes:'Porções',burgers:'Hambúrgueres',bebidas:'Bebidas',drinks:'Drinks',chopes:'Chopes',bordas:'Bordas'}[cat]||cat;
+}
+
+function _renderBordaChips() {
+  // Atualiza todos os conjuntos de chips de borda na página
+  document.querySelectorAll('.borda-chips-dynamic').forEach(function(el) {
+    el.innerHTML = BORDAS.map(function(b) {
+      return '<div class="borda-chip">' + b.nome + ' <span class="chip-price">+R$ ' + b.preco.toFixed(2).replace('.',',') + '</span></div>';
+    }).join('');
+  });
+  // Re-renderiza o seletor no modal se estiver aberto
+  if (typeof renderPPBordas === 'function') renderPPBordas();
 }
 
 function _onPrecoChange(input) {
@@ -3982,6 +3991,20 @@ function _salvarPrecos(cat) {
     });
   });
   _precos[cat] = dados;
+  // Bordas: atualizar array BORDAS e chips
+  if (cat === 'bordas') {
+    var bordaMap = {
+      'borda-catupiry': 'Catupiry', 'borda-cheddar': 'Cheddar',
+      'borda-vulcao': 'Vulcão Cheddar & Catupiry', 'borda-bacon-cheddar': 'Bacon com Cheddar',
+      'borda-cal-catupiry': 'Calabresa com Catupiry', 'borda-cal-cheddar': 'Calabresa com Cheddar',
+      'borda-choc-branco': 'Chocolate Branco', 'borda-choc-preto': 'Chocolate Preto'
+    };
+    BORDAS.forEach(function(b, i) {
+      var id = Object.keys(bordaMap).find(function(k){ return bordaMap[k] === b.nome; });
+      if (id && dados[id] && dados[id][0] !== undefined) BORDAS[i].preco = parseFloat(dados[id][0]) || b.preco;
+    });
+    _renderBordaChips();
+  }
   window._fbSet(window._fbRef(window._fbDb, 'cardapio_precos/' + cat), dados)
     .then(function() {
       var msg = document.getElementById('preco-saved-msg');
@@ -4045,6 +4068,19 @@ function _aplicarPrecosNoCardapio(cat, dados) {
           if (txtNode && txtNode.nodeType === 3) txtNode.textContent = 'R$ ' + parseFloat(preco3).toFixed(2).replace('.',',');
         }
       }
+    } else if (cat === 'bordas') {
+      // Atualiza array BORDAS e re-renderiza chips
+      var bordaMap = {
+        'borda-catupiry':'Catupiry','borda-cheddar':'Cheddar',
+        'borda-vulcao':'Vulcão Cheddar & Catupiry','borda-bacon-cheddar':'Bacon com Cheddar',
+        'borda-cal-catupiry':'Calabresa com Catupiry','borda-cal-cheddar':'Calabresa com Cheddar',
+        'borda-choc-branco':'Chocolate Branco','borda-choc-preto':'Chocolate Preto'
+      };
+      BORDAS.forEach(function(b, i) {
+        var id = Object.keys(bordaMap).find(function(k){ return bordaMap[k] === b.nome; });
+        if (id && dados[id] && dados[id][0] !== undefined) BORDAS[i].preco = parseFloat(dados[id][0]) || b.preco;
+      });
+      if (typeof _renderBordaChips === 'function') _renderBordaChips();
     } else if (cat === 'chopes') {
       // Atualiza o btn "Ver tamanhos" com novos preços e o "A partir de"
       var btns = document.querySelectorAll('.chope-ver-btn');

@@ -1453,6 +1453,20 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
               </div>
             </div>
 
+            <!-- Tábua de Carne -->
+            <div class="food-card" data-item-key="tabua-carne">
+              <div class="food-img-wrap">
+                <img src="" alt="Tábua de Carne" class="food-img" style="display:none" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder">🥩</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Tábua de Carne</div>
+                <div class="food-card-desc">900g · Calabresa, coração, salsichão, iscas de alcatra, pão, molho agridoce e molho de maionese</div>
+                <div class="food-card-prices"><div class="price-single">R$ 120,00</div></div>
+                <button class="btn-add-item" data-item-key="tabua-carne" onclick="abrirPorcao('Tábua de Carne','900g · Calabresa, coração, salsichão, iscas de alcatra, pão, molho agridoce e molho de maionese',120.00)" style="margin-top:8px;width:100%">+ Adicionar</button>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -1596,6 +1610,20 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 <div class="food-card-desc">Pão, hambúrguer 180g, creme cheddar, cheddar, cebola empanada e alface</div>
                 <div class="food-card-prices"><div class="price-single">R$ 37,90</div></div>
                 <button class="btn-add-item" data-item-key="cebola-empanada" onclick="abrirBurger('Cebola Empanada','Pão, hambúrguer 180g, creme cheddar, cheddar, cebola empanada e alface',37.9)">+</button>
+              </div>
+            </div>
+
+            <!-- Hambúrguer de Rúcula com Cebola -->
+            <div class="food-card" data-item-key="rucula-cebola">
+              <div class="food-img-wrap">
+                <img src="" alt="Hambúrguer de Rúcula com Cebola" class="food-img" style="display:none" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="food-img-placeholder">🥗</div>
+              </div>
+              <div class="food-card-body">
+                <div class="food-card-name">Hambúrguer de Rúcula com Cebola</div>
+                <div class="food-card-desc">Pão, maionese, rúcula, hambúrguer, mussarela, cebola caramelizada</div>
+                <div class="food-card-prices"><div class="price-single">R$ 39,90</div></div>
+                <button class="btn-add-item" data-item-key="rucula-cebola" onclick="abrirBurger('Hambúrguer de Rúcula com Cebola','Pão, maionese, rúcula, hambúrguer, mussarela, cebola caramelizada',39.9)">+</button>
               </div>
             </div>
 
@@ -3143,6 +3171,7 @@ const SABORES_SALGADOS = [
   { nome: 'Milho',               desc: 'Milho, mussarela, molho de tomate e orégano',                                          extra: 0 },
   { nome: 'Pepperoni',           desc: 'Pepperoni, mussarela, molho caseiro e orégano',                                        extra: 0 },
   { nome: 'Pizza Camarão',       desc: 'Camarão médio, molho de tomate, mussarela, raspas de limão siciliano, alho e pimentão', extra: 12 },
+  { nome: '⭐ Pizza Picanha',     desc: 'Massa caseira, molho caseiro, mussarela, fatias de picanha, orégano e molho de mostarda com parmesão',                              extra: 14.10 },
   { nome: 'Portuguesa',          desc: 'Massa caseira, molho de tomate fresco, mussarela, ovo, presunto e azeitona',           extra: 0 },
   { nome: 'Quatro Queijos',      desc: 'Mussarela, provolone, parmesão, catupiry, molho de tomate e orégano',                  extra: 0 },
   { nome: 'Strogonoff de Gado',  desc: 'Strogonoff de carne bovina, mussarela, molho de tomate, batata palha e orégano',       extra: 0 },
@@ -3155,6 +3184,7 @@ const SABORES_DOCES = [
   { nome: 'Dois Amores',                desc: 'Creme de leite, chocolate ao leite, chocolate branco e morango',                               extra: 0 },
   { nome: 'Duas Sensações',             desc: 'Chocolate branco, chocolate preto, morango, creme de leite, mussarela e leite condensado',     extra: 0 },
   { nome: 'Guirlanda Pringles',         desc: 'Frango cremoso, bacon, mussarela, catupiry, cebola, tomate, pimentão e Pringles',              extra: 40 },
+  { nome: 'Kinder Bueno',             desc: 'Massa caseira, chocolate branco, morango e Kinder Bueno triturado',                  extra: 9.00 },
   { nome: 'Marshmallow',                desc: 'Queijo, chocolate ao leite ralado e marshmallow',                                              extra: 0 },
   { nome: 'Ouro Branco',               desc: 'Ouro branco, chocolate preto e creme de leite',                                                extra: 5 },
   { nome: 'Paçoca',                     desc: 'Queijo, paçoca e creme de leite',                                                              extra: 0 },
@@ -3849,6 +3879,7 @@ var _CATALOGO = {
     { id:'alcatra',          nome:'Alcatra Acebolada',                sub:'Porção de 350g',                     campos:[{l:'350g',v:57.90}] },
     { id:'chorizo',          nome:'Chorizo Argentino',                sub:'Porção de 400g',                     campos:[{l:'400g',v:64.90}] },
     { id:'tilapia',          nome:'Tilápia em Iscas',                 sub:'Porção de 300g',                     campos:[{l:'300g',v:57.00}] },
+    { id:'tabua-carne',      nome:'Tábua de Carne',                   sub:'900g · Carnes mistas + acompanhamentos', campos:[{l:'Preço',v:120.00}] },
   ],
   burgers: [
     { id:'burguer',          nome:'Burguer',                         sub:'Pão brioche, maionese, hambúrguer, queijo mussarela',      campos:[{l:'Un.',v:27.90}] },
@@ -3903,6 +3934,8 @@ var _CATALOGO = {
     { id:'pizza-extra-urbana',         nome:'Extra: Urbana',             sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:5}] },
     { id:'pizza-extra-guirlanda',      nome:'Extra: Guirlanda Pringles', sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:40}] },
     { id:'pizza-extra-sonho-meu',      nome:'Extra: Sonho Meu',          sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:50}] },
+    { id:'pizza-extra-picanha',         nome:'Extra: Pizza Picanha',       sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:14.10}] },
+    { id:'pizza-extra-kinder',          nome:'Extra: Pizza Kinder Bueno',  sub:'Acréscimo sobre preço base',        campos:[{l:'Extra',v:9.00}] },
   ],
   especiais: [
     { id:'soda-italiana',    nome:'Soda Italiana',      sub:'Artesanal gaseificada · Sem álcool',   campos:[{l:'Un.',v:12.50}] },
@@ -4140,7 +4173,8 @@ function _aplicarPrecosNoCardapio(cat, dados) {
         var extraNomeMap = {
           'pizza-extra-camarao':'Pizza Camarão','pizza-extra-costela-prem':'Costela Premium',
           'pizza-extra-ouro-branco':'Ouro Branco','pizza-extra-urbana':'Urbana',
-          'pizza-extra-guirlanda':'Guirlanda Pringles','pizza-extra-sonho-meu':'Sonho Meu'
+          'pizza-extra-guirlanda':'Guirlanda Pringles','pizza-extra-sonho-meu':'Sonho Meu',
+          'pizza-extra-picanha':'⭐ Pizza Picanha','pizza-extra-kinder':'Kinder Bueno'
         };
         var sNome = extraNomeMap[item.id];
         if (sNome) {
@@ -4578,7 +4612,10 @@ const TODOS_ITENS = [
   { key: 'pizza-pacoca', nome: 'Paçoca', cat: 'Pizzas Doces' },
   { key: 'pizza-prestigio', nome: 'Prestígio', cat: 'Pizzas Doces' },
   { key: 'pizza-sensacao-branca', nome: 'Sensação Branca', cat: 'Pizzas Doces' },
+  { key: 'pizza-picanha', nome: 'Pizza Picanha', cat: 'Pizzas Salgadas' },
+  { key: 'pizza-kinder', nome: 'Kinder Bueno', cat: 'Pizzas Doces' },
   // Hambúrgueres
+  { key: 'rucula-cebola', nome: 'Hambúrguer de Rúcula com Cebola', cat: 'Hambúrgueres' },
   { key: 'burguer', nome: 'Burguer', cat: 'Hambúrgueres' },
   { key: 'big-thann', nome: 'Big Thänn', cat: 'Hambúrgueres' },
   { key: 'doble-smash', nome: 'Doble Smash', cat: 'Hambúrgueres' },

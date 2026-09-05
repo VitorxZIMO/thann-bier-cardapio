@@ -195,10 +195,13 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 .config-box {
   position: relative; z-index: 1;
   background: #141414; border: 1px solid #2a2a2a; border-radius: 20px;
-  width: 320px; max-width: 95vw;
-  max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+  width: 340px; max-width: 95vw;
+  max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
   box-shadow: 0 20px 60px rgba(0,0,0,.7);
   animation: configPop .25s cubic-bezier(.2,.8,.3,1) both;
+}
+@media (min-width: 768px) {
+  .config-box { width: 720px; max-width: 92vw; max-height: 92vh; }
 }
 @keyframes configPop {
   from { transform: scale(.92) translateY(10px); opacity: 0; }
@@ -2164,7 +2167,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                 </div>
                 <div class="refri-card-body">
                   <div class="refri-name">Coca-Cola</div>
-                  <div class="refri-variants">Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa</div>
+                  <div class="refri-variants" id="coca-variants">Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa</div>
                   <div class="refri-price">A partir de R$ 6,00
                   <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirCocaModal()">+</button>
                   </div>
@@ -3727,7 +3730,7 @@ function toggleCocaZero(oculta) {
 function aplicarCocaZero() {
   const tog = document.getElementById('toggle-coca-zero');
   if (tog) tog.checked = cocaZeroOculta;
-  const variants = document.querySelector('.refri-variants');
+  const variants = document.getElementById('coca-variants');
   if (variants) {
     variants.innerHTML = cocaZeroOculta
       ? 'Normal &nbsp;·&nbsp; Lata e Garrafa'
@@ -4728,7 +4731,9 @@ window._renderEstoque = function() {
 
   let html = '';
   Object.entries(cats).forEach(([cat, itens]) => {
-    html += '<div style="font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a">'+cat+'</div>';
+    const catId = 'estq-cat-' + cat.replace(/\s+/g,'_');
+    html += '<div onclick="var el=document.getElementById(\''+catId+'\');var arr=this.querySelector(\'.estq-arr\');if(el){el.style.display=el.style.display===\'none\'?\'\':\' none\';arr.textContent=el.style.display===\'none\'?\'▶\':\' ▼\'}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a;user-select:none"><span>'+cat+'</span><span class="estq-arr" style="font-size:10px">▼</span></div>';
+    html += '<div id="'+catId+'">';
     itens.forEach(item => {
       const esg = !!(dados[item.key] && dados[item.key].esgotado);
       const temFoto = !!(window._dadosFotos && window._dadosFotos[item.key]);
@@ -4743,6 +4748,7 @@ window._renderEstoque = function() {
         + '<label class="estoque-toggle"><input type="checkbox" '+(esg?'':'checked')+' onchange="toggleEstoque(\''+item.key+'\', !this.checked)"><span class="estoque-toggle-slider"></span></label>'
         + '</div>';
     });
+    html += '</div>'; // fecha categoria colapsável
   });
   list.innerHTML = html;
 };

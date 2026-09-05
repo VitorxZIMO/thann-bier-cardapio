@@ -1229,9 +1229,9 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   </aside>
 
   <!-- ── BOTÃO CHAMAR GARÇOM FLUTUANTE ── -->
-  <div id="garcom-fab" style="position:fixed;bottom:28px;left:20px;z-index:700;display:flex;flex-direction:column;align-items:flex-start;gap:8px">
-    <button id="garcom-btn" onclick="chamarGarcom()" style="background:linear-gradient(135deg,#003d10,#006020);border:2px solid #00802a;border-radius:20px;color:#fff;padding:20px 30px;cursor:pointer;display:flex;align-items:center;gap:14px;font-size:17px;font-weight:800;box-shadow:0 6px 28px rgba(0,100,30,.6);transition:all .2s;white-space:nowrap;min-width:220px">
-      <span style="font-size:30px">🔔</span>
+  <div id="garcom-fab" style="position:fixed;bottom:28px;right:28px;z-index:700;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <button id="garcom-btn" onclick="chamarGarcom()" style="background:linear-gradient(135deg,#003d10,#006020);border:1px solid #00802a;border-radius:18px;color:#fff;padding:14px 22px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:15px;font-weight:800;box-shadow:0 4px 20px rgba(0,100,30,.5);transition:all .2s;white-space:nowrap">
+      <span style="font-size:22px">🔔</span>
       <div style="text-align:left">
         <div id="garcom-title" style="font-size:13px;font-weight:800;color:#4dff88;text-transform:uppercase;letter-spacing:1px">Chamar Garçom</div>
         <div id="garcom-sub" style="font-size:11px;color:rgba(255,255,255,.6)">Toque para chamar</div>
@@ -2486,8 +2486,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
 </div>
 
 <!-- ── BANNER PEDIDO BLOQUEADO ── -->
-<div id="pedido-bloqueado-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;background:#1a0a0a;border:1.5px solid #c41a0a;border-radius:30px;padding:9px 18px;text-align:center;white-space:nowrap;box-shadow:0 4px 20px rgba(196,26,10,.4)">
-  <span style="font-size:13px;font-weight:800;color:#fff">🍽️ Pedidos com o garçom &nbsp;·&nbsp; </span><b style="font-size:13px;color:#5dff8a;cursor:pointer" onclick="chamarGarcom()">Chamar 🔔</b>
+<div id="pedido-bloqueado-banner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:800;background:#1a0a0a;border:1.5px solid #c41a0a;border-radius:30px;padding:12px 22px;text-align:center;white-space:nowrap;box-shadow:0 4px 20px rgba(196,26,10,.4)">
+  <span style="font-size:14px;font-weight:800;color:#fff">🍽️ Pedidos com o garçom &nbsp;·&nbsp; </span><b style="font-size:18px;color:#5dff8a;cursor:pointer;padding:8px 14px;background:rgba(93,255,138,.12);border-radius:20px;display:inline-block" onclick="chamarGarcom()">Chamar 🔔</b>
 </div>
 
 <!-- ── BANNER PEDIDO LANÇADO ── -->
@@ -3722,9 +3722,6 @@ function aplicarBloqueio() {
   // FAB carrinho
   const fab = document.getElementById('cart-fab');
   if (fab) fab.style.display = pedidosBloqueados ? 'none' : '';
-  // FAB garçom — aparece quando pedidos bloqueados (único recurso do cliente)
-  const garcomFab = document.getElementById('garcom-fab');
-  if (garcomFab) garcomFab.style.display = pedidosBloqueados ? '' : 'none';
 }
 
 // Interceptar cliques quando bloqueado

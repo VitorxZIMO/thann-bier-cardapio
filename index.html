@@ -1026,6 +1026,18 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
           </div>
         </div>
         <div class="config-section">
+          <div class="config-section-title">🥤 Bebidas</div>
+          <div class="config-row">
+            <div>
+              <div class="config-row-label">Ocultar Coca Zero</div>
+            </div>
+            <label class="estoque-toggle" style="width:48px;height:26px">
+              <input type="checkbox" id="toggle-coca-zero" onchange="toggleCocaZero(this.checked)">
+              <span class="estoque-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="config-section">
           <div class="config-section-title">🛑 Pedido na Mesa</div>
           <div class="config-row">
             <div>
@@ -2154,7 +2166,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
                   <div class="refri-name">Coca-Cola</div>
                   <div class="refri-variants">Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa</div>
                   <div class="refri-price">A partir de R$ 6,00
-                  <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirItemModal('Coca-Cola','Lata 350ml · 600ml · 2L',6.00,[{id:'tipo',label:'🥤 Escolha o tipo',required:true,opcoes:[{txt:'Normal',preco_extra:0},{txt:'Coca Zero',preco_extra:0}]},{id:'extras',label:'🍋 Extras',required:false,opcoes:[{txt:'Com limão e gelo',preco_extra:0},{txt:'Sem',preco_extra:0}]}])">+</button>
+                  <button class="btn-add-item" data-item-key="coca-cola" onclick="abrirCocaModal()">+</button>
                   </div>
                 </div>
               </div>
@@ -3695,6 +3707,33 @@ function fecharPedidoEnviado() {
 //  BLOQUEAR PEDIDOS NA MESA
 // ──────────────────────────────────────────
 let pedidosBloqueados = localStorage.getItem('thann_bloqueado') === '1';
+let cocaZeroOculta = localStorage.getItem('thann_coca_zero') === '1';
+
+function abrirCocaModal() {
+  var opcoesTipo = [{txt:'Normal',preco_extra:0}];
+  if (!cocaZeroOculta) opcoesTipo.push({txt:'Coca Zero',preco_extra:0});
+  abrirItemModal('Coca-Cola','Lata 350ml · 600ml · 2L',6.00,[
+    {id:'tipo',label:'🥤 Escolha o tipo',required:true,opcoes:opcoesTipo},
+    {id:'extras',label:'🍋 Extras',required:false,opcoes:[{txt:'Com limão e gelo',preco_extra:0},{txt:'Sem',preco_extra:0}]}
+  ]);
+}
+
+function toggleCocaZero(oculta) {
+  cocaZeroOculta = oculta;
+  localStorage.setItem('thann_coca_zero', oculta ? '1' : '0');
+  aplicarCocaZero();
+}
+
+function aplicarCocaZero() {
+  const tog = document.getElementById('toggle-coca-zero');
+  if (tog) tog.checked = cocaZeroOculta;
+  const variants = document.querySelector('.refri-variants');
+  if (variants) {
+    variants.innerHTML = cocaZeroOculta
+      ? 'Normal &nbsp;·&nbsp; Lata e Garrafa'
+      : 'Normal &nbsp;·&nbsp; Zero &nbsp;·&nbsp; Lata e Garrafa';
+  }
+}
 
 function toggleBloquearPedido(ativo) {
   pedidosBloqueados = ativo;
@@ -3747,6 +3786,7 @@ document.addEventListener('click', function(e) {
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
     aplicarBloqueio();
+    aplicarCocaZero();
     if (window._fbIniciarListenerBloqueio) window._fbIniciarListenerBloqueio();
     if (window._iniciarPrecosSync) window._iniciarPrecosSync();
     if (window._iniciarProdutosExtrasSync) window._iniciarProdutosExtrasSync();

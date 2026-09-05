@@ -1068,6 +1068,13 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
       <!-- PAINEL ESTOQUE -->
       <div class="cfg-panel" id="cfg-panel-estoque">
         <div class="config-section-title" style="margin-bottom:12px">📦 Controle de Estoque</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:10px 14px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:700;color:#fff">🥤 Ocultar Coca Zero</div>
+          <label class="estoque-toggle" style="width:48px;height:26px">
+            <input type="checkbox" id="toggle-coca-zero-est" onchange="toggleCocaZero(this.checked);document.getElementById('toggle-coca-zero').checked=this.checked">
+            <span class="estoque-toggle-slider"></span>
+          </label>
+        </div>
         <p style="font-size:11px;color:#888;margin-bottom:14px">Marque como <b style="color:#c41a0a">ESGOTADO</b> para desativar o item no cardápio em tempo real.</p>
         <div class="estoque-list" id="estoque-list">
           <div style="color:#555;font-size:12px;text-align:center;padding:20px">Carregando itens...</div>
@@ -1079,7 +1086,7 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
         <div class="config-section-title" style="margin-bottom:4px">✏️ Editor de Preços</div>
         <p style="font-size:11px;color:#666;margin-bottom:10px">Edite e salve — atualiza em todos os tablets na hora.</p>
         <!-- sub-tabs por categoria -->
-        <div class="preco-cats" id="preco-cats">
+        <div class="preco-cats" id="preco-cats" style="display:none">
           <button class="preco-cat active" onclick="mudarPrecoCat('porcoes',this)">🥩 Porções</button>
           <button class="preco-cat" onclick="mudarPrecoCat('burgers',this)">🍔 Burgers</button>
           <button class="preco-cat" onclick="mudarPrecoCat('bebidas',this)">🥤 Bebidas</button>
@@ -3730,6 +3737,8 @@ function toggleCocaZero(oculta) {
 function aplicarCocaZero() {
   const tog = document.getElementById('toggle-coca-zero');
   if (tog) tog.checked = cocaZeroOculta;
+  const togEst = document.getElementById('toggle-coca-zero-est');
+  if (togEst) togEst.checked = cocaZeroOculta;
   const variants = document.getElementById('coca-variants');
   if (variants) {
     variants.innerHTML = cocaZeroOculta
@@ -4047,31 +4056,37 @@ window._renderChopeEditor = function() { _renderPrecoEditor(); };
 function _renderPrecoEditor() {
   var body = document.getElementById('preco-editor-body');
   if (!body) return;
-  var cat = _precoCatAtual;
-  var itens = _CATALOGO[cat] || [];
-  var html = '<div id="preco-list-' + cat + '">';
-  itens.forEach(function(item, ii) {
-    html += '<div class="preco-item">';
-    html += '<div><div class="preco-item-nome">' + item.nome + '</div><div class="preco-item-sub">' + item.sub + '</div></div>';
-    html += '<div class="preco-item-fields">';
-    item.campos.forEach(function(c, ci) {
-      var val = (_precos[cat] && _precos[cat][item.id] && _precos[cat][item.id][ci] !== undefined)
-        ? _precos[cat][item.id][ci] : c.v;
-      var displayVal = (val === 0 || val === '0') ? '' : parseFloat(val).toFixed(2);
-      var placeholder = (cat === 'drinks') ? 'Consulte' : '0.00';
-      html += '<div class="preco-field-row">';
-      html += '<span class="preco-field-label">' + c.l + '</span>';
-      html += '<input class="preco-field-input" type="number" step="0.01" min="0" '
-            + 'value="' + displayVal + '" placeholder="' + placeholder + '" '
-            + 'data-cat="' + cat + '" data-id="' + item.id + '" data-ci="' + ci + '" '
-            + 'onchange="_onPrecoChange(this)">';
-      html += '</div>';
+  var html = '';
+  var cats = Object.keys(_CATALOGO);
+  cats.forEach(function(cat) {
+    var itens = _CATALOGO[cat] || [];
+    if (!itens.length) return;
+    var catId = 'preco-sec-' + cat;
+    html += '<div onclick="var el=document.getElementById(\''+catId+'\');var arr=this.querySelector(\'.preco-arr\');if(el){el.style.display=el.style.display===\'none\'?\'\':\' none\';arr.textContent=el.style.display===\'none\'?\'▶\':\' ▼\'}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a;user-select:none"><span>'+_catLabel(cat)+'</span><span class="preco-arr" style="font-size:10px">▼</span></div>';
+    html += '<div id="'+catId+'">';
+    itens.forEach(function(item) {
+      html += '<div class="preco-item">';
+      html += '<div><div class="preco-item-nome">' + item.nome + '</div><div class="preco-item-sub">' + (item.sub||'') + '</div></div>';
+      html += '<div class="preco-item-fields">';
+      item.campos.forEach(function(c, ci) {
+        var val = (_precos[cat] && _precos[cat][item.id] && _precos[cat][item.id][ci] !== undefined)
+          ? _precos[cat][item.id][ci] : c.v;
+        var displayVal = (val === 0 || val === '0') ? '' : parseFloat(val).toFixed(2);
+        var placeholder = (cat === 'drinks') ? 'Consulte' : '0.00';
+        html += '<div class="preco-field-row">';
+        html += '<span class="preco-field-label">' + c.l + '</span>';
+        html += '<input class="preco-field-input" type="number" step="0.01" min="0" '
+              + 'value="' + displayVal + '" placeholder="' + placeholder + '" '
+              + 'data-cat="' + cat + '" data-id="' + item.id + '" data-ci="' + ci + '" '
+              + 'onchange="_onPrecoChange(this)">';
+        html += '</div>';
+      });
+      html += '</div></div>';
     });
-    html += '</div></div>';
+    html += '<button class="preco-save-btn" style="margin:8px 0 4px" onclick="_salvarPrecos(\''+cat+'\')">💾 Salvar '+_catLabel(cat)+'</button>';
+    html += '<div class="preco-saved-msg" id="preco-saved-msg-'+cat+'">✅ Salvo!</div>';
+    html += '</div>';
   });
-  html += '</div>';
-  html += '<button class="preco-save-btn" onclick="_salvarPrecos(\'' + cat + '\')">💾 Salvar ' + _catLabel(cat) + '</button>';
-  html += '<div class="preco-saved-msg" id="preco-saved-msg">✅ Salvo! Atualizando em todos os tablets...</div>';
   body.innerHTML = html;
 }
 
@@ -4130,7 +4145,7 @@ function _salvarPrecos(cat) {
   }
   window._fbSet(window._fbRef(window._fbDb, 'cardapio_precos/' + cat), dados)
     .then(function() {
-      var msg = document.getElementById('preco-saved-msg');
+      var msg = document.getElementById('preco-saved-msg-'+cat) || document.getElementById('preco-saved-msg');
       if (msg) { msg.style.display = 'block'; setTimeout(function(){ msg.style.display='none'; }, 3000); }
       _aplicarPrecosNoCardapio(cat, dados);
     })

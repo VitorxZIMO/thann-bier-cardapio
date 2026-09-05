@@ -3722,9 +3722,9 @@ function aplicarBloqueio() {
   // FAB carrinho
   const fab = document.getElementById('cart-fab');
   if (fab) fab.style.display = pedidosBloqueados ? 'none' : '';
-  // FAB garçom — some quando pedidos bloqueados
+  // FAB garçom — aparece quando pedidos bloqueados (único recurso do cliente)
   const garcomFab = document.getElementById('garcom-fab');
-  if (garcomFab) garcomFab.style.display = pedidosBloqueados ? 'none' : '';
+  if (garcomFab) garcomFab.style.display = pedidosBloqueados ? '' : 'none';
 }
 
 // Interceptar cliques quando bloqueado

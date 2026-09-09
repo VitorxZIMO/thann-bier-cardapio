@@ -201,7 +201,8 @@ html, body { height: 100%; overflow: hidden; background: #080808; color: var(--t
   animation: configPop .25s cubic-bezier(.2,.8,.3,1) both;
 }
 @media (min-width: 768px) {
-  .config-box { width: 720px; max-width: 92vw; max-height: 92vh; }
+  .config-box { width: 860px; max-width: 94vw; max-height: 94vh; }
+  #preco-editor-body .preco-item { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
 }
 @keyframes configPop {
   from { transform: scale(.92) translateY(10px); opacity: 0; }
@@ -4057,33 +4058,29 @@ function _renderPrecoEditor() {
   var body = document.getElementById('preco-editor-body');
   if (!body) return;
   var html = '';
-  var cats = Object.keys(_CATALOGO);
-  cats.forEach(function(cat) {
+  Object.keys(_CATALOGO).forEach(function(cat) {
     var itens = _CATALOGO[cat] || [];
     if (!itens.length) return;
     var catId = 'preco-sec-' + cat;
-    html += '<div onclick="var el=document.getElementById(\''+catId+'\');var arr=this.querySelector(\'.preco-arr\');if(el){el.style.display=el.style.display===\'none\'?\'\':\' none\';arr.textContent=el.style.display===\'none\'?\'▶\':\' ▼\'}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a;user-select:none"><span>'+_catLabel(cat)+'</span><span class="preco-arr" style="font-size:10px">▼</span></div>';
+    // Header colapsável
+    html += '<div onclick="var s=document.getElementById(\''+catId+'\');var hidden=s.style.display===\'none\';s.style.display=hidden?\'block\':\'none\';this.querySelector(\'.preco-arr\').textContent=hidden?\'▼\':\'▶\'" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800;color:#ccc;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding:8px 10px;background:#1e1e1e;border-radius:8px;user-select:none"><span>'+_catLabel(cat)+'</span><span class="preco-arr" style="font-size:11px">▼</span></div>';
     html += '<div id="'+catId+'">';
     itens.forEach(function(item) {
       html += '<div class="preco-item">';
-      html += '<div><div class="preco-item-nome">' + item.nome + '</div><div class="preco-item-sub">' + (item.sub||'') + '</div></div>';
+      html += '<div><div class="preco-item-nome">'+item.nome+'</div><div class="preco-item-sub">'+(item.sub||'')+'</div></div>';
       html += '<div class="preco-item-fields">';
       item.campos.forEach(function(c, ci) {
         var val = (_precos[cat] && _precos[cat][item.id] && _precos[cat][item.id][ci] !== undefined)
           ? _precos[cat][item.id][ci] : c.v;
         var displayVal = (val === 0 || val === '0') ? '' : parseFloat(val).toFixed(2);
-        var placeholder = (cat === 'drinks') ? 'Consulte' : '0.00';
         html += '<div class="preco-field-row">';
-        html += '<span class="preco-field-label">' + c.l + '</span>';
-        html += '<input class="preco-field-input" type="number" step="0.01" min="0" '
-              + 'value="' + displayVal + '" placeholder="' + placeholder + '" '
-              + 'data-cat="' + cat + '" data-id="' + item.id + '" data-ci="' + ci + '" '
-              + 'onchange="_onPrecoChange(this)">';
+        html += '<span class="preco-field-label">'+c.l+'</span>';
+        html += '<input class="preco-field-input" type="number" step="0.01" min="0" value="'+displayVal+'" placeholder="0.00" data-cat="'+cat+'" data-id="'+item.id+'" data-ci="'+ci+'" onchange="_onPrecoChange(this)">';
         html += '</div>';
       });
       html += '</div></div>';
     });
-    html += '<button class="preco-save-btn" style="margin:8px 0 4px" onclick="_salvarPrecos(\''+cat+'\')">💾 Salvar '+_catLabel(cat)+'</button>';
+    html += '<button class="preco-save-btn" style="margin:8px 0 12px" onclick="_salvarPrecos(\''+cat+'\')">💾 Salvar '+_catLabel(cat)+'</button>';
     html += '<div class="preco-saved-msg" id="preco-saved-msg-'+cat+'">✅ Salvo!</div>';
     html += '</div>';
   });
@@ -4747,7 +4744,7 @@ window._renderEstoque = function() {
   let html = '';
   Object.entries(cats).forEach(([cat, itens]) => {
     const catId = 'estq-cat-' + cat.replace(/\s+/g,'_');
-    html += '<div onclick="var el=document.getElementById(\''+catId+'\');var arr=this.querySelector(\'.estq-arr\');if(el){el.style.display=el.style.display===\'none\'?\'\':\' none\';arr.textContent=el.style.display===\'none\'?\'▶\':\' ▼\'}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a;user-select:none"><span>'+cat+'</span><span class="estq-arr" style="font-size:10px">▼</span></div>';
+    html += '<div onclick="var el=document.getElementById(\''+catId+'\');var arr=this.querySelector(\'.estq-arr\');if(el){var hidden=el.style.display===\'none\';el.style.display=hidden?\'block\':\'none\';arr.textContent=hidden?\'▼\':\'▶\'}" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid #2a2a2a;user-select:none"><span>'+cat+'</span><span class="estq-arr" style="font-size:10px">▼</span></div>';
     html += '<div id="'+catId+'">';
     itens.forEach(item => {
       const esg = !!(dados[item.key] && dados[item.key].esgotado);
